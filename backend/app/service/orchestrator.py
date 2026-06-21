@@ -9,15 +9,17 @@ from sqlalchemy.orm import Session
 
 from ..channels.base import NormalizedMessage
 from ..models import Conversation, Message
+from .conversation.engine import OrchestrationResult, orchestrate
 from .leads.service import capture_lead
 
 
 def handle_inbound(
     db: Session, msg: NormalizedMessage, channel_name: str = "simulator"
-) -> tuple[int, int, int | None]:
-    """处理一条归一化入站消息：确保会话存在 + 写消息；文本消息顺带抽取留资（REQ-4）。
+) -> tuple[int, int, int | None, OrchestrationResult | None]:
+    """处理一条归一化入站消息：入库 + 留资抽取（REQ-4）+ 编排（REQ-6 检索作答/缺口）。
 
-    返回 (message_id, conversation_id, lead_id)；lead_id 为 None 表示无留资。
+    返回 (message_id, conversation_id, lead_id, orchestration)；orchestration 为 None
+    表示未做编排（非文本消息，或检索不可用被跳过——如 SQLite 测试无 TEI/pgvector）。
     """
     conv = (
         db.query(Conversation)
@@ -52,6 +54,15 @@ def handle_inbound(
         else None
     )
 
+    # 编排（REQ-6）：文本消息做检索→命中作答/未命中缺口。检索依赖 TEI+pgvector，
+    # 不可用时（如 SQLite 测试环境）优雅跳过，不阻塞入库。
+    orchestration: OrchestrationResult | None = None
+    if msg.content_type == "text" and msg.content_text:
+        try:
+            orchestration = orchestrate(db, conv, msg.content_text, channel_name)
+        except Exception as e:  # noqa: BLE001
+            print(f"[warn] 编排跳过（检索不可用？）：{e}")
+
     db.commit()
     db.refresh(message)
-    return message.id, conv.id, (lead.id if lead else None)
+    return message.id, conv.id, (lead.id if lead else None), orchestration

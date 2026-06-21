@@ -19,12 +19,20 @@ router = APIRouter(prefix="/api/v1", tags=["messages"])
 
 @router.post("/messages/simulate", response_model=ApiResponse[SimulateData])
 def simulate(req: SimulateRequest, db: Session = Depends(get_db)):
-    """模拟器投递一条入站消息 → 归一化 → 入库 + 留资抽取；返回 message_id / conversation_id / lead_id。"""
+    """模拟器投递一条入站消息 → 归一化 → 入库 + 留资 + 编排（命中作答/缺口）。"""
     normalized = simulator_channel.receive(req.model_dump())
-    message_id, conversation_id, lead_id = handle_inbound(db, normalized, channel_name="simulator")
+    message_id, conversation_id, lead_id, orch = handle_inbound(
+        db, normalized, channel_name="simulator"
+    )
     return ApiResponse(
         data=SimulateData(
-            message_id=message_id, conversation_id=conversation_id, lead_id=lead_id
+            message_id=message_id,
+            conversation_id=conversation_id,
+            lead_id=lead_id,
+            hit=orch.hit if orch else None,
+            reply_text=orch.reply_text if orch else None,
+            gap_id=orch.gap_id if orch else None,
+            handoff_id=orch.handoff_id if orch else None,
         )
     )
 
