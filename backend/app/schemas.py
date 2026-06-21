@@ -112,3 +112,10 @@ class HandoffStateRequest(BaseModel):
 class HandoffStateData(BaseModel):
     conversation_id: int
     handoff_state: str
+
+
+class SummaryData(BaseModel):
+    """定时小结响应（07 §3.4）。"""
+
+    notification_id: int
+    summary: str

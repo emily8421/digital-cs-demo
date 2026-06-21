@@ -179,6 +179,13 @@
 ### 禁止事项
 - 小结口径为「该关注什么」非系统报表腔；不引入前端。
 
+### 验收记录（2026-06-21）
+- 已实现：`service/summary/generator.generate_daily_summary`（聚合 `inbound messages` 量/类型 + `open handoffs` 跟进清单含目标 staff → 口语化小结 → 落 `dcs_notifications`(kind=summary) 发 owner）；`POST /api/v1/summaries/daily`（手动触发）。
+- **调度选型收敛**：**外部 cron**（应用不内嵌 APScheduler）——接口提供能力，定时由部署层 cron/systemd/k8s 调用；少组件、生产更稳（进程重启不丢调度）。已同步 `docs/05-tech-spec.md`。
+- 自动化测试：`pytest -q` → **26 passed**（+小结聚合 2）。
+- 真实端到端：`POST /summaries/daily` →「今天共 8 条客户消息（文字6、语音2）…3 条需跟进：售前(小雯)、待确认问题(陈总)…均已通知对应同事」；`dcs_notifications` 落 kind=summary。
+- **REQ-7 可验证口径：通过。** 03 §3 Demo 步骤 4 可走通。
+
 ---
 
 ## Sprint-7：端到端串联 + 企业微信接入（视 Sprint-0 结论）

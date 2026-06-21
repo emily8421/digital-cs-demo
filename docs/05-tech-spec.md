@@ -13,7 +13,7 @@
 | Embedding | **待定**：中转站 `/v1/embeddings`（待测）或本地 BGE | 待确认 | P1 | 中转站未必带向量接口；Sprint-2 前定（见背景约束 §3） |
 | 消息平台（客户侧） | 企业微信开放 API | n/a | 愿景·待验证 | 群内自动回复 Sprint-0 已核实不成立；**当前企业微信未认证→真实通道需先认证**（见背景约束） |
 | 员工通知出站 | **飞书机器人**（custom robot webhook） | 待确认 | P1 | 据背景约束（内部 IM=飞书）；MVP 可用飞书 custom robot，接入简单 |
-| 任务调度 | 待确认（候选 APScheduler / 外部 cron） | 待确认 | P1 | 定时小结；P2 时效检查 |
+| 任务调度 | **外部 cron**（应用不内嵌） | — | P1 | 定时小结；应用只提供 `POST /summaries/daily` 接口，定时由部署层 cron/systemd/k8s 调用（Sprint-6 定，少组件、生产更稳） |
 | 部署 | **本机原型**（Docker Desktop / 本地 Python）；公司 Linux 服务器＝后续 | 待确认 | P1 | 据背景约束：本机先跑通，公司服务器后续 |
 | 测试 | pytest（待确认） | 待确认 | P1 | tests/ 目录 |
 
