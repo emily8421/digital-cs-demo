@@ -28,6 +28,7 @@ class SimulateRequest(BaseModel):
 class SimulateData(BaseModel):
     message_id: int
     conversation_id: int
+    lead_id: Optional[int] = None  # 留资记录 id（REQ-4）；无联系方式时为 None
 
 
 class MessageOut(BaseModel):
@@ -74,3 +75,23 @@ class KnowledgeItemOut(BaseModel):
 class KnowledgeSearchData(BaseModel):
     hit: bool
     items: list[KnowledgeItemOut]
+
+
+class HandoffRequest(BaseModel):
+    """转交请求体（07 §3.3）。"""
+
+    conversation_id: int
+    scenario: str
+    reason: str
+    context_ref: Optional[dict] = None
+
+
+class HandoffData(BaseModel):
+    """转交响应（07 §3.3）：路由解析 + 通知结果。"""
+
+    handoff_id: int
+    target_staff_id: Optional[int] = None
+    target_role: Optional[str] = None
+    staff_name: Optional[str] = None
+    notification_id: int
+    body: str  # 生成的口语化提醒（便于查看/验证）

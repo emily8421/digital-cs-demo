@@ -100,6 +100,13 @@
 ### 禁止事项
 - 转人工暂停的会话级判定留到 Sprint-5（已提至 P1）；Sprint-3 只做转交记录与通知，不做暂停判定。不做前端；联系方式须脱敏存储。
 
+### 验收记录（2026-06-21）
+- 已实现：5 表 ORM（`dcs_leads`/`dcs_staff`/`dcs_routing_rules`/`dcs_handoffs`/`dcs_notifications`）；留资识别（`detector` 手机号正则 + 脱敏，接入 `handle_inbound`）；路由（`scenario→target_role→在岗 staff`）；口语化通知（`build_handoff_body`）；`POST /api/v1/handoffs`；飞书 webhook 出站（`FEISHU_WEBHOOK_URL` 可配）；staff/routing 种子脚本。
+- 边界（合规）：联系方式**只脱敏不加密**（`contact_value_enc` 建 bytea 留 NULL，加密需密钥管理待后续）；飞书**默认只落库**（webhook 未配则不发送，本机原型）；不做转人工暂停（Sprint-5）；不做编排完整分支（Sprint-4）。
+- 自动化测试：`pytest -q` → **19 passed**（Sprint-1/2 的 8 + 留资 3 / 路由 5 / handoffs 3）。
+- 真实端到端：投递含手机号消息 → 产生脱敏留资（`139****5678`）；`POST /handoffs` 路由 `presale→sales/小雯`、`unknown_question→owner/陈总`，通知落 `dcs_notifications`(kind=handoff, channel=feishu)，body 口语化含摘要+客户标识+脱敏联系方式。
+- **REQ-4/5/8 可验证口径：通过。** 转人工暂停留 Sprint-5，编排闭环（检索作答/缺口转人串联）留 Sprint-4。
+
 ---
 
 ## Sprint-4：知识缺口检测 + 编排闭环串联
