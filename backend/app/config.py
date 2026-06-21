@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     # 本机默认指向 docker compose 起的 PG（psycopg3 驱动）
-    database_url: str = "postgresql+psycopg://dcs:dcs@localhost:5432/dcs"
+    database_url: str = "postgresql+psycopg://dcs:dcs@localhost:15432/dcs"
     app_host: str = "127.0.0.1"
     app_port: int = 8000
 

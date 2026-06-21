@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: dcs
       POSTGRES_DB: dcs
     ports:
-      - "5432:5432"
+      - "15432:5432"  # 宿主机用 15432（避开 Windows Hyper-V 对 5432 的端口预留）
     volumes:
       - dcs_pgdata:/var/lib/postgresql/data
 
