@@ -1,7 +1,9 @@
-"""FastAPI 入口。Sprint-1：注册路由 + 启动时建表。"""
+"""FastAPI 入口。注册路由 + 启动时建表 + 挂载演示 UI（/ui）。"""
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from .api import handoffs, knowledge, messages, summaries
 from .db import init_db
@@ -27,3 +29,9 @@ app.include_router(summaries.router)
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+# 演示用前端（静态挂载，同源避免 CORS）；frontend/ 定位为「演示辅助 UI」（非 P1 功能前端）
+_frontend_dir = Path(__file__).resolve().parents[2] / "frontend"
+if _frontend_dir.is_dir():
+    app.mount("/ui", StaticFiles(directory=str(_frontend_dir), html=True), name="ui")
