@@ -59,7 +59,7 @@
 > 以下均为 AI 草稿/占位，待人工确认；确认后回写对应文档。
 
 - **DEC-2 技术栈版本/选型** `[部分已定·待补]`：已定——向量库=**pgvector**、部署=**本机原型先**（公司 Linux 服务器后续）、员工通知=**飞书机器人**、LLM 对话=**经中转站（GLM-5.2/DeepSeek）**。**待定**：embedding 走中转站还是本地 BGE（中转站未必带向量接口，Sprint-2 前定）；各组件版本；任务调度（APScheduler vs cron）；海外 API 备选。
-- **DEC-3 `project-rules` §0–§5 草稿确认** `[待定]`：尤其 §1 Phase 边界、§2 技术栈、§3「本期不启用 frontend」——见 `ai/project-rules.md`。
+- **DEC-3 `project-rules` §0–§5 草稿确认** `[部分确认]`：尤其 §1 Phase 边界、§2 技术栈、§3 frontend（**演示辅助 UI 启用**，P1 收官后补、非功能前端）——见 `ai/project-rules.md`。
 - **DEC-4 路由默认场景映射** `[待定]`：售前→sales、未知问题→owner(拍板人)、订单→跟单、售后→tech，是否符合实际组织分工——见 `docs/design-routing-notification.md` §2。
 - **DEC-5 合规细节** `[待定]`：留资脱敏 + `contact_value_enc` 加密存储方案、企业微信回调签名校验/鉴权方案——见 `docs/06-db-design.md`（dcs_leads）、`docs/07-api-spec.md` §1。
 - **DEC-6 转人工暂停粒度** `[待定·次优先]`：P1 暂按「会话(群)级」实现；是否需要在近期推进「话题(thread)级」精化——见 `docs/02-srs.md` REQ-10 粒度说明。
