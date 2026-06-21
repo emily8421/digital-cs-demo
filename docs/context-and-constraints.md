@@ -26,10 +26,9 @@
 ## 3. 约束 → 对架构/技术方案的含义
 
 - **AI 对话＝经中转站（已定）**：GLM-5.2 / DeepSeek，OpenAI 兼容，复用公司现有账号。
-- **AI 向量 embedding（待定）**：中转站**未必代理向量接口**。两条路，Sprint-2 前定：
-  - (A) 测中转站 `/v1/embeddings` 是否可用 → 可用则直接走（最省事）；
-  - (B) 本地跑 **BGE** 向量模型（Docker，免费，不依赖中转站）→ 确定性强的兜底。
-  - 不走「纯 Claude」（无 embedding）；海外 API 仅作备选，注意客户数据出境合规。
+- **AI 向量 embedding（已定，Sprint-2）**：**本地 BGE via Docker TEI（text-embeddings-inference）**。
+  - 选定 (B) 本地 BGE：原拟「进程内 sentence-transformers」，但 Python 3.14 + Windows 下 torch/onnxruntime 原生 DLL（`c10.dll`/pybind）加载失败（`WinError 1114`），改容器内 Linux 跑 TEI、宿主以 httpx 调用（`POST /embed`，512 维 bge-small-zh-v1.5）；向量库 pgvector。
+  - (A) 中转站 `/v1/embeddings` 未采用（待测、未必支持）；海外 API 仍作备选，注意客户数据出境合规。
 - **企业微信计划认证**：MVP（模拟器）不受影响；真实接客户（微信客服/会话存档）需认证完成（见 DEC-8）。
 - **内部 IM＝飞书**：员工侧「转交提醒 / 日报」出站通道＝**飞书机器人**（custom robot webhook，接入简单），MVP 即可用。
 - **部署＝本机原型优先**：当前在**本机**跑通原型（Docker Desktop + 本地 Python），**暂不启用公司服务器**——即当前无需折腾服务器访问/Docker-on-server。公司 Linux 服务器作为后续部署资源，原型稳定后再上。
@@ -42,14 +41,14 @@
 | 数据库 | PostgreSQL（本机先用 Docker 起；服务器后续） | 已定（栈级） |
 | 向量检索 | pgvector（复用 PG） | 已定 |
 | LLM 对话 | 经中转站：GLM-5.2 / DeepSeek（OpenAI 兼容） | 已定 |
-| Embedding | 待定：中转站 embedding（待测） vs 本地 BGE | **待测**（Sprint-2 前定） |
+| Embedding | 本地 BGE via Docker TEI（text-embeddings-inference） | **已定**（Sprint-2） |
 | 员工通知出站 | 飞书机器人（custom robot） | 已定 |
 | 真实客户通道 | 企业微信合规途径（微信客服/会话存档） | 前置：认证（已计划） |
 
 ## 5. 仍待项目方补充 / 确认
 
 1. ~~LLM provider~~ → **已定**：对话经中转站（GLM-5.2 / DeepSeek）。
-2. **embedding 走中转站还是本地 BGE**？— 待测/待定（Sprint-2 前定；可先跑本文 §3 的 curl 测试）。
+2. ~~embedding 走中转站还是本地 BGE~~ → **已定（Sprint-2）**：本地 BGE via Docker **TEI（text-embeddings-inference）**。原因：Python 3.14 + Windows 下进程内 torch/onnx 原生 DLL 加载失败（`WinError 1114`），改容器内 Linux 跑 TEI、宿主 httpx 调用；向量库 pgvector。
 3. ~~企业微信是否认证~~ → **已定**：计划认证（DEC-8）。
 4. ~~服务器~~ → **本机原型先**；公司服务器后续（暂缓）。
 5. **海外 API 是哪家的 key**？（若启用备选）— 待补。

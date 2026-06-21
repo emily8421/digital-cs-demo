@@ -1,9 +1,12 @@
-"""ORM 模型，对应 docs/06-db-design.md 的 dcs_conversations / dcs_messages（Sprint-1 范围）。
+"""ORM 模型，对应 docs/06-db-design.md。
 
-注意：只落地这两张表。其余表（knowledge/leads/handoffs/...）随各自 Sprint 加入。
+- dcs_conversations / dcs_messages（Sprint-1）
+- dcs_knowledge_items（Sprint-2）
+其余表（leads/handoffs/staff/...）随各自 Sprint 加入。
 """
 from datetime import datetime, timezone
 
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
     CheckConstraint,
     DateTime,
@@ -76,3 +79,30 @@ class Message(Base):
     )
 
     conversation: Mapped["Conversation"] = relationship(back_populates="messages")
+
+
+class KnowledgeItem(Base):
+    """知识条目（FAQ/参数/选型）及其确认状态。对应 dcs_knowledge_items。"""
+
+    __tablename__ = "dcs_knowledge_items"
+    __table_args__ = (
+        CheckConstraint("status IN ('confirmed','pending')", name="ck_knowledge_status"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    question_pattern: Mapped[str] = mapped_column(Text, nullable=False)
+    answer: Mapped[str] = mapped_column(Text, nullable=False)
+    category: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    # 向量：PG 用 pgvector 的 vector(512)；SQLite 退化为 JSON（无 Docker 单测也能建表）
+    embedding: Mapped[list[float] | None] = mapped_column(
+        Vector(512).with_variant(JSON, "sqlite"), nullable=True
+    )
+    status: Mapped[str] = mapped_column(String(16), nullable=False, default="confirmed")
+    # 来源确认人；dcs_staff 表在 Sprint-3 建，本轮先 nullable、不加 FK（预置种子为 NULL）
+    source_staff_id: Mapped[int | None] = mapped_column(nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
