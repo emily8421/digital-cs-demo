@@ -2,16 +2,20 @@
 
 - dcs_conversations / dcs_messages（Sprint-1）
 - dcs_knowledge_items（Sprint-2）
-其余表（leads/handoffs/staff/...）随各自 Sprint 加入。
+- dcs_leads / dcs_staff / dcs_routing_rules / dcs_handoffs / dcs_notifications（Sprint-3）
+其余表（knowledge_gaps/...）随各自 Sprint 加入。
 """
 from datetime import datetime, timezone
 
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
+    Boolean,
     CheckConstraint,
     DateTime,
     ForeignKey,
+    Integer,
     JSON,
+    LargeBinary,
     String,
     Text,
 )
@@ -106,3 +110,99 @@ class KnowledgeItem(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, default=_now
     )
+
+
+class Staff(Base):
+    """员工花名册与角色。对应 dcs_staff。REQ-5/8。"""
+
+    __tablename__ = "dcs_staff"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(64), nullable=False)
+    role: Mapped[str] = mapped_column(String(32), nullable=False)  # sales/tech/merchandiser/owner
+    external_id: Mapped[str | None] = mapped_column(String(128), nullable=True)  # 接收提醒的外部标识
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+
+
+class RoutingRule(Base):
+    """场景→角色路由规则。对应 dcs_routing_rules。REQ-8。"""
+
+    __tablename__ = "dcs_routing_rules"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    scenario: Mapped[str] = mapped_column(String(32), nullable=False, unique=True)
+    target_role: Mapped[str] = mapped_column(String(32), nullable=False)
+    priority: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+
+class Lead(Base):
+    """客户留资（联系方式，脱敏存储）。对应 dcs_leads。REQ-4。"""
+
+    __tablename__ = "dcs_leads"
+    __table_args__ = (
+        CheckConstraint(
+            "contact_type IN ('phone','wechat','email','other')", name="ck_leads_contact_type"
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    conversation_id: Mapped[int] = mapped_column(
+        ForeignKey("dcs_conversations.id"), nullable=False
+    )
+    contact_type: Mapped[str] = mapped_column(String(16), nullable=False)
+    contact_value_masked: Mapped[str] = mapped_column(String(64), nullable=False)  # 脱敏值（如 138****6677）
+    # 加密原文（合规存储）；Sprint-3 暂不实现加密，留 NULL（需密钥管理，待后续）
+    contact_value_enc: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
+    captured_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+    note: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class Handoff(Base):
+    """转人工/转交记录。对应 dcs_handoffs。REQ-5/8。"""
+
+    __tablename__ = "dcs_handoffs"
+    __table_args__ = (
+        CheckConstraint("status IN ('open','accepted','closed')", name="ck_handoffs_status"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    conversation_id: Mapped[int] = mapped_column(
+        ForeignKey("dcs_conversations.id"), nullable=False
+    )
+    scenario: Mapped[str] = mapped_column(String(32), nullable=False)
+    target_staff_id: Mapped[int | None] = mapped_column(
+        ForeignKey("dcs_staff.id"), nullable=True
+    )
+    reason: Mapped[str] = mapped_column(Text, nullable=False)
+    context_ref: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    status: Mapped[str] = mapped_column(String(16), nullable=False, default="open")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+
+
+class Notification(Base):
+    """出站提醒/小结的发送记录。对应 dcs_notifications。REQ-5/7。"""
+
+    __tablename__ = "dcs_notifications"
+    __table_args__ = (
+        CheckConstraint("kind IN ('handoff','summary','gap')", name="ck_notifications_kind"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    kind: Mapped[str] = mapped_column(String(16), nullable=False)
+    target_staff_id: Mapped[int | None] = mapped_column(
+        ForeignKey("dcs_staff.id"), nullable=True
+    )
+    channel: Mapped[str] = mapped_column(String(32), nullable=False)  # feishu/log/...
+    body: Mapped[str] = mapped_column(Text, nullable=False)
+    sent_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+    ref_handoff_id: Mapped[int | None] = mapped_column(
+        ForeignKey("dcs_handoffs.id"), nullable=True
+    )
+    # ref_gap_id：dcs_knowledge_gaps 表 Sprint-4 才建，本轮先 nullable、不加 FK
+    ref_gap_id: Mapped[int | None] = mapped_column(nullable=True)
