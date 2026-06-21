@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from ..channels.base import NormalizedMessage
 from ..models import Conversation, Message
-from .conversation.engine import OrchestrationResult, orchestrate
+from .conversation.engine import OrchestrationResult, act_on_non_text, orchestrate
 from .leads.service import capture_lead
 
 
@@ -54,11 +54,18 @@ def handle_inbound(
         else None
     )
 
-    # 编排（REQ-6）：文本消息做检索→命中作答/未命中缺口。检索依赖 TEI+pgvector，
-    # 不可用时（如 SQLite 测试环境）优雅跳过，不阻塞入库。
+    # 编排（REQ-6/10/12）：会话级暂停 → 非文字如实告知 → 文本检索作答/缺口。
+    # 检索依赖 TEI+pgvector，不可用时（如 SQLite 测试环境）优雅跳过，不阻塞入库。
     orchestration: OrchestrationResult | None = None
-    if msg.content_type == "text" and msg.content_text:
-        try:
+    if conv.handoff_state == "handed_off":
+        pass  # REQ-10：已转人工，暂停所有自动编排（仅记录消息）
+    elif msg.content_type != "text":
+        try:  # REQ-12：非文字如实告知 + 提醒员工查看
+            orchestration = act_on_non_text(db, conv, msg.content_type, channel_name)
+        except Exception as e:  # noqa: BLE001
+            print(f"[warn] 非文字处理跳过：{e}")
+    elif msg.content_text:
+        try:  # REQ-6：文本检索 → 命中作答 / 未命中缺口
             orchestration = orchestrate(db, conv, msg.content_text, channel_name)
         except Exception as e:  # noqa: BLE001
             print(f"[warn] 编排跳过（检索不可用？）：{e}")

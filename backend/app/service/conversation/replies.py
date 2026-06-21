@@ -16,3 +16,14 @@ def build_gap_reply() -> str:
         "这个问题我暂时还答不准，帮您请同事确认一下。"
         "方便留个联系方式吗？回复后会有专人跟进。"
     )
+
+
+def build_non_text_reply(content_type: str) -> str:
+    """非文字消息如实告知（REQ-12）：无法识别内容，请改文字或等待同事。"""
+    label = {"voice": "语音", "image": "图片", "video": "视频"}.get(
+        content_type, content_type
+    )
+    return (
+        f"收到您的{label}，我暂时看不了内容，"
+        f"麻烦用文字说明一下，或者稍等我请同事看一下。"
+    )

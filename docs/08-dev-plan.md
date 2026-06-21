@@ -153,6 +153,13 @@
 ### 禁止事项
 - 不做话题（thread）级暂停（后续）；不做非文字内容理解（永久）；不超过 3 个模块。
 
+### 验收记录（2026-06-21）
+- 已实现：编排边界——`handle_inbound` 加 `handoff_state` 检查（`handed_off` 暂停所有自动编排，仅记录，REQ-10）+ 非文字分支 `act_on_non_text`（如实告知 + 转交 owner 提醒，不生成内容作答、不写 gap，REQ-12）；`POST /api/v1/conversations/{id}/handoff-state`（置/解除暂停标记）；`build_non_text_reply`（按类型：语音/图片/视频）。
+- 边界：暂停为**会话级**（话题级留后续）；非文字仅识别类型 + 如实告知（**内容理解永久非目标**）。
+- 自动化测试：`pytest -q` → **24 passed**（+暂停/非文字 3）。
+- 真实端到端：投 voice → 如实告知 + 员工提醒（notif）；置 `handed_off` → 投消息无自动回复（reply/notif 均 None）；解除 `auto` → 恢复。
+- **REQ-10/12 可验证口径：通过。**
+
 ---
 
 ## Sprint-6：定时小结 / 日报

@@ -14,7 +14,7 @@ from ...models import Conversation, Handoff, KnowledgeGap, Message
 from ..knowledge.search import KnowledgeHit, search as knowledge_search
 from ..routing.notifier import build_handoff_body, notify_handoff
 from ..routing.router import resolve_target
-from .replies import build_answer, build_gap_reply
+from .replies import build_answer, build_gap_reply, build_non_text_reply
 
 
 @dataclass
@@ -119,3 +119,30 @@ def orchestrate(
     """检索 + 编排（端到端用，需 TEI/pgvector；单测请直接测 act_on_search 注入 fake 结果）。"""
     hit, items = knowledge_search(db, question_text, embedder=embedder)
     return act_on_search(db, conv, question_text, channel, hit, items)
+
+
+def act_on_non_text(
+    db: Session, conv: Conversation, content_type: str, channel: str
+) -> OrchestrationResult:
+    """非文字消息（REQ-12）：群内如实告知 + 提醒员工查看；不生成内容作答、不写 gap。"""
+    reply = build_non_text_reply(content_type)
+    _write_outbound(db, conv.id, channel, reply)
+    target = resolve_target(db, "unknown_question")
+    body = build_handoff_body(
+        staff_name=target.staff_name,
+        scenario="non_text",
+        reason=f"收到 {content_type} 消息，需人工查看",
+        customer=conv.external_group_id,
+        masked_contact=None,
+    )
+    notification = notify_handoff(
+        db, staff_id=target.staff_id, body=body, ref_handoff_id=None
+    )
+    return OrchestrationResult(
+        hit=False,
+        reply_text=reply,
+        answer_source_id=None,
+        gap_id=None,
+        handoff_id=None,
+        notification_id=notification.id,
+    )
