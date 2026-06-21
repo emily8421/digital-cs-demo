@@ -30,7 +30,7 @@ cd backend
 uvicorn app.main:app --reload
 ```
 
-浏览器打开 http://127.0.0.1:8000/docs 看 Swagger UI（可直接点按钮试接口）。
+浏览器打开 http://127.0.0.1:8000/docs 看 Swagger UI（可直接点按钮试接口）；或 http://127.0.0.1:8000/ui 看**演示辅助 UI**（聊天窗 + 控制台，P1 收官后补，更直观地演示全流程）。
 
 ## 3. 试一下（对应 REQ-1）
 
