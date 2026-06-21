@@ -33,6 +33,7 @@ def simulate(req: SimulateRequest, db: Session = Depends(get_db)):
             reply_text=orch.reply_text if orch else None,
             gap_id=orch.gap_id if orch else None,
             handoff_id=orch.handoff_id if orch else None,
+            notification_id=orch.notification_id if orch else None,
         )
     )
 

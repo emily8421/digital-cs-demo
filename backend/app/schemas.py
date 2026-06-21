@@ -34,6 +34,7 @@ class SimulateData(BaseModel):
     reply_text: Optional[str] = None
     gap_id: Optional[int] = None
     handoff_id: Optional[int] = None
+    notification_id: Optional[int] = None
 
 
 class MessageOut(BaseModel):
@@ -100,3 +101,14 @@ class HandoffData(BaseModel):
     staff_name: Optional[str] = None
     notification_id: int
     body: str  # 生成的口语化提醒（便于查看/验证）
+
+
+class HandoffStateRequest(BaseModel):
+    """置/解除转人工暂停（REQ-10）。"""
+
+    handoff_state: str = Field(pattern="^(auto|handed_off)$")
+
+
+class HandoffStateData(BaseModel):
+    conversation_id: int
+    handoff_state: str

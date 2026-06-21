@@ -7,7 +7,13 @@ from sqlalchemy.orm import Session
 
 from ..db import get_db
 from ..models import Conversation, Handoff, Lead
-from ..schemas import ApiResponse, HandoffData, HandoffRequest
+from ..schemas import (
+    ApiResponse,
+    HandoffData,
+    HandoffRequest,
+    HandoffStateData,
+    HandoffStateRequest,
+)
 from ..service.routing.notifier import build_handoff_body, notify_handoff
 from ..service.routing.router import resolve_target
 
@@ -63,5 +69,28 @@ def create_handoff(req: HandoffRequest, db: Session = Depends(get_db)):
             notification_id=notification.id,
             staff_name=target.staff_name,
             body=body,
+        )
+    )
+
+
+@router.post(
+    "/conversations/{conversation_id}/handoff-state",
+    response_model=ApiResponse[HandoffStateData],
+)
+def set_handoff_state(
+    conversation_id: int, req: HandoffStateRequest, db: Session = Depends(get_db)
+):
+    """置/解除会话「转人工暂停」标记（REQ-10）。
+
+    handed_off → 该会话新消息暂停 AI 自动作答/缺口；auto → 恢复。
+    """
+    conv = db.get(Conversation, conversation_id)
+    if conv is None:
+        raise HTTPException(status_code=404, detail="conversation not found")
+    conv.handoff_state = req.handoff_state
+    db.commit()
+    return ApiResponse(
+        data=HandoffStateData(
+            conversation_id=conv.id, handoff_state=conv.handoff_state
         )
     )
