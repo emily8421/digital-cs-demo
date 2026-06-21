@@ -1,0 +1,17 @@
+# 本机原型用：起一个 PostgreSQL 即可。
+# Sprint-1 不需要 pgvector（知识库向量在 Sprint-2 加入时再换 pgvector 镜像）。
+services:
+  db:
+    image: postgres:16
+    container_name: dcs-db
+    environment:
+      POSTGRES_USER: dcs
+      POSTGRES_PASSWORD: dcs
+      POSTGRES_DB: dcs
+    ports:
+      - "5432:5432"
+    volumes:
+      - dcs_pgdata:/var/lib/postgresql/data
+
+volumes:
+  dcs_pgdata:
