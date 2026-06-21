@@ -46,8 +46,13 @@
 ### 验收记录（2026-06-21）
 - 已实现：通道适配层（`simulator`）+ `NormalizedMessage` 契约 + `dcs_messages`/`dcs_conversations` + `POST /api/v1/messages/simulate` + `GET /api/v1/conversations(/{id})`。
 - 自动化测试：`pytest -q` → **3 passed**（SQLite 内存库；覆盖 投递→归一化→入库→读回、同群聚合、非文字归一化）。
-- 待人工验证：真实 PG 路径（`docker compose up db` + `uvicorn` + `curl`）——此处 Docker daemon 未运行，未端到端跑；ORM/SQL 逻辑同 SQLite 测试。
+- 真实 PG 端到端（补验，已通过）：`docker compose up db`（PG:16，宿主端口 15432）+ `uvicorn app.main:app`。
+  - `POST /api/v1/messages/simulate`（text）→ `200 {message_id, conversation_id}`；
+  - 同群再投 `image`（非文字）→ 归一化入库，`conversation_id` 与上一条相同（同群聚合生效）；
+  - `GET /api/v1/conversations/{id}` → 读回消息流，字段齐全（`direction/channel/content_type/content_text/raw_payload/received_at`，非文字 `content_text` 为空且保留 `raw_payload`）。
+  - 中文 UTF-8 存储无误（`repr` 校验码点正确；先前控制台乱码仅 Windows GBK 显示问题，非存储问题）。
 - 依赖备注：Python 3.14 下驱动用 **psycopg3**（`psycopg[binary]`）替代 psycopg2-binary（后者无 3.14 预编译包）。
+- **REQ-1 可验证口径：通过。** Sprint-1 验收完成。
 
 ---
 
