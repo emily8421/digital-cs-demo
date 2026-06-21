@@ -3,7 +3,7 @@
 原型期用 Base.metadata.create_all 建表（简单、对初学者友好）；
 后续接入真实部署时换成 Alembic 迁移脚本（见 ai/project-rules.md §5.2）。
 """
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
 from .config import settings
@@ -32,4 +32,8 @@ def init_db():
     """建表（原型期）。导入 models 以确保表定义已注册。"""
     from . import models  # noqa: F401
 
+    # 仅 PostgreSQL 启用 pgvector 扩展（SQLite 测试库无此语法，跳过）
+    if engine.dialect.name == "postgresql":
+        with engine.begin() as conn:
+            conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
     Base.metadata.create_all(bind=engine)

@@ -59,3 +59,18 @@ class ConversationListItem(BaseModel):
     external_group_id: str
     handoff_state: str
     last_active_at: datetime
+
+
+class KnowledgeItemOut(BaseModel):
+    """知识检索命中条目（07 §3.2）。"""
+
+    id: int
+    question_pattern: str
+    answer: str
+    score: float
+    status: str
+
+
+class KnowledgeSearchData(BaseModel):
+    hit: bool
+    items: list[KnowledgeItemOut]

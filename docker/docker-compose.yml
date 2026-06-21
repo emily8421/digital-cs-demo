@@ -1,8 +1,8 @@
 # 本机原型用：起一个 PostgreSQL 即可。
-# Sprint-1 不需要 pgvector（知识库向量在 Sprint-2 加入时再换 pgvector 镜像）。
+# Sprint-2 起需要 pgvector（知识库向量检索）；用 pgvector 官方镜像（自带 vector 扩展）。
 services:
   db:
-    image: postgres:16
+    image: pgvector/pgvector:pg16
     container_name: dcs-db
     environment:
       POSTGRES_USER: dcs
@@ -13,5 +13,18 @@ services:
     volumes:
       - dcs_pgdata:/var/lib/postgresql/data
 
+  # 本地 BGE 向量服务（Sprint-2 知识检索 embedding）
+  # 进程内 torch 在 Python 3.14 + Windows 不可用，改用容器内 Linux 跑 text-embeddings-inference
+  embeddings:
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.6
+    container_name: dcs-embeddings
+    # 直连 HuggingFace（hf-mirror 不透传 etag 头，TEI 下载会失败）
+    command: --model-id BAAI/bge-small-zh-v1.5
+    ports:
+      - "18080:80"
+    volumes:
+      - dcs_hf_cache:/data
+
 volumes:
   dcs_pgdata:
+  dcs_hf_cache:

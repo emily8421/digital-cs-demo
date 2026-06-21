@@ -73,6 +73,14 @@
 ### 禁止事项
 - 不做多轮；未命中不生成编造答案；向量库/LLM 选型须与 05 一致（新依赖先确认）。
 
+### 验收记录（2026-06-21）
+- 已实现：`dcs_knowledge_items`（pgvector `vector(512)`）+ `KnowledgeItem` ORM + 检索（pgvector cosine）+ `select_hits` 阈值/排序纯逻辑 + `GET /api/v1/knowledge/search` + 灯带/驱动 FAQ 种子 7 条。
+- **embedding 落地变更（重要）**：原拟「本地 BGE 进程内（sentence-transformers）」，但 Python 3.14 + Windows 下 torch/onnxruntime 原生 DLL（`c10.dll`/pybind）加载失败（`WinError 1114`），改用 **Docker TEI（text-embeddings-inference）服务**、宿主以 httpx 调用；向量库仍 pgvector（05 不变）。详见 `docs/context-and-constraints.md` §3/§4/§5.2。
+- 自动化测试：`pytest -q` → **8 passed**（Sprint-1 的 3 + Sprint-2 的 `select_hits` 逻辑 5），SQLite 内存库，不依赖 Docker/torch。
+- 真实端到端（TEI bge-small-zh + pgvector + uvicorn）：`search` 命中返回带 score 的 confirmed 条目，无关问题 `hit:false`。
+- **阈值标定（数据驱动）**：扫描种子相似度分布——相关问法 top-1 ∈ [0.50, 0.86]、无关问法 ≤ 0.46；据此把默认阈值从初稿 0.7 调到 **0.5**（cosine 相似度，可配置 `config.knowledge_score_threshold`），随真实语料增长需复核。
+- **REQ-2/3 可验证口径：通过。** Sprint-2 验收完成（编排「命中→作答」接入留 Sprint-4）。
+
 ---
 
 ## Sprint-3：留资 + 转交通知 + 角色路由

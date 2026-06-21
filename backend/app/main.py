@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from .api import messages
+from .api import messages, knowledge
 from .db import init_db
 
 
@@ -19,6 +19,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Digital Customer Service (Demo)", version="0.1.0", lifespan=lifespan)
 app.include_router(messages.router)
+app.include_router(knowledge.router)
 
 
 @app.get("/health")
