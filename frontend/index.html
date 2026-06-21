@@ -2,39 +2,53 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>数字客服 Demo</title>
 <style>
   * { box-sizing: border-box; }
-  body { font-family: system-ui, -apple-system, sans-serif; margin: 0; background: #f5f5f5; display: flex; height: 100vh; }
+  body { font-family: system-ui, -apple-system, "PingFang SC", sans-serif; margin: 0; background: #f5f5f5; display: flex; height: 100vh; height: 100dvh; }
   .chat { flex: 2; display: flex; flex-direction: column; border-right: 1px solid #ddd; background: #ededed; min-width: 0; }
-  .chat-header { padding: 12px 16px; background: #07c160; color: #fff; font-weight: bold; }
-  .messages { flex: 1; overflow-y: auto; padding: 16px; }
-  .bubble { max-width: 75%; padding: 8px 12px; border-radius: 8px; margin: 6px 0; word-break: break-word; font-size: 14px; line-height: 1.5; }
+  .chat-header { padding: 10px 14px; background: #07c160; color: #fff; font-weight: bold; display: flex; align-items: center; gap: 8px; font-size: 14px; }
+  .convtag { background: rgba(255,255,255,.25); padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: normal; }
+  .messages { flex: 1; overflow-y: auto; padding: 14px; }
+  .bubble { max-width: 78%; padding: 8px 12px; border-radius: 8px; margin: 6px 0; word-break: break-word; font-size: 14px; line-height: 1.5; position: relative; }
   .bubble.cust { background: #fff; border: 1px solid #eee; margin-right: auto; }
   .bubble.ai { background: #95ec69; color: #000; margin-left: auto; }
   .bubble.sys { background: #fff3cd; color: #856404; margin-left: auto; font-size: 13px; }
-  .input { display: flex; padding: 8px; border-top: 1px solid #ddd; background: #f7f7f7; }
-  .input input { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
-  .input button { margin-left: 8px; padding: 8px 16px; background: #07c160; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
-  .side { flex: 1; padding: 14px; overflow-y: auto; min-width: 260px; }
-  .side h3 { margin-top: 0; font-size: 16px; }
-  .side section { background: #fff; padding: 12px; margin-bottom: 12px; border-radius: 6px; border: 1px solid #eee; }
-  .side section b { font-size: 14px; }
-  .side input, .side select { padding: 6px; margin: 4px 0; width: 100%; border: 1px solid #ddd; border-radius: 4px; }
-  .side button { padding: 6px 12px; background: #1890ff; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-top: 4px; }
-  .result { font-size: 13px; color: #444; margin-top: 6px; white-space: pre-wrap; background: #f9f9f9; padding: 6px; border-radius: 4px; max-height: 160px; overflow-y: auto; }
-  .tip { font-size: 12px; color: #888; margin-top: 8px; }
+  .bubble .ts { display: block; font-size: 10px; color: #999; margin-top: 3px; text-align: right; }
+  .bubble.sys .ts { color: #b8860b; }
+  .input { display: flex; padding: 8px; border-top: 1px solid #ddd; background: #f7f7f7; gap: 6px; }
+  .input input { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; min-width: 0; }
+  .input button { padding: 8px 14px; background: #07c160; color: #fff; border: none; border-radius: 4px; cursor: pointer; white-space: nowrap; }
+  .input .ico { padding: 8px 10px; background: #fff; color: #333; border: 1px solid #ddd; font-size: 16px; }
+  .side { flex: 1; padding: 14px; overflow-y: auto; min-width: 260px; max-width: 380px; }
+  .side h3 { margin-top: 0; font-size: 15px; }
+  .side section { background: #fff; padding: 11px; margin-bottom: 11px; border-radius: 6px; border: 1px solid #eee; }
+  .side section b { font-size: 13px; }
+  .side input, .side select { padding: 6px; margin: 4px 0; width: 100%; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
+  .side button { padding: 6px 12px; background: #1890ff; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-top: 4px; font-size: 13px; }
+  .result { font-size: 12px; color: #444; margin-top: 6px; white-space: pre-wrap; background: #f9f9f9; padding: 6px; border-radius: 4px; max-height: 150px; overflow-y: auto; }
+  .tip { font-size: 11px; color: #888; margin-top: 8px; line-height: 1.5; }
+  @media (max-width: 720px) {
+    body { flex-direction: column; }
+    .chat { border-right: none; border-bottom: 1px solid #ddd; flex: none; height: 58vh; }
+    .side { min-width: 0; max-width: none; flex: 1; }
+  }
 </style>
 </head>
 <body>
 <div class="chat">
-  <div class="chat-header">客户群：demo_ui（模拟器通道 · 客户视角）</div>
+  <div class="chat-header">
+    <span>客户群：demo_ui（模拟器通道）</span>
+    <span id="curconv" class="convtag"></span>
+  </div>
   <div class="messages" id="msgs">
-    <div class="bubble sys">提示：在下方输入客户消息，系统会自动检索作答 / 请留资 / 转交。右侧控制台可单独触发检索、转交、小结、暂停。</div>
+    <div class="bubble sys">提示：输入客户消息看 AI 作答/请留资；点 🎤🖼 演示非文字（如实告知）；右侧控制台可单独触发检索、转交、小结、暂停。</div>
   </div>
   <div class="input">
-    <input id="text" placeholder="输入客户消息，如「5050和2835区别」「能做IP67吗」「订货电话13912345678」…" onkeydown="if(event.key==='Enter')send()">
+    <input id="text" placeholder="如「5050和2835区别」「能做IP67吗」「订货电话13912345678」…" onkeydown="if(event.key==='Enter')send()">
+    <button class="ico" onclick="sendNon('voice')" title="发一条语音">🎤</button>
+    <button class="ico" onclick="sendNon('image')" title="发一张图片">🖼</button>
     <button onclick="send()">发送</button>
   </div>
 </div>
@@ -42,13 +56,13 @@
   <h3>演示控制台</h3>
   <section>
     <b>知识检索（REQ-2/3）</b>
-    <input id="q" placeholder="如：5050和2835区别">
+    <input id="q" placeholder="如：能做IP67吗">
     <button onclick="search()">检索</button>
     <div class="result" id="r-search"></div>
   </section>
   <section>
     <b>转人工转交（REQ-5/8）</b>
-    <input id="h-cid" placeholder="会话 ID（见聊天上方提示）">
+    <input id="h-cid" placeholder="会话 ID（见聊天标题）">
     <select id="h-scen">
       <option value="presale">售前 presale → sales</option>
       <option value="unknown_question">待确认 unknown_question → owner</option>
@@ -74,38 +88,48 @@
     <button onclick="setstate()">设置</button>
     <div class="result" id="r-state"></div>
   </section>
-  <div class="tip">前置：docker compose up -d + uvicorn（见 README）。本页连 localhost:8000。</div>
+  <div class="tip">前置：docker compose up -d + uvicorn。本页连 localhost:8000。改完按 Ctrl+F5 强刷。</div>
 </div>
 <script>
 const B = '/api/v1';
 const GROUP = 'demo_ui', SENDER = 'cust_demo';
+function now() { return new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }); }
 function bubble(cls, text) {
   const d = document.createElement('div');
   d.className = 'bubble ' + cls;
-  d.textContent = text;
+  d.innerHTML = text + '<span class="ts">' + now() + '</span>';
   const m = document.getElementById('msgs');
   m.appendChild(d);
   m.scrollTop = m.scrollHeight;
+}
+function setConv(id) { document.getElementById('curconv').textContent = id ? ('会话 #' + id) : ''; }
+async function postSim(body, customerLabel) {
+  bubble('cust', customerLabel);
+  try {
+    const r = await fetch(B + '/messages/simulate', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    });
+    const d = (await r.json()).data;
+    setConv(d.conversation_id);
+    if (d.reply_text) {
+      bubble('ai', d.reply_text);
+    } else {
+      bubble('sys', '[未自动回复]（可能已转人工暂停）');
+    }
+    if (d.lead_id) bubble('sys', '📝 已记录留资 lead #' + d.lead_id);
+    if (d.hit === false && d.handoff_id) bubble('sys', '⚠️ 知识缺口，已转交拍板人 handoff #' + d.handoff_id + ' / notif #' + d.notification_id);
+    if (d.hit === true) bubble('sys', '✓ 命中知识 #' + d.answer_source_id);
+  } catch (e) { bubble('sys', '请求失败：' + e + '（后端起了吗？）'); }
 }
 async function send() {
   const t = document.getElementById('text').value.trim();
   if (!t) return;
   document.getElementById('text').value = '';
-  bubble('cust', t);
-  try {
-    const r = await fetch(B + '/messages/simulate', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ external_group_id: GROUP, sender_external_id: SENDER, content_type: 'text', content_text: t })
-    });
-    const d = (await r.json()).data;
-    if (d.reply_text) {
-      bubble('ai', d.reply_text);
-    } else {
-      bubble('sys', '[未自动回复] conv=' + d.conversation_id + '（可能已转人工暂停）'
-        + (d.lead_id ? '\n留资 lead_id=' + d.lead_id : '')
-        + (d.hit === false ? '\n缺口 gap_id=' + d.gap_id : ''));
-    }
-  } catch (e) { bubble('sys', '请求失败：' + e + '（后端起了吗？）'); }
+  await postSim({ external_group_id: GROUP, sender_external_id: SENDER, content_type: 'text', content_text: t }, t);
+}
+async function sendNon(ctype) {
+  const label = ctype === 'voice' ? '🎤 [语音消息]' : '🖼 [图片消息]';
+  await postSim({ external_group_id: GROUP, sender_external_id: SENDER, content_type: ctype, content_text: null }, label);
 }
 async function search() {
   const q = document.getElementById('q').value.trim();
