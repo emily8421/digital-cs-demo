@@ -29,6 +29,11 @@ class SimulateData(BaseModel):
     message_id: int
     conversation_id: int
     lead_id: Optional[int] = None  # 留资记录 id（REQ-4）；无联系方式时为 None
+    # 编排结果（Sprint-4）；orchestration 被跳过时全为 None
+    hit: Optional[bool] = None
+    reply_text: Optional[str] = None
+    gap_id: Optional[int] = None
+    handoff_id: Optional[int] = None
 
 
 class MessageOut(BaseModel):

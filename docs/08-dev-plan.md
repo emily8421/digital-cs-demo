@@ -126,6 +126,13 @@
 ### 禁止事项
 - 不做多轮/身份披露/非文字完整分支；任何分支不允许无依据生成参数/结论。
 
+### 验收记录（2026-06-21）
+- 已实现：`KnowledgeGap` ORM（`dcs_knowledge_gaps`，status open/resolved，`resolved_knowledge_id` 留 P2 回写）；编排引擎 `service/conversation`（`act_on_search` 命中作答/未命中缺口+转交·纯编排可测；`orchestrate` 检索+编排）；`handle_inbound` 接入编排（try/except：无 TEI/pgvector 时跳过，不阻塞入库）；客户侧出站＝写 `dcs_messages`(outbound)（原型，不经 OutboundChannel）；`SimulateData` 返回编排结果（hit/reply_text/gap_id/handoff_id）。
+- 自动化测试：`pytest -q` → **21 passed**（+编排 `act_on_search` 命中/未命中 2）。
+- 真实端到端：命中问题（5050/2835）→ 作答 outbound（回标准答案）；未覆盖问题（公司地址）→ 客户侧「请留资」+ `dcs_knowledge_gaps`(open) + 转交 owner/陈总 + 通知。
+- **REQ-6 可验证口径：通过。** MVP 主路径闭环完成（Sprint-2 检索 + Sprint-3 留资/转交 + Sprint-4 串联）；03 §3 Demo 步骤 1-3 可走通。
+- 检索边界（待调）：灯带规格类问题（如「海里使用」）可能在阈值 0.5 下误命中同类规格条目（召回偏宽），属检索质量持续调优（Sprint-2 范畴），**编排逻辑不受影响**（缺口分支已用低相似度问题验证）。
+
 ---
 
 ## Sprint-5：转人工暂停 + 非文字消息处理（编排边界）

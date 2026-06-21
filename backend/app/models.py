@@ -3,7 +3,8 @@
 - dcs_conversations / dcs_messages（Sprint-1）
 - dcs_knowledge_items（Sprint-2）
 - dcs_leads / dcs_staff / dcs_routing_rules / dcs_handoffs / dcs_notifications（Sprint-3）
-其余表（knowledge_gaps/...）随各自 Sprint 加入。
+- dcs_knowledge_gaps（Sprint-4）
+其余表随各自 Sprint 加入。
 """
 from datetime import datetime, timezone
 
@@ -206,3 +207,26 @@ class Notification(Base):
     )
     # ref_gap_id：dcs_knowledge_gaps 表 Sprint-4 才建，本轮先 nullable、不加 FK
     ref_gap_id: Mapped[int | None] = mapped_column(nullable=True)
+
+
+class KnowledgeGap(Base):
+    """答不上的缺口问题记录。对应 dcs_knowledge_gaps。REQ-6。"""
+
+    __tablename__ = "dcs_knowledge_gaps"
+    __table_args__ = (
+        CheckConstraint("status IN ('open','resolved')", name="ck_gaps_status"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    conversation_id: Mapped[int] = mapped_column(
+        ForeignKey("dcs_conversations.id"), nullable=False
+    )
+    question_text: Mapped[str] = mapped_column(Text, nullable=False)
+    detected_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+    status: Mapped[str] = mapped_column(String(16), nullable=False, default="open")
+    # 解决后回填的知识条目（P2 回写链路）；Sprint-4 建表留 nullable
+    resolved_knowledge_id: Mapped[int | None] = mapped_column(
+        ForeignKey("dcs_knowledge_items.id"), nullable=True
+    )
