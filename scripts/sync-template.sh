@@ -3,7 +3,7 @@
 #
 # 用法（在派生项目根目录执行）:
 #   bash scripts/sync-template.sh [--dry-run|--commit]
-#     --dry-run  仅抓取并 stage、显示差异，不提交（默认）
+#     --dry-run  仅抓取并预览差异，不修改工作区、不 stage（默认）
 #     --commit   抓取、覆盖、stage 并提交 "sync template vX.Y"
 #   环境变量:
 #     TEMPLATE_REMOTE  模板远端（默认 https://github.com/emily8421/ai-project-template.git）
@@ -23,10 +23,12 @@ TEMPLATE_REMOTE="${TEMPLATE_REMOTE:-https://github.com/emily8421/ai-project-temp
 # 同步清单（与 README「方法论同步」单一来源；项目专属的 project-rules 不在此列）
 SYNC_FILES=(
   "ai/global-rules.md"
+  "INIT-PROMPT.md"
   "CONTRIBUTING.md"
   "git-guide.md"
   "scripts/new-project.sh"
   "scripts/sync-template.sh"
+  "scripts/check-template.sh"
 )
 
 git rev-parse --is-inside-work-tree >/dev/null
@@ -47,22 +49,47 @@ VERSION="$(printf '%s' "$LINE" | grep -oE 'v[0-9]+\.[0-9]+' | head -1 || true)"
 echo "==> 模板版本: $VERSION"
 echo "==> 同步文件:"
 
-for f in "${SYNC_FILES[@]}"; do
-  if git cat-file -e "$REF:$f" 2>/dev/null; then
-    git checkout "$REF" -- "$f"
-    echo "    ✓ $f"
-  else
-    echo "    · $f （模板无此文件，跳过）"
-  fi
-done
+if [[ "$MODE" == "--dry-run" ]]; then
+  for f in "${SYNC_FILES[@]}"; do
+    if git cat-file -e "$REF:$f" 2>/dev/null; then
+      if git diff --quiet "$REF" -- "$f" 2>/dev/null; then
+        echo "    = $f（无差异）"
+      else
+        echo "    Δ $f"
+      fi
+    else
+      echo "    · $f （模板无此文件，跳过）"
+    fi
+  done
 
-echo
-if [[ "$MODE" == "--commit" ]]; then
-  git commit -q -m "sync template $VERSION from ai-project-template"
+  echo
+  echo "ℹ️  dry-run：仅预览，未修改工作区、未 stage。差异统计："
+  for f in "${SYNC_FILES[@]}"; do
+    if git cat-file -e "$REF:$f" 2>/dev/null; then
+      git diff --stat "$REF" -- "$f" || true
+    fi
+  done
+  echo "   确认后执行: bash scripts/sync-template.sh --commit"
+else
+  UPDATED_FILES=()
+  for f in "${SYNC_FILES[@]}"; do
+    if git cat-file -e "$REF:$f" 2>/dev/null; then
+      git checkout "$REF" -- "$f"
+      git add "$f"
+      UPDATED_FILES+=("$f")
+      echo "    ✓ $f"
+    else
+      echo "    · $f （模板无此文件，跳过）"
+    fi
+  done
+
+  echo
+  if git diff --quiet HEAD -- "${UPDATED_FILES[@]}"; then
+    echo "ℹ️  无需提交：同步文件与模板一致。"
+    exit 0
+  fi
+
+  git commit -q -m "sync template $VERSION from ai-project-template" -- "${UPDATED_FILES[@]}"
   echo "✅ 已提交：sync template $VERSION"
   echo "   推送: git push"
-else
-  echo "ℹ️  dry-run：已 stage，未提交。差异预览："
-  git diff --cached --stat || true
-  echo "   确认后执行: bash scripts/sync-template.sh --commit"
 fi
