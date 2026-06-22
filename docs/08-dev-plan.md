@@ -225,8 +225,122 @@
 
 ---
 
-> P2（多轮引导/身份披露/知识回写/时效监控）与愿景（订单进度/售后推理）的 Sprint，待 P1 完成升阶段后在本文**原位追加**，不删旧内容。
-> （转人工暂停 REQ-10、非文字处理 REQ-12 已提至 P1，见 Sprint-5。）
+## Sprint-8：多轮引导（定制询盘状态机，REQ-9）
+
+### 目标
+定制询盘堆叠多要求时，拆项 → 多轮状态机逐条确认 → 收集后整理为可核价摘要转交。
+
+### 输入文档
+- `docs/02-srs.md` REQ-9、`docs/design-conversation-engine.md` §3（P2 多轮骨架）、`docs/06-db-design.md`（conversations 多轮状态字段）
+
+### 修改范围
+- `backend/service/conversation/`（多轮状态机）、`backend/model/`（状态字段）
+
+### 验收标准
+- 投递定制询盘（多要求）→ 系统拆项逐条确认 → 收集后摘要转交。REQ-9 可验证口径通过。
+
+### 禁止事项
+- 不做身份披露/回写/时效；状态机不过度复杂（覆盖典型定制询盘即可）。
+
+---
+
+## Sprint-9：AI 身份披露（REQ-11）
+
+### 目标
+被问「是不是 AI/机器人」时，按既定口径自然承认身份，不喧宾夺主。
+
+### 输入文档
+- `docs/02-srs.md` REQ-11、`docs/design-conversation-engine.md` §3（P2 身份骨架）
+
+### 修改范围
+- `backend/service/conversation/`（身份意图识别 + 既定话术）
+
+### 验收标准
+- 投递「你是机器人吗」→ 系统按既定话术承认身份。REQ-11 可验证口径通过。
+
+### 禁止事项
+- 被动披露（不主动）；不做多轮；话术不喧宾夺主。
+
+---
+
+## Sprint-10：知识回写 + 确认页面（REQ-13）
+
+### 目标
+拍板人答复缺口后 → 生成 pending 条目 → 征询确认 → 经确认页面 confirm → confirmed；落地知识确认轻量页面（前端）。
+
+### 输入文档
+- `docs/02-srs.md` REQ-13、`docs/design-knowledge-base.md` §3（P2 回写骨架）、`docs/07-api-spec.md` §3.5（POST /knowledge/{id}/confirm）
+
+### 修改范围
+- `backend/service/knowledge/`（回写 pending→confirmed）、`backend/app/api/`（confirm 接口）、`frontend/`（知识确认页面）
+
+### 验收标准
+- 缺口补答 → pending → 确认页面确认 → confirmed 入库。REQ-13 可验证口径通过。
+
+### 禁止事项
+- 回写必须经拍板人确认（不自动固化）；不做多轮。
+
+---
+
+## Sprint-11：响应时效 SLA 监控（REQ-14）
+
+### 目标
+扫描「客户消息 → 首次应答」间隔，对 > 阈值（愿景口径 30 分钟）未回复者提示。
+
+### 输入文档
+- `docs/02-srs.md` REQ-14、`docs/design-routing-notification.md` §3（P2 时效骨架）
+
+### 修改范围
+- `backend/service/`（时效扫描，候选 sla/ 或复用 summary 调度）、调度配置
+
+### 验收标准
+- 模拟超时未回复消息 → 触发时效提示。REQ-14 可验证口径通过。
+
+### 禁止事项
+- 不做售后/订单；超时口径待调参。
+
+---
+
+## Sprint-12：转人工暂停话题级精化（REQ-10）
+
+### 目标
+P1 会话级暂停 → 话题（thread）级精化：会话内某话题 handed_off 只暂停该话题，其他话题不暂停。
+
+### 输入文档
+- `docs/02-srs.md` REQ-10、`docs/design-conversation-engine.md` §2、`docs/06-db-design.md`（conversations.topic_key）
+
+### 修改范围
+- `backend/service/conversation/`（话题级暂停判定）、`backend/model/`（topic_key 读写）
+
+### 验收标准
+- 会话内某话题置 handed_off → 该话题新消息不自动回复、其他话题正常。REQ-10 话题级口径通过。
+
+### 禁止事项
+- 不做话题级非文字处理；话题识别口径待定（键策略）。
+
+---
+
+## Sprint-13：P2 端到端 + 演示
+
+### 目标
+串联 P2 全流程（多轮/身份/回写/时效/话题暂停）+ demo-ui 扩展（知识确认页面、多轮演示）。
+
+### 输入文档
+- `docs/03-prd.md` §3、各 `docs/design-*.md`、Sprint-8~12
+
+### 修改范围
+- `tests/`（P2 集成）、`frontend/`（demo 扩展）
+
+### 验收标准
+- P2 全部 REQ（9/11/13/14 + 话题级 10）可验证口径通过；demo 走通 P2 流程。
+
+### 禁止事项
+- 不做愿景/企微；不引入 P3 功能。
+
+---
+
+> P2 Sprint 已追加（Sprint-8~13）。愿景（订单进度/售后推理）的 Sprint，待 P2 完成升阶段后在本文**原位追加**。
+> （转人工暂停 REQ-10、非文字处理 REQ-12 已提至 P1，见 Sprint-5；REQ-10 话题级精化在 Sprint-12。）
 
 ---
 
