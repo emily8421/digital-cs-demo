@@ -26,7 +26,7 @@
 ## 9. 模板优化反馈
 
 本仓库派生自 `ai-project-template`，`ai/global-rules.md` 是模板复用件、**不得在本仓直接改**（会版本漂移、无法审计）。
-发现可通用优化时，写 `TEMPLATE-UPGRADE-*.md` 提案（去项目化：动机 / 拟改 / 版本 / 影响），按 `CONTRIBUTING.md` §4 到【ai-project-template】仓库开 PR 落实；合并后下行同步、删除提案文档。
+发现可通用优化时，写 `TEMPLATE-UPGRADE-*.md` **提案**（去项目化：动机 / 拟改 / 版本 / 影响；**可附 `-patch.md`**：具体 old→new 改动清单，给执行者），按 `CONTRIBUTING.md` §4 到【ai-project-template】仓库开 PR 落实；合并后下行同步、删除提案与 patch 文档。
 ```
 
 ## 改动 2：`INIT-PROMPT.md`
@@ -72,6 +72,12 @@
 
 ### 5c. `ai/global-rules.md`（随改动 1 的 §5 / 改动 2 反馈节一并改）
 注明根 `README.md` 是**项目件**（项目说明），不在 `sync-template.sh` 同步清单（已确认 SYNC_FILES 不含 README），各项目各自维护。
+
+## 改动 6：`CONTRIBUTING.md` §4（补「提案 vs patch」区分约定）
+
+在 §4「上行流程 B」补一句区分约定，让派生项目的 AI/人不仅知道「要写提案」，还知道「提案与 patch 各是什么、何时附 patch」：
+- **提案 `TEMPLATE-UPGRADE-*.md`** = WHY/WHAT（去项目化：动机 / 拟改 / 版本 / 影响），给评审者决策；
+- **patch `-patch.md`（可选但推荐）** = HOW（具体 old→new 改动，绑定模板当前版本），给执行者照改。
 
 ## 落地步骤
 1. `git clone ai-project-template && git checkout -b feat/template-v1.5-demo-and-feedback`
