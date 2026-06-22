@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>小辰 · 数字客服</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { font-family: system-ui, -apple-system, "PingFang SC", sans-serif; margin: 0; background: #d9d9d9; }
+  /* 单列全屏聊天；max-width 让桌面预览也像手机框，手机上则全宽 */
+  .chat { display: flex; flex-direction: column; height: 100vh; height: 100dvh; max-width: 640px; margin: 0 auto; background: #ededed; box-shadow: 0 0 16px rgba(0,0,0,.08); }
+  .chat-header { padding: 12px 14px; background: #07c160; color: #fff; font-weight: bold; display: flex; align-items: center; gap: 8px; font-size: 15px; }
+  .chat-header .avatar { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,.25); display: flex; align-items: center; justify-content: center; font-size: 15px; }
+  .chat-header .right { margin-left: auto; display: flex; gap: 6px; }
+  .chat-header button { background: rgba(255,255,255,.2); color: #fff; border: none; border-radius: 4px; padding: 4px 10px; font-size: 12px; cursor: pointer; }
+  .chat-header button:active { background: rgba(255,255,255,.35); }
+  .messages { flex: 1; overflow-y: auto; padding: 14px; -webkit-overflow-scrolling: touch; }
+  .bubble { max-width: 80%; padding: 9px 13px; border-radius: 10px; margin: 7px 0; word-break: break-word; font-size: 15px; line-height: 1.55; position: relative; }
+  .bubble.cust { background: #fff; border: 1px solid #eee; margin-right: auto; }
+  .bubble.ai { background: #95ec69; color: #000; margin-left: auto; }
+  .bubble.sys { background: #fff3cd; color: #856404; margin-left: auto; font-size: 13px; }
+  .bubble .ts { display: block; font-size: 10px; color: #999; margin-top: 3px; text-align: right; }
+  .bubble.sys .ts { color: #b8860b; }
+  .replay { float: right; margin-left: 8px; background: #f0f0f0; color: #888; border: none; border-radius: 3px; padding: 1px 6px; font-size: 11px; cursor: pointer; }
+  .replay:active { background: #07c160; color: #fff; }
+  .input { display: flex; padding: 8px; border-top: 1px solid #ddd; background: #f7f7f7; gap: 6px; }
+  .input input { flex: 1; padding: 9px; border: 1px solid #ddd; border-radius: 6px; min-width: 0; font-size: 15px; }
+  .input button { padding: 9px 16px; background: #07c160; color: #fff; border: none; border-radius: 6px; cursor: pointer; white-space: nowrap; font-size: 15px; }
+  .input .ico { padding: 9px 12px; background: #fff; color: #333; border: 1px solid #ddd; font-size: 18px; line-height: 1; }
+</style>
+</head>
+<body>
+<div class="chat">
+  <div class="chat-header">
+    <span class="avatar">辰</span>
+    <span>小辰 · 数字客服</span>
+    <span class="right">
+      <button onclick="replayDemo()">▶ 演示</button>
+      <button onclick="clearHist()">清空</button>
+    </span>
+  </div>
+  <div class="messages" id="msgs"></div>
+  <div class="input">
+    <input id="text" placeholder="问问小辰…" onkeydown="if(event.key==='Enter')send()">
+    <button class="ico" onclick="sendNon('voice')" title="发一条语音">🎤</button>
+    <button class="ico" onclick="sendNon('image')" title="发一张图片">🖼</button>
+    <button onclick="send()">发送</button>
+  </div>
+</div>
+<script>
+// 客户视角 H5：纯聊天，无演示控制台；独立会话/历史，不与 /ui 混。
+const B = '/api/v1';
+const GROUP = 'demo_h5', SENDER = 'cust_h5';
+const HKEY = 'h5_history';
+function now() { return new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }); }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function saveHist() { try { localStorage.setItem(HKEY, document.getElementById('msgs').innerHTML); } catch(e){} }
+function loadHist() { try { const h = localStorage.getItem(HKEY); if (h) document.getElementById('msgs').innerHTML = h; } catch(e){} }
+function clearHist() { localStorage.removeItem(HKEY); location.reload(); }
+function bubble(cls, html) {
+  const d = document.createElement('div');
+  d.className = 'bubble ' + cls;
+  d.innerHTML = html;
+  const m = document.getElementById('msgs');
+  m.appendChild(d);
+  m.scrollTop = m.scrollHeight;
+  saveHist();
+}
+function custBubble(label, type, content) {
+  const rep = '<button class="replay" data-type="'+type+'" data-content="'+esc(content||'')+'" title="重放">↻</button>';
+  bubble('cust', rep + esc(label) + '<span class="ts">' + now() + '</span>');
+}
+async function postSim(body, customerLabel, type, content) {
+  custBubble(customerLabel, type, content);
+  try {
+    const r = await fetch(B + '/messages/simulate', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    });
+    const d = (await r.json()).data;
+    // 客户视角：AI 回答 / 转人工 / 留资 / 缺口转跟进 —— 文案客户化，不带内部 id
+    if (d.reply_text) bubble('ai', esc(d.reply_text) + '<span class="ts">' + now() + '</span>');
+    else bubble('sys', '已为您转接人工客服，稍候由同事为您服务 🙂<span class="ts">' + now() + '</span>');
+    if (d.lead_id) bubble('sys', '📝 您的联系方式已收到，会有同事尽快联系您<span class="ts">' + now() + '</span>');
+    if (d.hit === false && d.handoff_id) bubble('sys', '这个问题我需要确认一下，已请同事为您跟进 🙋<span class="ts">' + now() + '</span>');
+  } catch (e) { bubble('sys', '请求失败：' + e + '（后端起了吗？）'); }
+}
+async function send() {
+  const t = document.getElementById('text').value.trim();
+  if (!t) return;
+  document.getElementById('text').value = '';
+  await postSim({ external_group_id: GROUP, sender_external_id: SENDER, content_type: 'text', content_text: t }, t, 'text', t);
+}
+async function sendNon(ctype) {
+  const label = ctype === 'voice' ? '🎤 [语音消息]' : '🖼 [图片消息]';
+  await postSim({ external_group_id: GROUP, sender_external_id: SENDER, content_type: ctype, content_text: null }, label, ctype, '');
+}
+// 点 ↻ 重放该客户消息
+document.getElementById('msgs').addEventListener('click', function(e){
+  const btn = e.target.closest('.replay'); if (!btn) return;
+  const t = btn.dataset.type, c = btn.dataset.content;
+  if (t === 'text' && c) { document.getElementById('text').value = c; send(); }
+  else if (t === 'voice' || t === 'image') sendNon(t);
+});
+// 一键重放完整 Demo（问答 → 缺口转人 → 留资 → 非文字）
+async function replayDemo() {
+  bubble('sys', '▶ 开始演示（AI 全流程）<span class="ts">' + now() + '</span>');
+  const steps = [
+    ['text', '5050和2835灯带有什么区别'],
+    ['text', '你们灯带能用在海里潜水吗'],
+    ['text', '满意，想订货，电话13912345678'],
+    ['voice', ''],
+  ];
+  for (const [t, c] of steps) {
+    if (t === 'text') await postSim({ external_group_id: GROUP, sender_external_id: SENDER, content_type: 'text', content_text: c }, c, 'text', c);
+    else await sendNon(t);
+  }
+  bubble('sys', '✅ 演示完成<span class="ts">' + now() + '</span>');
+}
+loadHist();
+</script>
+</body>
+</html>
