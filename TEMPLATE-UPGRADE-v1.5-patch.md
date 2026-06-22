@@ -26,7 +26,7 @@
 ## 9. 模板优化反馈
 
 本仓库派生自 `ai-project-template`，`ai/global-rules.md` 是模板复用件、**不得在本仓直接改**（会版本漂移、无法审计）。
-发现可通用优化时，写 `TEMPLATE-UPGRADE-*.md` **提案**（去项目化：动机 / 拟改 / 版本 / 影响；**可附 `-patch.md`**：具体 old→new 改动清单，给执行者），按 `CONTRIBUTING.md` §4 到【ai-project-template】仓库开 PR 落实；合并后下行同步、删除提案与 patch 文档。
+**每次任务收尾时，顺带审视本次是否暴露模板可优化点**（规则不清/决策缺失/流程别扭等）；发现可通用优化时，写 `TEMPLATE-UPGRADE-*.md` **提案**（去项目化：动机 / 拟改 / 版本 / 影响；**可附 `-patch.md`**：具体 old→new 改动清单，给执行者），按 `CONTRIBUTING.md` §4 到【ai-project-template】仓库开 PR 落实；合并后下行同步、删除提案与 patch 文档。
 ```
 
 ## 改动 2：`INIT-PROMPT.md`

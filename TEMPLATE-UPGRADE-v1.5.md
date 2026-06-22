@@ -32,7 +32,7 @@ Demo / 原型项目核心目的是**可演示**。当前 `project-rules.md §3` 
 `frontend/` 启用从「按需」改为「按 §3 演示决策」；补演示形态维度说明。
 
 ### 2.4 `ai/global-rules.md` 新增「模板优化反馈」指示（对应动机 1.2）
-AI 必读层加一条：本仓 `global-rules.md` 是复用件不得直接改；发现可通用优化写 `TEMPLATE-UPGRADE-*.md` **提案**（可附 `-patch.md` 具体改动清单），按 `CONTRIBUTING.md` §4 到模板仓库 PR。
+AI 必读层加一条：本仓 `global-rules.md` 是复用件不得直接改；**每次任务收尾时顺带审视本次是否暴露模板可优化点**（规则不清/决策缺失/流程别扭）；发现可通用优化写 `TEMPLATE-UPGRADE-*.md` **提案**（可附 `-patch.md` 具体改动清单），按 `CONTRIBUTING.md` §4 到模板仓库 PR。
 
 ### 2.5（可选）`_examples/`
 补「消息通道内交互、`frontend` 不启用」样例，与 `md-notes-frontend` 对照。
