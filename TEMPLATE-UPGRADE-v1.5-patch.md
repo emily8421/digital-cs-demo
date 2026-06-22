@@ -59,8 +59,19 @@
 
 在「方法论同步 / 版本记录」段新增一行：
 ```
-- v1.5（2026-06-21）：global-rules §5 frontend 启用绑定 §3「演示形态」决策 + 新增 §9「模板优化反馈」指示（反馈机制提升到 AI 必读层）；INIT-PROMPT §0/§1 推导前端 + 解析愿景交互词；project-rules §3 骨架加「演示形态」裁剪项。提议来自 digital-cs-demo（TEMPLATE-UPGRADE-v1.5）。
+- v1.5（2026-06-21）：global-rules §5 frontend 绑定 §3「演示形态」+ 新增「模板优化反馈」指示 + 注明 README 是项目件；INIT-PROMPT §0/§1 推导前端 + 项目化 README；project-rules §3 加「演示形态」；new-project.sh 创建时项目化 README。提议来自 digital-cs-demo（TEMPLATE-UPGRADE-v1.5）。
 ```
+
+## 改动 5：README 项目化机制（对应动机 1.3）
+
+### 5a. `scripts/new-project.sh`
+创建项目（复制模板）后，把根 `README.md` 从模板说明**替换为项目 README 骨架**（占位：`# <项目名>` + 简介/能力/快速开始/文档指针/模板关系/进度，待填），或打印显式提示「请项目化根 README（当前是模板版）」。
+
+### 5b. `INIT-PROMPT.md`
+初始化流程（§0/§1）加一步「项目化 README」：据 00-02 / 愿景生成项目说明，替换模板 README。
+
+### 5c. `ai/global-rules.md`（随改动 1 的 §5 / 改动 2 反馈节一并改）
+注明根 `README.md` 是**项目件**（项目说明），不在 `sync-template.sh` 同步清单（已确认 SYNC_FILES 不含 README），各项目各自维护。
 
 ## 落地步骤
 1. `git clone ai-project-template && git checkout -b feat/template-v1.5-demo-and-feedback`
