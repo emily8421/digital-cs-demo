@@ -19,6 +19,7 @@ from sqlalchemy import (
     LargeBinary,
     String,
     Text,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -261,4 +262,31 @@ class Inquiry(Base):
     )
     completed_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
+    )
+
+
+class TopicHandoff(Base):
+    """话题级转人工暂停状态。对应 dcs_topic_handoffs。REQ-10（P2/Sprint-12）。"""
+
+    __tablename__ = "dcs_topic_handoffs"
+    __table_args__ = (
+        CheckConstraint(
+            "handoff_state IN ('auto','handed_off')", name="ck_topic_handoffs_state"
+        ),
+        UniqueConstraint(
+            "conversation_id", "topic_key", name="uq_topic_handoffs_conv_topic"
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    conversation_id: Mapped[int] = mapped_column(
+        ForeignKey("dcs_conversations.id"), nullable=False
+    )
+    topic_key: Mapped[str] = mapped_column(String(128), nullable=False)  # 原型＝sender_external_id
+    handoff_state: Mapped[str] = mapped_column(String(16), nullable=False, default="auto")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
     )

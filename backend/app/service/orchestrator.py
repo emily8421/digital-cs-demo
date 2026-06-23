@@ -9,7 +9,12 @@ from sqlalchemy.orm import Session
 
 from ..channels.base import NormalizedMessage
 from ..models import Conversation, Message
-from .conversation.engine import OrchestrationResult, act_on_non_text, orchestrate
+from .conversation.engine import (
+    OrchestrationResult,
+    act_on_non_text,
+    orchestrate,
+    topic_handed_off,
+)
 from .conversation.identity import act_on_identity, detect_identity_question
 from .conversation.inquiry import (
     act_on_inquiry_reply,
@@ -64,8 +69,11 @@ def handle_inbound(
     # 编排（REQ-6/10/12）：会话级暂停 → 非文字如实告知 → 文本检索作答/缺口。
     # 检索依赖 TEI+pgvector，不可用时（如 SQLite 测试环境）优雅跳过，不阻塞入库。
     orchestration: OrchestrationResult | None = None
-    if conv.handoff_state == "handed_off":
-        pass  # REQ-10：已转人工，暂停所有自动编排（仅记录消息）
+    # REQ-10 暂停：会话级（P1）或话题级（P2，topic=sender）
+    if conv.handoff_state == "handed_off" or topic_handed_off(
+        db, conv.id, msg.sender_external_id
+    ):
+        pass  # 已转人工，暂停自动编排（仅记录消息）
     elif msg.content_type != "text":
         try:  # REQ-12：非文字如实告知 + 提醒员工查看
             orchestration = act_on_non_text(db, conv, msg.content_type, channel_name)

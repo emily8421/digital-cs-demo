@@ -360,6 +360,13 @@ P1 会话级暂停 → 话题（thread）级精化：会话内某话题 handed_o
 #### 禁止事项
 - 不做话题级非文字处理；话题识别口径待定（键策略）。
 
+#### 验收记录（2026-06-23）
+- 已实现：`models.TopicHandoff`（dcs_topic_handoffs，conversation_id+topic_key+handoff_state，UNIQUE）、`engine.topic_handed_off`（话题级判定）、`orchestrator.handle_inbound` 两级暂停（会话级 OR 话题级 handed_off → 暂停）、`api POST /conversations/{id}/topic-handoff`（置/解除某话题暂停）。
+- 设计决策：话题＝`sender_external_id`（群内多客户各成一线，愿景尾注 5；键策略可调）；新表 `dcs_topic_handoffs`（一会话一话题一行）；P1 会话级 `handoff_state` 保留（整会话暂停＝话题级特例，向后兼容）；两级任一 handed_off 即暂停。
+- 自动化测试：`pytest -q` → **51 passed**（+ `test_topic_handoff` 4：默认不暂停、该话题暂停/其他正常、auto 不暂停、会话隔离；SQLite）。
+- 真实端到端（uvicorn + docker）：cust_A 造会话作答 → 置 cust_A 话题 handed_off → cust_A 再发**无回复**（reply_text None）→ cust_B 同会话发**正常作答**（hit true）。话题级精化生效（某话题暂停不影响其他）。
+- **REQ-10 话题级口径：通过。** Sprint-12 验收完成（P2 全部功能 REQ 9/11/13/14 + 话题级 10 完成；剩 Sprint-13 端到端）。
+
 ---
 
 ### Sprint-13：P2 端到端 + 演示

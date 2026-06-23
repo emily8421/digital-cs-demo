@@ -165,6 +165,19 @@ class HandoffStateData(BaseModel):
     handoff_state: str
 
 
+class TopicHandoffRequest(BaseModel):
+    """置/解除话题级转人工暂停（REQ-10 话题级，07 §3.5）。"""
+
+    topic_key: str
+    handoff_state: str = Field(pattern="^(auto|handed_off)$")
+
+
+class TopicHandoffData(BaseModel):
+    conversation_id: int
+    topic_key: str
+    handoff_state: str
+
+
 class SummaryData(BaseModel):
     """定时小结响应（07 §3.4）。"""
 

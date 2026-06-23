@@ -17,6 +17,7 @@
 | `dcs_routing_rules` | 场景→角色路由规则 | REQ-8 | P1 | P1-已设计 |
 | `dcs_notifications` | 出站提醒与定时小结的发送记录 | REQ-5/7 | P1 + P2 时效 | P1-已设计 |
 | `dcs_inquiries` | 定制询盘多轮收集状态 | REQ-9 | P2 | P2-已设计 |
+| `dcs_topic_handoffs` | 话题级转人工暂停状态 | REQ-10 | P2 | P2-已设计 |
 | `dcs_orders` | 订单/进度（售中转人工依赖） | REQ-16 | 愿景·待技术验证 | 骨架·待细化 |
 
 ## 2. 表结构（P1 表详写；愿景表骨架）
@@ -131,6 +132,17 @@
 | summary | text |  | 可核价摘要（completed 时生成） |
 | created_at / updated_at | timestamptz | NOT NULL default now() | |
 | completed_at | timestamptz |  | 完成/转交时间 |
+
+### dcs_topic_handoffs `[P2]` `[P2-已设计]`
+话题级转人工暂停（REQ-10 话题级精化）：一会话一话题一行（UNIQUE）。
+| 字段 | 类型 | 约束 | 说明 |
+|---|---|---|---|
+| id | bigserial | PK | |
+| conversation_id | bigint | NOT NULL, FK→dcs_conversations.id | 所属会话 |
+| topic_key | varchar(128) | NOT NULL | 话题键（原型＝sender_external_id 客户） |
+| handoff_state | varchar(16) | NOT NULL default auto, CHECK in(auto,handed_off) | 该话题是否已转人工 |
+| created_at / updated_at | timestamptz | NOT NULL default now() | |
+| | | UNIQUE(conversation_id, topic_key) | 一会话一话题一行 |
 
 ### dcs_orders `[愿景·待技术验证]` `[骨架·待细化]`
 订单/进度表，依赖外部订单或生产记录系统是否存在与可集成（REQ-16）。字段待外部系统确定后补：订单号、产品、客户标识、工序进度、来源系统指针等。**本期不实现、不建表**，仅占位说明。

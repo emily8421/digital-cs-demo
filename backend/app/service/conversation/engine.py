@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
 
-from ...models import Conversation, Handoff, KnowledgeGap, Message
+from ...models import Conversation, Handoff, KnowledgeGap, Message, TopicHandoff
 from ..knowledge.search import KnowledgeHit, search as knowledge_search
 from ..routing.notifier import build_handoff_body, notify_handoff
 from ..routing.router import resolve_target
@@ -145,4 +145,18 @@ def act_on_non_text(
         gap_id=None,
         handoff_id=None,
         notification_id=notification.id,
+    )
+
+
+def topic_handed_off(db: Session, conversation_id: int, topic_key: str) -> bool:
+    """话题级暂停判定（REQ-10 话题级）：该会话该话题是否 handed_off。"""
+    return (
+        db.query(TopicHandoff)
+        .filter_by(
+            conversation_id=conversation_id,
+            topic_key=topic_key,
+            handoff_state="handed_off",
+        )
+        .first()
+        is not None
     )

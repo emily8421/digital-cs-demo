@@ -6,13 +6,15 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from ..db import get_db
-from ..models import Conversation, Handoff, Lead
+from ..models import Conversation, Handoff, Lead, TopicHandoff
 from ..schemas import (
     ApiResponse,
     HandoffData,
     HandoffRequest,
     HandoffStateData,
     HandoffStateRequest,
+    TopicHandoffData,
+    TopicHandoffRequest,
 )
 from ..service.routing.notifier import build_handoff_body, notify_handoff
 from ..service.routing.router import resolve_target
@@ -92,5 +94,43 @@ def set_handoff_state(
     return ApiResponse(
         data=HandoffStateData(
             conversation_id=conv.id, handoff_state=conv.handoff_state
+        )
+    )
+
+
+@router.post(
+    "/conversations/{conversation_id}/topic-handoff",
+    response_model=ApiResponse[TopicHandoffData],
+)
+def set_topic_handoff(
+    conversation_id: int, req: TopicHandoffRequest, db: Session = Depends(get_db)
+):
+    """置/解除某话题「转人工暂停」（REQ-10 话题级）。
+
+    topic_key 原型＝sender_external_id；handed_off → 该话题新消息暂停，其他话题正常。
+    """
+    conv = db.get(Conversation, conversation_id)
+    if conv is None:
+        raise HTTPException(status_code=404, detail="conversation not found")
+    th = (
+        db.query(TopicHandoff)
+        .filter_by(conversation_id=conversation_id, topic_key=req.topic_key)
+        .first()
+    )
+    if th is None:
+        th = TopicHandoff(
+            conversation_id=conversation_id,
+            topic_key=req.topic_key,
+            handoff_state=req.handoff_state,
+        )
+        db.add(th)
+    else:
+        th.handoff_state = req.handoff_state
+    db.commit()
+    return ApiResponse(
+        data=TopicHandoffData(
+            conversation_id=conversation_id,
+            topic_key=req.topic_key,
+            handoff_state=req.handoff_state,
         )
     )
