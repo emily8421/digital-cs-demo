@@ -44,7 +44,7 @@
 
 定制询盘（堆叠多要求）→ 拆项 → 多轮逐条确认 → 收集 → 可核价摘要转交。
 
-- **意图识别 + 拆项（规则，不引 LLM）**：文本含定制类关键词（定制/定做/我要做…）→ 识别为定制询盘；待确认维度 = 从文本抽到的规格词维度（尺寸/颜色/数量/材质/Logo/包装/交期），抽不到则用默认核心维度（颜色/数量/Logo/交期）。纯规则，守 §2 可控性约束（不 LLM 生成）。原型不抽值预填（系统主导逐项让客户确认），智能预填留优化。
+- **意图识别 + 拆项（规则，不引 LLM）**：文本含定制类关键词（定制/定做/我要做…）→ 识别为定制询盘；**抽值预填**——颜色/数量/Logo/交期 用正则抽客户陈述的值预填 `collected`，系统只追问未陈述维度（`pending`），不重复问；未陈述规格时用默认核心维度（颜色/数量/Logo/交期）。纯规则，守 §2 可控性约束（不 LLM 生成）。
 - **状态落新表 `dcs_inquiries`**（询盘级生命周期，不污染 conversations）：`status`(collecting/completed/abandoned)、`items_pending`/`items_collected`(jsonb)、`summary`(text)、`conversation_id`(FK)。见 `06-db-design.md`。
 - **状态机**：新询盘 → 建 inquiry(collecting) + 出站确认第 1 项；客户回复 → 匹配当前 pending 项 → 移入 collected → 确认下一项；全部 collected → 生成可核价摘要 → 转交（handoff `scenario=custom_inquiry` + 通知跟单）→ inquiry=completed。
 - **编排接入点**（`handle_inbound` 文本分支，多轮优先）：文本时先查 conv 的 collecting inquiry → 有则接续（匹配回复到 pending）；无则 `detect_custom_inquiry` → 命中则建 inquiry + 首轮；否则原 `orchestrate`（检索/缺口）。即正在多轮的会话优先接续，检索兜底。

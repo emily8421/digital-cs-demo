@@ -257,7 +257,7 @@
 
 #### 验收记录（2026-06-23）
 - 已实现：`Inquiry` ORM（`dcs_inquiries`，**新表**而非 conversations 扩展——询盘级生命周期：status/items_pending/items_collected(jsonb)/current_item/summary）+ `service/conversation/inquiry.py`（`detect_custom_inquiry` 触发词识别+维度抽取/默认、`build_summary`、`start_inquiry`/`act_on_inquiry_reply` 状态机逐项确认→摘要转交）+ `orchestrator.handle_inbound` 文本分支接入（collecting 优先 → 新询盘识别 → 检索兜底）。
-- 设计决策：状态落**新表 `dcs_inquiries`**（询盘级，不污染 conversations）；意图识别**纯规则**（定制触发词+维度关键词，大小写不敏感，不引 LLM，守可控性）；客户未陈述规格时用默认核心维度（颜色/数量/Logo/交期）；转交走 `presale` 路由（售前核价）。原型简化：不抽值预填（值用客户原话）、首轮前缀每轮重复——留优化（见 design §3.1）。
+- 设计决策：状态落**新表 `dcs_inquiries`**（询盘级，不污染 conversations）；意图识别**纯规则**（定制触发词+维度关键词，大小写不敏感，不引 LLM，守可控性）；客户未陈述规格时用默认核心维度（颜色/数量/Logo/交期）；转交走 `presale` 路由（售前核价）。**抽值预填（2026-06-23 优化）**：颜色/数量/Logo/交期 用正则抽客户陈述值预填 collected，系统只追问未陈述维度（陈述规格不重复问）；后续项提示去前缀重复。
 - 自动化测试：`pytest -q` → **33 passed**（P1 的 27 + `test_inquiry` 纯逻辑 6：触发词识别+维度抽取/默认/不误判、摘要模板）。SQLite 内存库，不依赖 TEI/pgvector。
 - 真实端到端（uvicorn + docker db/embeddings）：投递「我要定制灯带」→ 系统逐项问【颜色/数量/Logo/交期】→ 客户逐项答（蓝色/100米/要logo/7天交货）→ 收集完生成摘要「颜色=蓝色 / 数量=100米 / Logo=要logo / 交期=7天交货」转交 → `dcs_inquiries=completed` + `handoff #7`(presale)。
 - **REQ-9 可验证口径：通过。** Sprint-8 验收完成（身份披露/回写/时效留 Sprint-9~11）。

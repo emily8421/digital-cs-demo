@@ -76,9 +76,10 @@ def handle_inbound(
             if active:  # 多轮接续：匹配客户回复到当前项
                 orchestration = act_on_inquiry_reply(db, active, msg.content_text, channel_name)
             else:
-                items = detect_custom_inquiry(msg.content_text)
-                if items:  # 新定制询盘：建 inquiry + 首轮确认
-                    orchestration = start_inquiry(db, conv, items, channel_name)
+                detected = detect_custom_inquiry(msg.content_text)
+                if detected is not None:  # 新定制询盘：抽值预填 + 首轮确认
+                    collected, pending = detected
+                    orchestration = start_inquiry(db, conv, collected, pending, channel_name)
                 else:  # 普通文本：检索作答 / 未命中缺口
                     orchestration = orchestrate(db, conv, msg.content_text, channel_name)
         except Exception as e:  # noqa: BLE001
