@@ -106,7 +106,10 @@
 
 ### 3.5 P2 / 愿景接口（骨架）
 
-- **POST `/api/v1/knowledge/{id}/confirm`** `[P2]`：拍板人确认某条 pending 答复转为 confirmed 标准答案。入参/出参待细化（确认人、生效范围）。
+- **GET `/api/v1/knowledge/gaps`** `[P2]`：列 open 缺口（供拍板人补答）。响应 `{ data: { gaps: [{ id, question_text, detected_at }] } }`。
+- **POST `/api/v1/knowledge/gaps/{gap_id}/answer`** `[P2]`：拍板人对缺口补答 → 创建 pending 条目（关联 gap）。请求 `{ answer, staff_id }`；响应 `{ data: { knowledge_id, status: "pending" } }`（`question_pattern` 取 gap.question_text、生成 embedding、`source_staff_id`=staff_id）。
+- **GET `/api/v1/knowledge/pending`** `[P2]`：列 pending 条目（供拍板人确认）。响应 `{ data: { items: [{ id, question_pattern, answer, source_staff_id }] } }`。
+- **POST `/api/v1/knowledge/{id}/confirm`** `[P2]`：拍板人确认 pending → confirmed + 回填 gap。请求 `{ staff_id }`；响应 `{ data: { id, status: "confirmed", resolved_gap_id } }`（记 `source_staff_id`、关联 gap `status=resolved` + `resolved_knowledge_id`）。
 - **GET `/api/v1/orders/{id}/progress`** `[愿景]`：订单工序进度；依赖外部订单/生产系统集成存在性，未确定前不实现，仅占位。
 
 ---

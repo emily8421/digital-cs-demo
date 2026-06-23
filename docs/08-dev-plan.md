@@ -307,6 +307,13 @@
 #### 禁止事项
 - 回写必须经拍板人确认（不自动固化）；不做多轮。
 
+#### 验收记录（2026-06-23）
+- 已实现：`service/knowledge/writeback.py`（`answer_gap` 补答→pending+embedding+关联gap、`confirm_knowledge` pending→confirmed+gap resolved、`list_open_gaps`/`list_pending`）+ `api/knowledge.py` 4 接口（GET /gaps、POST /gaps/{id}/answer、GET /pending、POST /{id}/confirm）+ `frontend/confirm.html` 知识确认页面（两区：缺口补答 + 待确认，挂 /ui/confirm.html）+ schemas。
+- 设计决策：保留 **pending 中间态**（展示「确认才回写」）；补答即生成 embedding（确认后可检索命中）；回填 `gap.resolved_knowledge_id` + `gap.status=resolved`；归属 `source_staff_id` 记确认人。
+- 自动化测试：`pytest -q` → **43 passed**（+ `test_writeback` 5：补答→pending+关联、confirm→confirmed+gap resolved、缺口不存在/非pending 返回 None、列表；SQLite + fake embedder）。
+- 真实端到端（uvicorn + docker TEI）：造缺口（未命中「今天天气怎么样」→ gap #6）→ 补答（pending #8）→ 确认（confirmed + gap #6 resolved）→ 检索「天气」命中新条目（answer=补答内容）。确认页面 `/ui/confirm.html` 可视化操作。
+- **REQ-13 可验证口径：通过。** Sprint-10 验收完成（时效/话题暂停留 Sprint-11~12）。
+
 ---
 
 ### Sprint-11：响应时效 SLA 监控（REQ-14）

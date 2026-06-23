@@ -83,6 +83,57 @@ class KnowledgeSearchData(BaseModel):
     items: list[KnowledgeItemOut]
 
 
+class KnowledgeGapOut(BaseModel):
+    """知识缺口（供拍板人补答，07 §3.5）。"""
+
+    model_config = {"from_attributes": True}
+    id: int
+    question_text: str
+    detected_at: datetime
+
+
+class KnowledgeGapListData(BaseModel):
+    gaps: list[KnowledgeGapOut]
+
+
+class KnowledgeAnswerRequest(BaseModel):
+    """拍板人对缺口补答（07 §3.5）。"""
+
+    answer: str
+    staff_id: int
+
+
+class KnowledgeAnswerData(BaseModel):
+    knowledge_id: int
+    status: str
+
+
+class KnowledgePendingItemOut(BaseModel):
+    """待确认条目（供拍板人确认，07 §3.5）。"""
+
+    model_config = {"from_attributes": True}
+    id: int
+    question_pattern: str
+    answer: str
+    source_staff_id: Optional[int] = None
+
+
+class KnowledgePendingListData(BaseModel):
+    items: list[KnowledgePendingItemOut]
+
+
+class KnowledgeConfirmRequest(BaseModel):
+    """拍板人确认 pending→confirmed（07 §3.5）。"""
+
+    staff_id: int
+
+
+class KnowledgeConfirmData(BaseModel):
+    id: int
+    status: str
+    resolved_gap_id: Optional[int] = None
+
+
 class HandoffRequest(BaseModel):
     """转交请求体（07 §3.3）。"""
 

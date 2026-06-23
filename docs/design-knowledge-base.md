@@ -24,12 +24,16 @@
 
 ## 3. P2 / 愿景骨架
 
-- `[P2]` **确认回写（REQ-13）**：
-  - 拍板人答复缺口后，生成 `status=pending` 条目；
-  - 系统征询「是否作为以后标准答案」；
-  - 经 `POST /api/v1/knowledge/{id}/confirm` 确认 → 置 confirmed，记 `source_staff_id`；
-  - 待细化：征询时机/交互载体（消息内 vs 轻量页面）、版本与归属、撤销。
-- `[愿景]` 无额外项；售后推理（REQ-17）属对话编排，不在本子系统。
+### 3.1 确认回写（REQ-13）`[P2]` `[P2-已设计]`
+
+拍板人答复缺口 → pending → 征询确认 → confirmed。**回写必经拍板人确认，不自动固化**（与 §4 风险一致）。
+
+- **流程**：缺口（open gap）→ 拍板人经确认页面补答 → 创建 `status=pending` 条目（+ embedding，关联 gap）→ 拍板人确认 → `confirmed` + `gap.resolved_knowledge_id` 回填 + `gap.status=resolved`。
+- **补答接口**：`POST /api/v1/knowledge/gaps/{gap_id}/answer`（07 §3.5），入参 `{answer, staff_id}` → 创建 pending 条目（`question_pattern=gap.question_text`、`answer`、`embedding`、`status=pending`、`source_staff_id`），关联 gap。
+- **确认接口**：`POST /api/v1/knowledge/{id}/confirm`（07 §3.5），入参 `{staff_id}` → `status=confirmed` + 记 `source_staff_id` + 回填 gap（resolved）。
+- **查询接口**：`GET /api/v1/knowledge/gaps`（列 open 缺口，供补答）、`GET /api/v1/knowledge/pending`（列 pending，供确认）。
+- **确认页面**：`frontend/confirm.html`（挂 `/ui/confirm.html`），两区——缺口补答区（open gaps + 答案输入）、待确认区（pending items + confirm 按钮）。
+- **边界**：补答即生成 embedding（确认后可被检索命中）；归属 `source_staff_id` 记确认人；pending 可被补答者撤回（原型暂不做撤销，留优化）。
 
 ## 4. 风险
 

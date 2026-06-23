@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>知识确认 · 数字客服</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, "PingFang SC", sans-serif; margin: 0; background: #f5f5f5; color: #333; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  .sub { font-size: 12px; color: #888; margin-bottom: 14px; }
+  .bar { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; background: #fff; padding: 10px 12px; border-radius: 6px; border: 1px solid #eee; }
+  .bar label { font-size: 13px; }
+  .bar input { padding: 5px 8px; border: 1px solid #ddd; border-radius: 4px; width: 80px; }
+  .bar button { padding: 6px 14px; background: #1890ff; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-left: auto; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 720px) { .cols { grid-template-columns: 1fr; } }
+  .col h2 { font-size: 15px; margin: 0 0 10px; padding-bottom: 6px; border-bottom: 2px solid #07c160; }
+  .col.pending h2 { border-color: #faad14; }
+  .card { background: #fff; border: 1px solid #eee; border-radius: 6px; padding: 11px; margin-bottom: 10px; }
+  .card .q { font-weight: bold; font-size: 13px; margin-bottom: 4px; }
+  .card .a { font-size: 13px; color: #555; background: #f9f9f9; padding: 6px 8px; border-radius: 4px; margin-bottom: 6px; white-space: pre-wrap; }
+  .card textarea { width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; resize: vertical; min-height: 52px; margin-bottom: 6px; font-family: inherit; }
+  .card button { padding: 5px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; }
+  .btn-answer { background: #07c160; color: #fff; }
+  .btn-confirm { background: #faad14; color: #fff; }
+  .empty { color: #aaa; font-size: 13px; padding: 20px; text-align: center; }
+  .meta { font-size: 11px; color: #999; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>知识确认</h1>
+  <div class="sub">拍板人对缺口补答 → 待确认 → 确认回写为标准答案（REQ-13）。回写必经确认，不自动固化。</div>
+  <div class="bar">
+    <label>确认人 staff_id：</label>
+    <input id="staff" type="number" value="1" min="1">
+    <button onclick="load()">刷新</button>
+  </div>
+  <div class="cols">
+    <div class="col gaps">
+      <h2>缺口补答（open）</h2>
+      <div id="gaps"></div>
+    </div>
+    <div class="col pending">
+      <h2>待确认（pending）</h2>
+      <div id="pending"></div>
+    </div>
+  </div>
+</div>
+<script>
+const B = '/api/v1/knowledge';
+function staffId() { return parseInt(document.getElementById('staff').value, 10) || 1; }
+function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+async function load() {
+  // 缺口补答区
+  try {
+    const gaps = ((await (await fetch(B + '/gaps')).json()).data.gaps) || [];
+    document.getElementById('gaps').innerHTML = gaps.length
+      ? gaps.map(g => `
+        <div class="card">
+          <div class="q">#${g.id} ${esc(g.question_text)}</div>
+          <div class="meta">${esc(g.detached_at || g.detected_at || '')}</div>
+          <textarea id="ans-${g.id}" placeholder="拍板人补答…"></textarea>
+          <button class="btn-answer" onclick="answer(${g.id})">补答 → 待确认</button>
+        </div>`).join('')
+      : '<div class="empty">暂无待补答缺口</div>';
+  } catch (e) { document.getElementById('gaps').innerHTML = '<div class="empty">加载失败：' + e + '</div>'; }
+  // 待确认区
+  try {
+    const items = ((await (await fetch(B + '/pending')).json()).data.items) || [];
+    document.getElementById('pending').innerHTML = items.length
+      ? items.map(it => `
+        <div class="card">
+          <div class="q">#${it.id} ${esc(it.question_pattern)}</div>
+          <div class="a">${esc(it.answer)}</div>
+          <div class="meta">补答人 staff #${it.source_staff_id || '?'}</div>
+          <button class="btn-confirm" onclick="confirmItem(${it.id})">确认 → 回写标准答案</button>
+        </div>`).join('')
+      : '<div class="empty">暂无待确认条目</div>';
+  } catch (e) { document.getElementById('pending').innerHTML = '<div class="empty">加载失败：' + e + '</div>'; }
+}
+async function answer(gapId) {
+  const ans = document.getElementById('ans-' + gapId).value.trim();
+  if (!ans) { alert('请填写补答'); return; }
+  const r = await fetch(B + '/gaps/' + gapId + '/answer', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ answer: ans, staff_id: staffId() })
+  });
+  if (r.ok) { load(); } else { alert('补答失败：' + r.status + ' ' + (await r.text())); }
+}
+async function confirmItem(itemId) {
+  const r = await fetch(B + '/' + itemId + '/confirm', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ staff_id: staffId() })
+  });
+  if (r.ok) { load(); } else { alert('确认失败：' + r.status + ' ' + (await r.text())); }
+}
+load();
+</script>
+</body>
+</html>
