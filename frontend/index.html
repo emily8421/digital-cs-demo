@@ -100,6 +100,20 @@
     <button onclick="setstate()">设置</button>
     <div class="result" id="r-state"></div>
   </section>
+  <section>
+    <b>P2 时效扫描（REQ-14）</b>
+    <button onclick="slaScan()">扫描超时未答</button>
+    <div class="result" id="r-sla"></div>
+  </section>
+  <section>
+    <b>P2 知识确认（REQ-13）</b>
+    <a href="/ui/confirm.html" target="_blank">打开知识确认页面 →</a>
+    <div class="tip">H5 发未命中问题造缺口 → 此页面补答确认 → 回 H5 再问命中</div>
+  </section>
+  <section>
+    <b>P2 多轮 / 身份（REQ-9/11）</b>
+    <div class="tip">左侧聊天发「我要定制灯带」（多轮）或「你是机器人吗」（身份）</div>
+  </section>
   <div class="tip">前置：docker compose up -d + uvicorn。聊天历史自动存浏览器（刷新不丢）。真机调见下方说明。</div>
 </div>
 <script>
@@ -215,6 +229,13 @@ async function setstate() {
   });
   const d = (await r.json()).data;
   document.getElementById('r-state').textContent = '会话 ' + d.conversation_id + ' → ' + d.handoff_state;
+}
+async function slaScan() {
+  const r = await fetch(B + '/sla/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+  const d = (await r.json()).data;
+  document.getElementById('r-sla').textContent = d.count
+    ? '⚠️ ' + d.count + ' 条超时：' + d.overdues.map(o => o.group + '(' + o.overdue_minutes + '分钟)').join('、') + (d.notification_id ? '｜已通知 #' + d.notification_id : '')
+    : '✓ 无超时（全部已应答或在阈值内）';
 }
 loadHist();
 </script>
