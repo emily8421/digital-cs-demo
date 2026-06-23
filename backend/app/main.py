@@ -5,7 +5,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from .api import handoffs, knowledge, messages, summaries
+from .api import handoffs, knowledge, messages, sla, summaries
 from .db import init_db
 
 
@@ -23,6 +23,7 @@ app = FastAPI(title="Digital Customer Service (Demo)", version="0.1.0", lifespan
 app.include_router(messages.router)
 app.include_router(knowledge.router)
 app.include_router(handoffs.router)
+app.include_router(sla.router)
 app.include_router(summaries.router)
 
 

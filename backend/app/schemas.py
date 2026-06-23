@@ -170,3 +170,25 @@ class SummaryData(BaseModel):
 
     notification_id: int
     summary: str
+
+
+class SLAScanRequest(BaseModel):
+    """SLA 扫描入参（07 §3.5）。"""
+
+    threshold_minutes: Optional[float] = None
+
+
+class OverdueItemOut(BaseModel):
+    """超时未答项（07 §3.5）。"""
+
+    conversation_id: int
+    group: str
+    message_id: int
+    overdue_minutes: int
+
+
+class SLAScanData(BaseModel):
+    overdues: list[OverdueItemOut]
+    count: int
+    notification_id: Optional[int] = None
+    prompt: Optional[str] = None

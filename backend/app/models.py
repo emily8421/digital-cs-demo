@@ -189,7 +189,7 @@ class Notification(Base):
 
     __tablename__ = "dcs_notifications"
     __table_args__ = (
-        CheckConstraint("kind IN ('handoff','summary','gap')", name="ck_notifications_kind"),
+        CheckConstraint("kind IN ('handoff','summary','gap','sla')", name="ck_notifications_kind"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)

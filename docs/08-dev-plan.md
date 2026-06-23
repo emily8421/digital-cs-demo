@@ -333,6 +333,14 @@
 #### 禁止事项
 - 不做售后/订单；超时口径待调参。
 
+#### 验收记录（2026-06-23）
+- 已实现：`service/sla/scanner.py`（`scan_sla` 扫超时未答 + 生成口语化提示 + 写 Notification kind=sla）、`api/sla.py`（POST /sla/scan 手动触发/外部 cron）、`config.sla_threshold_minutes`（默认 30）、models Notification CHECK 加 sla。
+- 设计决策：计时口径＝每会话最后 inbound，同会话无更晚 outbound + 距今 > 阈值 → 超时未答；提示发经营者（owner，复用 summary）；调度＝外部 cron（复用 summary 模式，不内嵌）；SQLite naive datetime 兼容（received_at aware 化）。
+- 自动化测试：`pytest -q` → **47 passed**（+ `test_sla` 4：超时未答→overdue、已答→不计、阈值内→不计、提示+Notification 落库；SQLite）。
+- 真实端到端（uvicorn + docker PG）：插超时未答消息（demo_sla_overdue，60 分钟前 inbound 无 outbound）→ POST /sla/scan(threshold 30) → 命中 3 条超时（含 demo_sla_overdue 62 分钟）+ Notification #50(kind=sla) + 口语化提示。
+- **PG 迁移备注**：notifications 表 CHECK 需含 sla；models 已改（新部署 create_all 自动），**已有 PG 库需手动 ALTER**（演示前已执行：DROP/ADD CONSTRAINT 含 sla）。
+- **REQ-14 可验证口径：通过。** Sprint-11 验收完成（话题级暂停留 Sprint-12，端到端留 Sprint-13）。
+
 ---
 
 ### Sprint-12：转人工暂停话题级精化（REQ-10）
