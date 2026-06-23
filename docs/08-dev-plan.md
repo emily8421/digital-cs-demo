@@ -281,6 +281,13 @@
 #### 禁止事项
 - 被动披露（不主动）；不做多轮；话术不喧宾夺主。
 
+#### 验收记录（2026-06-23）
+- 已实现：`service/conversation/identity.py`（`detect_identity_question` 规则识别身份询问、`build_identity_reply` 既定话术、`act_on_identity` 写 outbound）+ `orchestrator.handle_inbound` 文本分支**最前**接入（身份披露优先于多轮/检索）。
+- 设计决策：意图识别**纯规则**（身份询问关键词，大小写不敏感，不引 LLM）；既定话术承认身份+角色+回归服务（「我是小辰，汇辰灯饰的 AI 客服助理…有什么可以帮您的？」）；**被动披露**（被问才答，不主动）、单轮、不触多轮/缺口/转交。
+- 自动化测试：`pytest -q` → **38 passed**（+ `test_identity` 4：明确身份问句触发、普通问题不误判、话术含身份+角色+服务）。
+- 真实端到端（uvicorn + docker）：投「你是机器人吗」→ 既定话术承认身份（hit=false）；投「5050和2835区别」→ 照常检索作答（hit=true，身份不误判普通问题）。
+- **REQ-11 可验证口径：通过。** Sprint-9 验收完成（知识回写/时效/话题暂停留 Sprint-10~12）。
+
 ---
 
 ### Sprint-10：知识回写 + 确认页面（REQ-13）

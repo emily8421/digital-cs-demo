@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from ..channels.base import NormalizedMessage
 from ..models import Conversation, Message
 from .conversation.engine import OrchestrationResult, act_on_non_text, orchestrate
+from .conversation.identity import act_on_identity, detect_identity_question
 from .conversation.inquiry import (
     act_on_inquiry_reply,
     detect_custom_inquiry,
@@ -71,17 +72,20 @@ def handle_inbound(
         except Exception as e:  # noqa: BLE001
             print(f"[warn] 非文字处理跳过：{e}")
     elif msg.content_text:
-        try:  # REQ-9 多轮引导优先 → REQ-6 检索作答 / 未命中缺口
-            active = get_active_inquiry(db, conv.id)
-            if active:  # 多轮接续：匹配客户回复到当前项
-                orchestration = act_on_inquiry_reply(db, active, msg.content_text, channel_name)
+        try:  # REQ-11 身份披露优先 → REQ-9 多轮 → REQ-6 检索作答/缺口
+            if detect_identity_question(msg.content_text):  # 被问身份：按既定口径承认
+                orchestration = act_on_identity(db, conv, channel_name)
             else:
-                detected = detect_custom_inquiry(msg.content_text)
-                if detected is not None:  # 新定制询盘：抽值预填 + 首轮确认
-                    collected, pending = detected
-                    orchestration = start_inquiry(db, conv, collected, pending, channel_name)
-                else:  # 普通文本：检索作答 / 未命中缺口
-                    orchestration = orchestrate(db, conv, msg.content_text, channel_name)
+                active = get_active_inquiry(db, conv.id)
+                if active:  # 多轮接续：匹配客户回复到当前项
+                    orchestration = act_on_inquiry_reply(db, active, msg.content_text, channel_name)
+                else:
+                    detected = detect_custom_inquiry(msg.content_text)
+                    if detected is not None:  # 新定制询盘：抽值预填 + 首轮确认
+                        collected, pending = detected
+                        orchestration = start_inquiry(db, conv, collected, pending, channel_name)
+                    else:  # 普通文本：检索作答 / 未命中缺口
+                        orchestration = orchestrate(db, conv, msg.content_text, channel_name)
         except Exception as e:  # noqa: BLE001
             print(f"[warn] 编排跳过（检索不可用？）：{e}")
 
