@@ -230,3 +230,35 @@ class KnowledgeGap(Base):
     resolved_knowledge_id: Mapped[int | None] = mapped_column(
         ForeignKey("dcs_knowledge_items.id"), nullable=True
     )
+
+
+class Inquiry(Base):
+    """定制询盘多轮收集状态。对应 dcs_inquiries。REQ-9（P2/Sprint-8）。"""
+
+    __tablename__ = "dcs_inquiries"
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('collecting','completed','abandoned')", name="ck_inquiries_status"
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    conversation_id: Mapped[int] = mapped_column(
+        ForeignKey("dcs_conversations.id"), nullable=False
+    )
+    status: Mapped[str] = mapped_column(String(16), nullable=False, default="collecting")
+    # 待确认维度（list[str]，如 ["尺寸","颜色","数量"]）；PG jsonb / SQLite JSON
+    items_pending: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    # 已收集 {维度: 值}（如 {"颜色":"蓝","数量":"100米"}）
+    items_collected: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    current_item: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )

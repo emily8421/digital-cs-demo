@@ -10,6 +10,12 @@ from sqlalchemy.orm import Session
 from ..channels.base import NormalizedMessage
 from ..models import Conversation, Message
 from .conversation.engine import OrchestrationResult, act_on_non_text, orchestrate
+from .conversation.inquiry import (
+    act_on_inquiry_reply,
+    detect_custom_inquiry,
+    get_active_inquiry,
+    start_inquiry,
+)
 from .leads.service import capture_lead
 
 
@@ -65,8 +71,16 @@ def handle_inbound(
         except Exception as e:  # noqa: BLE001
             print(f"[warn] 非文字处理跳过：{e}")
     elif msg.content_text:
-        try:  # REQ-6：文本检索 → 命中作答 / 未命中缺口
-            orchestration = orchestrate(db, conv, msg.content_text, channel_name)
+        try:  # REQ-9 多轮引导优先 → REQ-6 检索作答 / 未命中缺口
+            active = get_active_inquiry(db, conv.id)
+            if active:  # 多轮接续：匹配客户回复到当前项
+                orchestration = act_on_inquiry_reply(db, active, msg.content_text, channel_name)
+            else:
+                items = detect_custom_inquiry(msg.content_text)
+                if items:  # 新定制询盘：建 inquiry + 首轮确认
+                    orchestration = start_inquiry(db, conv, items, channel_name)
+                else:  # 普通文本：检索作答 / 未命中缺口
+                    orchestration = orchestrate(db, conv, msg.content_text, channel_name)
         except Exception as e:  # noqa: BLE001
             print(f"[warn] 编排跳过（检索不可用？）：{e}")
 
