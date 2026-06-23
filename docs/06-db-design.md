@@ -119,7 +119,7 @@
 | sent_at | timestamptz | NOT NULL | |
 | ref_handoff_id / ref_gap_id | bigint |  | 关联转交/缺口 |
 
-### dcs_inquiries `[P2]` `[P2-已设计]`
+### dcs_inquiries `[P2]` `[P2-已实现]`
 定制询盘多轮收集（REQ-9）：一询盘一行，记录拆项/收集/摘要/转交状态。
 | 字段 | 类型 | 约束 | 说明 |
 |---|---|---|---|
@@ -133,7 +133,7 @@
 | created_at / updated_at | timestamptz | NOT NULL default now() | |
 | completed_at | timestamptz |  | 完成/转交时间 |
 
-### dcs_topic_handoffs `[P2]` `[P2-已设计]`
+### dcs_topic_handoffs `[P2]` `[P2-已实现]`
 话题级转人工暂停（REQ-10 话题级精化）：一会话一话题一行（UNIQUE）。
 | 字段 | 类型 | 约束 | 说明 |
 |---|---|---|---|
