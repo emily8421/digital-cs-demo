@@ -75,13 +75,13 @@ cat > "$TARGET/_proposals/README.md" <<EOF
 当开发过程中发现可通用于多个项目的规则、流程、文档骨架或脚本优化时，可在此新增：
 
 \`\`\`text
-TEMPLATE-UPGRADE-vX.Y.md        # 提案主体：动机、拟改、版本号、影响面
-TEMPLATE-UPGRADE-vX.Y-patch.md  # 可选：具体 old→new 修改建议
+TEMPLATE-UPGRADE-vX.Y.Z.md        # 提案主体：动机、拟改、版本影响、影响面
+TEMPLATE-UPGRADE-vX.Y.Z-patch.md  # 可选：具体 old→new 修改建议
 \`\`\`
 
 提案应保持去项目化，不写入本项目的具体业务需求、技术栈细节或私有信息。提案成熟后，回到模板仓库开 PR，把提案提交到模板仓库的 \`_proposals/\` 收件箱，由模板维护者汇总分析并落地。
 
-模板改动合并并下行同步后，可将本项目内已处理的提案移动到项目历史记录或删除。
+模板改动合并并下行同步后，应将本项目内已处理的提案移动到项目历史记录 / \`_archive/proposals/\` 或删除，避免继续作为待办重复执行。
 EOF
 
 cat > "$TARGET/README.md" <<EOF
@@ -93,27 +93,61 @@ cat > "$TARGET/README.md" <<EOF
 
 （用 2-3 句话说明本项目要解决的问题、目标用户与当前阶段范围。）
 
+## 当前阶段
+
+- 当前阶段：Phase1 / MVP（待确认）
+- 阶段目标：（说明当前阶段要演示的最小闭环）
+- 非目标：（说明当前阶段明确不做什么）
+
 ## 当前能力
 
 - （列出当前 Phase 已确认要实现的核心能力）
 
 ## 快速开始
 
-（补充本项目的安装、运行、测试或演示方式。）
+1. 运行 \`powershell -ExecutionPolicy Bypass -File scripts/collect-env.ps1\` 生成 \`docs/env/local-env.md\`，补齐本机可运行边界、允许降级 / Mock 项与服务器预案。
+2. 把产品愿景写入 \`docs/vision/product-vision.md\`，只写业务叙事、目标用户、核心场景、非目标与远期想法。
+3. 初填 \`ai/project-rules.md\` 的项目名称、Phase1 目标、技术栈倾向、运行环境约束与项目形态裁剪；不确定项标“待确认”。
+4. 复制 \`INIT-PROMPT.md\` §0 给 AI，让 AI 基于 product-vision + local-env 一次性生成 / 修订 \`docs/00-09\`、必要的 \`docs/design/\` 详细设计、项目 README 与 Sprint1。
+5. 人工确认 \`docs/03-prd.md\` §3 阶段路线图和 \`docs/05-tech-spec.md\` 的本机 Demo 可行性；确认后进入 Sprint 开发。
 
 ## 文档入口
 
 - \`docs/00-scenario.md\`：场景
+- \`docs/vision/product-vision.md\`：产品愿景叙事源文档
 - \`docs/01-user-requirements.md\`：用户需求
 - \`docs/02-srs.md\`：软件需求规格
 - \`docs/03-prd.md\`：产品需求与阶段路线图
+- \`docs/README.md\`：文档分区规则，新增文档前先看这里
+- \`docs/env/local-env.md\`：本机运行环境与资源约束
+- \`docs/design/\`：子系统 / 模块详细设计
 - \`docs/08-dev-plan.md\`：开发计划
 - \`docs/09-verification.md\`：验证计划
+
+## 运行环境
+
+- 本机环境记录：\`docs/env/local-env.md\`
+- 本机 Demo 可行性：（待确认）
+- 降级 / Mock 策略：（待确认）
+
+## 开发计划
+
+- 当前 Sprint：见 \`docs/08-dev-plan.md\`
+- 执行单个任务时使用 \`INIT-PROMPT.md\` §2
+
+## 验证方式
+
+- 验证计划：见 \`docs/09-verification.md\`
+- 本机资源验证：见 \`docs/09-verification.md\` 的资源验证项
 
 ## 模板关系
 
 - 通用方法论来自 \`ai-project-template\`。
+- 当前同步到的模板版本记录在 \`VERSION\`。
+- 根 \`README.md\` 是项目专属文档，不参与模板下行同步。
+- 模板方法论文件由 \`template-sync.json\` 定义，执行 \`scripts/sync-template.*\` 时可能被覆盖。
 - 项目专属规则写在 \`ai/project-rules.md\`。
+- 项目事实文档写在 \`docs/\`，但新增文档必须遵守 \`docs/README.md\` 的分区规则，不要直接堆到 \`docs/\` 根目录。
 - 如发现可通用的模板优化，先在 \`_proposals/\` 起草提案，再回流到模板仓库。
 EOF
 
@@ -147,4 +181,4 @@ else
 fi
 echo "后续："
 echo "  cd \"$TARGET\""
-echo "  填写 docs/00-scenario.md ~ 02-srs.md，再按 README 快速开始推进"
+echo "  填写 docs/00-scenario.md ~ 02-srs.md，运行 scripts/collect-env.ps1，再按 README 快速开始推进"
