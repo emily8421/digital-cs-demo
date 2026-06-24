@@ -12,16 +12,16 @@
 
 ```
 收到 NormalizedMessage
- ├─ [P1] content_type != text → 非文字处理分支（REQ-12）
+ ├─ [P1/P2] handoff 暂停（会话级 P1 conversations.handoff_state，或话题级 P2
+ │           dcs_topic_handoffs 该 sender）= handed_off → 暂停自动回复（REQ-10，仅记录）
+ ├─ [P1] content_type != text → 非文字如实告知 + 提醒员工（REQ-12）
  ├─ [P2] 命中「是否AI」意图 → 身份披露（REQ-11）
- ├─ [P1] 文本 → 知识检索（design-knowledge-base）
- │     ├─ 命中（confirmed）→ 作答回客户（REQ-2/3）
- │     └─ 未命中 → 缺口分支
- │           ├─ 抽取留资（REQ-4）→ 记录
- │           ├─ 客户侧：请留资/将请同事确认（REQ-6）
- │           └─ 员工侧：路由转交拍板人/相关角色（REQ-5/8）
- ├─ [P2] 命中「定制询盘」意图 → 多轮引导状态机（REQ-9）
- └─ [P1] handoff_state=handed_off → 该会话暂停自动回复（REQ-10）
+ ├─ [P2] 有 collecting 询盘 → 多轮接续（匹配客户回复到当前项，REQ-9）
+ ├─ [P2] 命中「定制询盘」意图 → 新建多轮引导（抽值预填 + 首轮，REQ-9）
+ └─ [P1] 文本 → 知识检索（design-knowledge-base，REQ-2/3）
+       ├─ 命中（confirmed）→ 作答回客户
+       └─ 未命中 → 缺口分支：抽取留资（REQ-4）+ 客户侧请留资（REQ-6）
+                   + 员工侧路由转交拍板人（REQ-5/8）
 ```
 
 ## 2. P1 细节 `[P1]` `[P1-已设计]`

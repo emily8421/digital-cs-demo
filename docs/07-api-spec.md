@@ -26,18 +26,22 @@
 | 方法 | 路径 | 用途 | 对应 REQ | 阶段 | 状态 |
 |---|---|---|---|---|---|
 | POST | `/webhooks/wework/message` | 企业微信消息回调（入站） | REQ-1/15 | 愿景·待验证 | 骨架·待验证 |
-| POST | `/api/v1/messages/simulate` | 模拟器投递一条入站消息 | REQ-1 | P1 | P1-已设计 |
-| GET | `/api/v1/conversations` | 会话列表 | REQ-1 | P1 | P1-已设计 |
-| GET | `/api/v1/conversations/{id}` | 会话详情（含消息流） | REQ-1 | P1 | P1-已设计 |
-| GET | `/api/v1/knowledge/search?q=` | 知识检索 | REQ-2/3 | P1 | P1-已设计 |
-| POST | `/api/v1/knowledge` | 新增/维护知识条目 | REQ-2/3 | P1 | P1-已设计 |
-| POST | `/api/v1/knowledge/{id}/confirm` | 拍板人确认回写 | REQ-13 | P2 | 骨架·待细化 |
-| POST | `/api/v1/leads` / GET `/api/v1/leads` | 留资记录 | REQ-4 | P1 | P1-已设计 |
-| POST | `/api/v1/handoffs` | 人工转交 | REQ-5/8 | P1 | P1-已设计 |
-| GET/POST | `/api/v1/staff` | 员工花名册 | REQ-5/8 | P1 | P1-已设计 |
-| GET/POST | `/api/v1/routing-rules` | 路由规则 | REQ-8 | P1 | P1-已设计 |
-| POST | `/api/v1/summaries/daily` | 触发定时小结（手动/调度） | REQ-7 | P1 | P1-已设计 |
+| POST | `/api/v1/messages/simulate` | 模拟器投递一条入站消息 | REQ-1 | P1 | P1-已实现 |
+| GET | `/api/v1/conversations` | 会话列表 | REQ-1 | P1 | P1-已实现 |
+| GET | `/api/v1/conversations/{id}` | 会话详情（含消息流） | REQ-1 | P1 | P1-已实现 |
+| POST | `/api/v1/conversations/{id}/handoff-state` | 置/解除**会话级**转人工暂停 | REQ-10 | P1 | P1-已实现 |
+| POST | `/api/v1/conversations/{id}/topic-handoff` | 置/解除**话题级**转人工暂停 | REQ-10 | P2 | P2-已实现 |
+| GET | `/api/v1/knowledge/search?q=` | 知识检索 | REQ-2/3 | P1 | P1-已实现 |
+| GET | `/api/v1/knowledge/gaps` | 列 open 缺口（供拍板人补答） | REQ-13 | P2 | P2-已实现 |
+| POST | `/api/v1/knowledge/gaps/{id}/answer` | 拍板人补答 → 创建 pending | REQ-13 | P2 | P2-已实现 |
+| GET | `/api/v1/knowledge/pending` | 列 pending（供确认） | REQ-13 | P2 | P2-已实现 |
+| POST | `/api/v1/knowledge/{id}/confirm` | 确认 pending → confirmed + 回填 gap | REQ-13 | P2 | P2-已实现 |
+| POST | `/api/v1/handoffs` | 人工转交（建记录 + 路由 + 通知） | REQ-5/8 | P1 | P1-已实现 |
+| POST | `/api/v1/summaries/daily` | 触发定时小结（手动/调度） | REQ-7 | P1 | P1-已实现 |
+| POST | `/api/v1/sla/scan` | 扫描超时未答 + 提示经营者 | REQ-14 | P2 | P2-已实现 |
 | GET | `/api/v1/orders/{id}/progress` | 订单进度（售中） | REQ-16 | 愿景·待验证 | 骨架·依赖外部系统 |
+
+> 注：知识/留资/员工/路由规则的 CRUD 经种子脚本（`scripts/seed_*.py`）与编排内部调用，未开 REST 接口（需时再议）。
 
 ## 3. 请求 / 响应示例（P1）
 

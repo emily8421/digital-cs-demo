@@ -7,17 +7,17 @@
 
 | 表 | 用途 | 对应 REQ | 阶段 | 状态 |
 |---|---|---|---|---|
-| `dcs_messages` | 入站/出站消息原始与归一化记录 | REQ-1 | P1 | P1-已设计 |
-| `dcs_conversations` | 会话（群/话题）与会话级状态 | REQ-1/5/10 | P1（handoff_state 供 REQ-10 暂停消费） | P1-已设计 |
-| `dcs_knowledge_items` | 知识条目（FAQ/参数/选型）及其确认状态 | REQ-2/3/13 | P1 + P2 回写 | P1-已设计 |
-| `dcs_knowledge_gaps` | 答不上的缺口问题记录 | REQ-6 | P1 | P1-已设计 |
-| `dcs_leads` | 识别出的客户留资（联系方式） | REQ-4 | P1 | P1-已设计 |
-| `dcs_handoffs` | 转人工/转交记录（对象/原因/上下文/状态） | REQ-5/8/10 | P1（暂停已 P1） | P1-已设计 |
-| `dcs_staff` | 员工/角色花名册与对接通道 | REQ-5/8 | P1 | P1-已设计 |
-| `dcs_routing_rules` | 场景→角色路由规则 | REQ-8 | P1 | P1-已设计 |
-| `dcs_notifications` | 出站提醒与定时小结的发送记录 | REQ-5/7 | P1 + P2 时效 | P1-已设计 |
-| `dcs_inquiries` | 定制询盘多轮收集状态 | REQ-9 | P2 | P2-已设计 |
-| `dcs_topic_handoffs` | 话题级转人工暂停状态 | REQ-10 | P2 | P2-已设计 |
+| `dcs_messages` | 入站/出站消息原始与归一化记录 | REQ-1 | P1 | P1-已实现 |
+| `dcs_conversations` | 会话（群/话题）与会话级状态 | REQ-1/5/10 | P1（handoff_state 供 REQ-10 暂停消费） | P1-已实现 |
+| `dcs_knowledge_items` | 知识条目（FAQ/参数/选型）及其确认状态 | REQ-2/3/13 | P1 + P2 回写 | P1-已实现 |
+| `dcs_knowledge_gaps` | 答不上的缺口问题记录 | REQ-6 | P1 | P1-已实现 |
+| `dcs_leads` | 识别出的客户留资（联系方式） | REQ-4 | P1 | P1-已实现 |
+| `dcs_handoffs` | 转人工/转交记录（对象/原因/上下文/状态） | REQ-5/8/10 | P1（暂停已 P1） | P1-已实现 |
+| `dcs_staff` | 员工/角色花名册与对接通道 | REQ-5/8 | P1 | P1-已实现 |
+| `dcs_routing_rules` | 场景→角色路由规则 | REQ-8 | P1 | P1-已实现 |
+| `dcs_notifications` | 出站提醒与定时小结的发送记录 | REQ-5/7 | P1 + P2 时效 | P1-已实现 |
+| `dcs_inquiries` | 定制询盘多轮收集状态 | REQ-9 | P2 | P2-已实现 |
+| `dcs_topic_handoffs` | 话题级转人工暂停状态 | REQ-10 | P2 | P2-已实现 |
 | `dcs_orders` | 订单/进度（售中转人工依赖） | REQ-16 | 愿景·待技术验证 | 骨架·待细化 |
 
 ## 2. 表结构（P1 表详写；愿景表骨架）
@@ -160,7 +160,7 @@
 
 ## 4. 表间关系
 
-- `conversations 1—N messages`、`conversations 1—N leads`、`conversations 1—N handoffs`、`conversations 1—N knowledge_gaps`、`conversations 1—N inquiries`。
+- `conversations 1—N messages`、`conversations 1—N leads`、`conversations 1—N handoffs`、`conversations 1—N knowledge_gaps`、`conversations 1—N inquiries`、`conversations 1—N topic_handoffs`。
 - `handoffs N—1 routing_rules`(经 scenario)、`handoffs N—1 staff`(目标)。
 - `knowledge_gaps 1—1 knowledge_items`(resolved 链路，P2 回写)。
 - `staff 1—N notifications`、`staff 1—N knowledge_items`(来源确认人)。
