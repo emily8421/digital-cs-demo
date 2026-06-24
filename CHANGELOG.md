@@ -6,6 +6,13 @@
 
 模板版本采用三段式 `vMAJOR.MINOR.PATCH`，以根目录 `VERSION` 为单一审计入口。任何会影响下游同步判断的模板合并都应递增版本；`ai/global-rules.md` 顶部仅记录全局规则自身版本。
 
+## v1.6.9（2026-06-24）
+
+- 修正派生项目同步模板方法论的标准流程：明确区分 v1.6.8 之前旧派生项目首次同步路径与 v1.6.8+ 后续同步路径。
+- 新增 `scripts/check-derived-sync.sh` / `scripts/check-derived-sync.ps1`，用于派生项目同步后的边界校验；该校验只检查同步提交是否限定在 `template-sync.json` 清单内，不检查模板仓库完整结构。
+- 明确 `scripts/check-template.sh` / `scripts/check-template.ps1` 是模板仓库完整性自检，不应作为派生项目同步成功判断。
+- 更新 `git-guide.md` §5、`INIT-PROMPT.md` §12、`SOP.md` 与 README 常用命令，避免旧派生项目误跑模板自检。
+
 ## v1.6.8（2026-06-24）
 
 - `INIT-PROMPT.md` 新增 §15「同步后项目整理」，用于派生项目完成方法论同步后审计并迁移项目专属内容。

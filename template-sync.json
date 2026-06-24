@@ -21,6 +21,8 @@
     "scripts/sync-template.ps1",
     "scripts/check-template.sh",
     "scripts/check-template.ps1",
+    "scripts/check-derived-sync.sh",
+    "scripts/check-derived-sync.ps1",
     "scripts/collect-env.ps1"
   ]
 }
