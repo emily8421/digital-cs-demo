@@ -55,7 +55,7 @@ def confirm_knowledge(
     if item is None:
         return None, None
     item.status = "confirmed"
-    item.source_staff_id = staff_id
+    item.confirmed_by_staff_id = staff_id  # 确认人；source_staff_id 保留补答人，不覆盖（作者归属完整）
     gap = db.query(KnowledgeGap).filter_by(resolved_knowledge_id=item_id).first()
     resolved_gap_id = None
     if gap:

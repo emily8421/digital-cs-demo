@@ -179,8 +179,9 @@ def act_on_inquiry_reply(
     cur = inquiry.current_item
 
     skipped = any(w in (reply_text or "") for w in _SKIP_WORDS)
-    if not skipped and cur:
-        collected[cur] = (reply_text or "").strip()
+    if cur:
+        # 跳过也记入 collected（标「（跳过）」），让摘要可见核价人知晓该维度未提供
+        collected[cur] = "（跳过）" if skipped else (reply_text or "").strip()
     if cur and cur in pending:
         pending.remove(cur)
 

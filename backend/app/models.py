@@ -106,6 +106,8 @@ class KnowledgeItem(Base):
     status: Mapped[str] = mapped_column(String(16), nullable=False, default="confirmed")
     # 来源确认人；dcs_staff 表在 Sprint-3 建，本轮先 nullable、不加 FK（预置种子为 NULL）
     source_staff_id: Mapped[int | None] = mapped_column(nullable=True)
+    # P2 知识回写：补答人=source_staff_id（answer_gap 写），确认人=confirmed_by_staff_id（confirm 写），互不覆盖
+    confirmed_by_staff_id: Mapped[int | None] = mapped_column(nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, default=_now
     )

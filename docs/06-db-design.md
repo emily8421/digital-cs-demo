@@ -55,7 +55,8 @@
 | category | varchar(64) |  | 分类（参数/选型/采购 FAQ…） |
 | embedding | vector |  | 向量（随向量库选型，待确认字段类型） |
 | status | varchar(16) | NOT NULL default confirmed, CHECK in(confirmed,pending) | confirmed＝已确认可答；pending＝P2 待确认回写 |
-| source_staff_id | bigint | FK→dcs_staff.id | 内容来源（确认人） |
+| source_staff_id | bigint | FK→dcs_staff.id | 补答人（answer_gap 写，REQ-13） |
+| confirmed_by_staff_id | bigint | FK→dcs_staff.id | 确认人（confirm 写，REQ-13，P2） |
 | created_at / updated_at | timestamptz | NOT NULL | |
 
 ### dcs_knowledge_gaps `[P1]`

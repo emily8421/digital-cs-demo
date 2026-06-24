@@ -60,7 +60,8 @@ def test_confirm_flips_to_confirmed_and_resolves_gap(db):
     db.flush()
     confirmed, gap_id = confirm_knowledge(db, item.id, staff_id=3)
     assert confirmed.status == "confirmed"
-    assert confirmed.source_staff_id == 3
+    assert confirmed.source_staff_id == 2  # 补答人保留，不被确认人覆盖
+    assert confirmed.confirmed_by_staff_id == 3  # 确认人（REQ-13 作者归属完整）
     assert gap_id == g.id
     db.refresh(g)
     assert g.status == "resolved"
