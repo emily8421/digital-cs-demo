@@ -23,6 +23,8 @@ TEMPLATE_REMOTE="${TEMPLATE_REMOTE:-https://github.com/emily8421/ai-project-temp
 # 兜底同步清单；优先读取模板远端 template-sync.json。
 DEFAULT_SYNC_FILES=(
   "VERSION"
+  "CHANGELOG.md"
+  "MAINTAINERS.md"
   "template-sync.json"
   "ai/index.md"
   "ai/global-rules.md"
@@ -33,11 +35,14 @@ DEFAULT_SYNC_FILES=(
   "INIT-PROMPT.md"
   "CONTRIBUTING.md"
   "git-guide.md"
+  "docs/README.md"
   "scripts/new-project.sh"
   "scripts/sync-template.sh"
   "scripts/sync-template.ps1"
   "scripts/check-template.sh"
   "scripts/check-template.ps1"
+  "scripts/check-derived-sync.sh"
+  "scripts/check-derived-sync.ps1"
   "scripts/collect-env.ps1"
 )
 
