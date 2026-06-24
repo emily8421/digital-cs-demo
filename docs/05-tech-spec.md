@@ -40,6 +40,13 @@
 详见 `ai/project-rules.md` §5。该节当前为「待 03-09 审核后回填」占位草稿；本文不重复、不虚构。
 待 project-rules §5 确认后，本节仅保留一行指针指向它，不在两处维护。
 
+## 4. 运行环境与资源评估
+
+> 本机 Demo 可行性见 `docs/env/local-env.md`（Win11/i7-12650H/32GB/RTX3050）；资源约束见 `docs/env/context-and-constraints.md`。
+- **资源瓶颈**：Python 3.14+Windows 进程内 torch DLL 失败 → Docker TEI（见 `docs/env/context-and-constraints.md` §3）
+- **降级/Mock**：TEI 不可用→编排跳过检索（`try/except + logging.warning`）；SQLite 内存库用于单测（不依赖 Docker）
+- **服务器预案**：**待确认**（公司 Linux 服务器资源/部署方式；本机原型先行）
+
 ---
 
 **追溯**：架构理由见 `docs/04-architecture.md` §3；数据落地见 `docs/06-db-design.md`；接口契约见 `docs/07-api-spec.md`。

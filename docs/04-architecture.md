@@ -99,6 +99,14 @@ flowchart TD
 - **业务知识归属在客户方**：知识写入需经拍板人确认（P2 回写）；系统只整理录入，不擅自把临时答复固化。
 - **不选**：不选个人微信非官方自动化（合规与封号风险，永久禁止）；不在 P1 引入复杂对话状态机/售后推理（高风险 AI，推迟验证）。
 
+## 4. 部署 / 运行拓扑约束
+
+> 本机环境见 `docs/env/local-env.md`；资源约束见 `docs/env/context-and-constraints.md`。
+- **本机单机（Demo）**：Docker Desktop（PG pgvector + TEI embedding）+ uvicorn（绑 0.0.0.0:8000）；模拟器通道（客户侧）；演示交互界面（`/ui` / `/ui/h5.html` / `/ui/confirm.html`）
+- **公司服务器（后续）**：Linux；**待确认**（资源/部署方式/是否容器化）
+- **远程服务**：**待确认**（是否用云；企微真实通道需公网回调，待 REQ-15 替代通道选定）
+- 边界：Demo 全程本机（含 TEI 模型加载）；真实通道/订单/售后＝愿景，跨拓扑边界
+
 ---
 
-**追溯**：功能→REQ 见 `docs/02-srs.md`；子系统内部分别见各 `design-*.md`；数据落地见 `docs/06-db-design.md`；接口见 `docs/07-api-spec.md`。
+**追溯**：功能→REQ 见 `docs/02-srs.md`；子系统内部分别见 `docs/design/`；数据落地见 `docs/06-db-design.md`；接口见 `docs/07-api-spec.md`。

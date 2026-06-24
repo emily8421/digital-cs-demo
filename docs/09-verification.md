@@ -41,6 +41,13 @@
 - **Phase2 / 优化扩展（✅ 已收官，2026-06-23）**：REQ-9/11/13/14 + 话题级 REQ-10 全部 ✅ 通过（见 §2）；P2 端到端集成测试 `test_p2_flow` 通过（55 passed）；demo 走通 P2 流程（多轮/身份/回写/时效/话题暂停）。
 - **远期愿景**：REQ-15/16/17 待技术验证通过后才有可验证口径，届时补用例。
 
+## 4. 本机资源验证
+
+> Demo 在本机资源范围内可运行的验证：
+- `docker compose up -d`（PG pgvector + TEI）+ uvicorn + `curl /health` ok（见 `docs/demo-script.md` §2）
+- `pytest -q` 55 passed（SQLite 内存库，不依赖 Docker/torch）
+- 真实端到端：见 `docs/08-dev-plan.md` 各 Sprint 验收记录；资源边界（TEI 模型加载/PG 端口）见 `docs/env/local-env.md`
+
 ---
 
 **追溯**：REQ 定义见 `docs/02-srs.md`；Sprint 见 `docs/08-dev-plan.md`；阶段范围见 `docs/03-prd.md` §3。
