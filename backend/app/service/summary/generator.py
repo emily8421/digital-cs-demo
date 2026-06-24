@@ -1,7 +1,7 @@
 """定时小结生成（REQ-7）。
 
 聚合消息量/类型 + 需跟进清单 → 口语化经营者小结，落 dcs_notifications(kind=summary)。
-对应 docs/design-routing-notification.md §2。口径＝像经营者口头汇报「该关注什么」，非系统报表腔。
+对应 docs/design/routing-notification.md §2。口径＝像经营者口头汇报「该关注什么」，非系统报表腔。
 """
 from dataclasses import dataclass
 

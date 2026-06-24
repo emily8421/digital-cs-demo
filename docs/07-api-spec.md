@@ -120,4 +120,4 @@
 
 ---
 
-**追溯**：接口对应 REQ 见 §2；读写的数据表见 `docs/06-db-design.md`；编排逻辑见 `docs/design-conversation-engine.md`。
+**追溯**：接口对应 REQ 见 §2；读写的数据表见 `docs/06-db-design.md`；编排逻辑见 `docs/design/conversation-engine.md`。

@@ -1,6 +1,6 @@
 """口语化提醒生成 + 通知落库/发送。REQ-5。
 
-对应 docs/design-routing-notification.md §2。口径＝像同事口头交代（含摘要、客户标识、
+对应 docs/design/routing-notification.md §2。口径＝像同事口头交代（含摘要、客户标识、
 时间），非系统报表腔；模板优先，LLM 仅可作润色且须可回退（本 Sprint 用模板）。
 """
 from sqlalchemy.orm import Session

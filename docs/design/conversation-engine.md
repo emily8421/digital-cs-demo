@@ -79,4 +79,4 @@ P1 会话级暂停 → 话题（thread）级精化：会话内某话题 handed_o
 
 ---
 
-**追溯**：REQ-2/3/4/5/6/9/10/11/12/17；联动见 `design-knowledge-base.md`、`design-routing-notification.md`、`design-channel-adapter.md`。
+**追溯**：REQ-2/3/4/5/6/9/10/11/12/17；联动见 `design/knowledge-base.md`、`design/routing-notification.md`、`design/channel-adapter.md`。

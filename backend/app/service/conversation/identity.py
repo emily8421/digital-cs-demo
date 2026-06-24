@@ -1,4 +1,4 @@
-"""AI 身份披露（REQ-11，Sprint-9）。对应 docs/design-conversation-engine.md §3.2。
+"""AI 身份披露（REQ-11，Sprint-9）。对应 docs/design/conversation-engine.md §3.2。
 
 被动披露：被问「是不是AI/机器人」时，按既定口径自然承认身份，不喧宾夺主。
 纯规则识别（不引 LLM）；单轮（问→答）；不主动披露、不触发缺口/转交。

@@ -1,6 +1,6 @@
 """灌入员工花名册 + 路由规则种子（Sprint-3）。
 
-对应 docs/design-routing-notification.md §2。幂等：按 name/scenario 存在则更新。
+对应 docs/design/routing-notification.md §2。幂等：按 name/scenario 存在则更新。
 用法（仓库根目录）：.venv/Scripts/python scripts/seed_staff_routing.py
 """
 import sys

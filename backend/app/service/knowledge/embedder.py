@@ -3,7 +3,7 @@
 部署：docker compose 起 text-embeddings-inference（TEI），加载 bge-small-zh-v1.5
 （512 维，TEI 输出已归一化）。宿主用 httpx 调用，**不依赖 torch**——Python 3.14 + Windows
 下进程内 torch/onnx 的原生 DLL 加载失败，改由容器内 Linux 跑 TEI（见 docs/05-tech-spec.md、
-docs/context-and-constraints.md §3）。
+docs/env/context-and-constraints.md §3）。
 
 测试可通过 Embedder 协议注入 fake（见 tests/test_knowledge.py）。
 """

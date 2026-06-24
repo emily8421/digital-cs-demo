@@ -1,4 +1,4 @@
-"""响应时效 SLA 监控（REQ-14，Sprint-11）。对应 docs/design-routing-notification.md §3.1。
+"""响应时效 SLA 监控（REQ-14，Sprint-11）。对应 docs/design/routing-notification.md §3.1。
 
 扫描「客户消息 → 首次应答」间隔，对 > 阈值未回复者提示。
 计时口径：每会话最后一条客户消息(inbound)，若同会话无 received_at 更晚的

@@ -11,7 +11,7 @@
   - `wxautox-real`（真实微信号，wxautox4 式）— 真实数据，灰路径，**非商用对比**
   - `official-compliant`（企业微信会话存档采集 + 飞书通知 + 微信客服回复）— 真实数据，合规
 - 不做：业务判断、知识检索、路由（这些都由对话编排/知识库/路由子系统负责）。
-- 对应：REQ-1（P1）、REQ-15（愿景·待验证）。指向：`docs/04-architecture.md` §2、`docs/channel-validation-plan.md`。
+- 对应：REQ-1（P1）、REQ-15（愿景·待验证）。指向：`docs/04-architecture.md` §2、`docs/research/channel-validation-plan.md`。
 
 ## 1. 完整框架
 
@@ -19,7 +19,7 @@
 - **入站适配器接口**：`InboundChannel.receive() -> NormalizedMessage`。
 - **出站适配器接口**：`OutboundChannel.send(target, body, kind) -> send_result`（回客户群 / 发员工提醒 / 发经营者小结）。
 - **通道注册**：按 `channel` 标识路由到三个实现之一；业务层只依赖契约，**不感知平台与合规差异**。
-- 三通道**并列、共用契约、可替换**——这是三步验证路线（见 `docs/channel-validation-plan.md`）的基础。
+- 三通道**并列、共用契约、可替换**——这是三步验证路线（见 `docs/research/channel-validation-plan.md`）的基础。
 
 ## 2. P1 细节（模拟器通道） `[P1]` `[P1-已设计]`
 
@@ -30,7 +30,7 @@
 
 ## 3. 真实通道（验证项 · 非 P1 功能 · 非商用对比）
 
-> Sprint-0 已核实（见 `docs/sprint-0-wework-findings.md`）：企业微信「客户群群内被动监听 + 自动回复外部用户」在官方能力下**不成立**（智能机器人 `from.userid`=企业成员、消息推送只发不收、会话存档禁自动回复）。故真实数据验证改为**两条并行 I/O 载体对比**：
+> Sprint-0 已核实（见 `docs/research/sprint-0-wework-findings.md`）：企业微信「客户群群内被动监听 + 自动回复外部用户」在官方能力下**不成立**（智能机器人 `from.userid`=企业成员、消息推送只发不收、会话存档禁自动回复）。故真实数据验证改为**两条并行 I/O 载体对比**：
 
 - **`wxautox-real`（灰路径）**：真实微信号经 wxautox4/UIAutomation 采集（可覆盖任意群，含外部微信客户群）+ 可发送。
   - ⚠️ 违微信协议（封号）、锁版本脆弱、单点；作者禁商用。**仅非商用对比**；风险 containment：专用测试号、隔离测试群、优先只读采集、回复最谨慎、数据 demo 后清理（见 channel-validation-plan §3、DEC-7）。
@@ -47,4 +47,4 @@
 
 ---
 
-**追溯**：REQ-1/15；接口见 `docs/07-api-spec.md` §3.1/§2；数据见 `docs/06-db-design.md`（dcs_messages）；验证路线见 `docs/channel-validation-plan.md`；决定见 `docs/open-decisions.md` DEC-7。
+**追溯**：REQ-1/15；接口见 `docs/07-api-spec.md` §3.1/§2；数据见 `docs/06-db-design.md`（dcs_messages）；验证路线见 `docs/research/channel-validation-plan.md`；决定见 `docs/decisions/open-decisions.md` DEC-7。

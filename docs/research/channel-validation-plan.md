@@ -10,7 +10,7 @@
 
 → 因此策略是：中间架构用模拟器先验证；真实数据的 I/O 边界，用**两种载体并列对比**，量化「合规代价」。架构本身（通道适配层）平台无关，只换适配器。
 
-关联：`docs/design-channel-adapter.md`（三适配器）、`docs/sprint-0-wework-findings.md`（Sprint-0 结论）、`docs/open-decisions.md` DEC-7。
+关联：`docs/design/channel-adapter.md`（三适配器）、`docs/research/sprint-0-wework-findings.md`（Sprint-0 结论）、`docs/decisions/open-decisions.md` DEC-7。
 
 ## 1. 三步路线
 
@@ -51,10 +51,10 @@
 - 能否搞到隔离的测试群？
 - Step 三是否走「企业微信会话存档」（需企业认证 + 付费 + 客户同意）？
 
-→ 见 `docs/open-decisions.md` DEC-7。
+→ 见 `docs/decisions/open-decisions.md` DEC-7。
 
 ## 5. 对文档的影响
 
-- `docs/design-channel-adapter.md`：通道显式拆为三适配器（simulator / wxautox-real / official-compliant）。
-- `docs/open-decisions.md` DEC-7：记录「三步、二/三并列对比、非商用」决定 + 灰路径风险边界。
+- `docs/design/channel-adapter.md`：通道显式拆为三适配器（simulator / wxautox-real / official-compliant）。
+- `docs/decisions/open-decisions.md` DEC-7：记录「三步、二/三并列对比、非商用」决定 + 灰路径风险边界。
 - `docs/08-dev-plan.md`：Step 一＝Sprint-1；二/三＝MVP 后并行 Spike（非 P1 功能）。

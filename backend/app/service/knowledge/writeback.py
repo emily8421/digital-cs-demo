@@ -1,4 +1,4 @@
-"""知识回写（REQ-13，Sprint-10）。对应 docs/design-knowledge-base.md §3.1。
+"""知识回写（REQ-13，Sprint-10）。对应 docs/design/knowledge-base.md §3.1。
 
 拍板人补答缺口 → pending（+embedding，关联 gap）→ 确认 → confirmed + gap resolved。
 **回写必经拍板人确认，不自动固化。**

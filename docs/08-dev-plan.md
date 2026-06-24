@@ -20,10 +20,10 @@
 核实「企业微信客户群（含外部微信联系人）机器人/自动回复对外部用户消息的接收与应答」是否可行：开放范围、接口权限、频控、是否需企业认证。产出一份验证结论，决定 REQ-15 是否升 P1 并接入真实通道。
 
 #### 输入文档
-- `docs/vision/product-vision.md`（文首 ⚠️）、`docs/03-prd.md` §3、`docs/design-channel-adapter.md` §2
+- `docs/vision/product-vision.md`（文首 ⚠️）、`docs/03-prd.md` §3、`docs/design/channel-adapter.md` §2
 
 #### 修改范围
-- 新增 `docs/sprint-0-wework-findings.md`（验证结论：能/不能/条件）；不改业务代码。
+- 新增 `docs/research/sprint-0-wework-findings.md`（验证结论：能/不能/条件）；不改业务代码。
 
 #### 验收标准
 - 结论明确：能否接收外部用户消息、能否应答、所需权限/认证/频控；并给出「通过则接入、未通过则仅用模拟器」的决策建议。
@@ -39,7 +39,7 @@
 搭后端骨架（FastAPI + PG），实现通道适配层与内置模拟器，落地 `dcs_messages`/`dcs_conversations`，跑通「投递一条文本 → 归一化 → 入库 → 可读回」。
 
 #### 输入文档
-- `docs/04-architecture.md`、`docs/05-tech-spec.md`、`docs/06-db-design.md`（messages/conversations）、`docs/07-api-spec.md` §3.1、`docs/design-channel-adapter.md`
+- `docs/04-architecture.md`、`docs/05-tech-spec.md`、`docs/06-db-design.md`（messages/conversations）、`docs/07-api-spec.md` §3.1、`docs/design/channel-adapter.md`
 
 #### 修改范围
 - `backend/`（api/service/model/channels 骨架）、`docker/`（本地 PG+应用）、`scripts/`（初始化）
@@ -69,7 +69,7 @@
 实现知识库 RAG 检索与作答，落地 `dcs_knowledge_items`，预置愿景种子数据；接入对话编排主路径「命中→作答」。
 
 #### 输入文档
-- `docs/02-srs.md` REQ-2/3、`docs/06-db-design.md`（knowledge_items）、`docs/07-api-spec.md` §3.2、`docs/design-knowledge-base.md` §2、`docs/design-conversation-engine.md` §2
+- `docs/02-srs.md` REQ-2/3、`docs/06-db-design.md`（knowledge_items）、`docs/07-api-spec.md` §3.2、`docs/design/knowledge-base.md` §2、`docs/design/conversation-engine.md` §2
 
 #### 修改范围
 - `backend/service/knowledge/`、`backend/model/`（knowledge_items）、种子数据脚本
@@ -82,7 +82,7 @@
 
 #### 验收记录（2026-06-21）
 - 已实现：`dcs_knowledge_items`（pgvector `vector(512)`）+ `KnowledgeItem` ORM + 检索（pgvector cosine）+ `select_hits` 阈值/排序纯逻辑 + `GET /api/v1/knowledge/search` + 灯带/驱动 FAQ 种子 7 条。
-- **embedding 落地变更（重要）**：原拟「本地 BGE 进程内（sentence-transformers）」，但 Python 3.14 + Windows 下 torch/onnxruntime 原生 DLL（`c10.dll`/pybind）加载失败（`WinError 1114`），改用 **Docker TEI（text-embeddings-inference）服务**、宿主以 httpx 调用；向量库仍 pgvector（05 不变）。详见 `docs/context-and-constraints.md` §3/§4/§5.2。
+- **embedding 落地变更（重要）**：原拟「本地 BGE 进程内（sentence-transformers）」，但 Python 3.14 + Windows 下 torch/onnxruntime 原生 DLL（`c10.dll`/pybind）加载失败（`WinError 1114`），改用 **Docker TEI（text-embeddings-inference）服务**、宿主以 httpx 调用；向量库仍 pgvector（05 不变）。详见 `docs/env/context-and-constraints.md` §3/§4/§5.2。
 - 自动化测试：`pytest -q` → **8 passed**（Sprint-1 的 3 + Sprint-2 的 `select_hits` 逻辑 5），SQLite 内存库，不依赖 Docker/torch。
 - 真实端到端（TEI bge-small-zh + pgvector + uvicorn）：`search` 命中返回带 score 的 confirmed 条目，无关问题 `hit:false`。
 - **阈值标定（数据驱动）**：扫描种子相似度分布——相关问法 top-1 ∈ [0.50, 0.86]、无关问法 ≤ 0.46；据此把默认阈值从初稿 0.7 调到 **0.5**（cosine 相似度，可配置 `config.knowledge_score_threshold`），随真实语料增长需复核。
@@ -96,7 +96,7 @@
 实现留资识别记录、角色路由、口语化员工提醒；落地 `dcs_leads`/`dcs_handoffs`/`dcs_staff`/`dcs_routing_rules`/`dcs_notifications`。
 
 #### 输入文档
-- `docs/02-srs.md` REQ-4/5/8、`docs/06-db-design.md`（leads/handoffs/staff/routing_rules/notifications）、`docs/07-api-spec.md` §3.3、`docs/design-routing-notification.md` §2
+- `docs/02-srs.md` REQ-4/5/8、`docs/06-db-design.md`（leads/handoffs/staff/routing_rules/notifications）、`docs/07-api-spec.md` §3.3、`docs/design/routing-notification.md` §2
 
 #### 修改范围
 - `backend/service/leads/`、`backend/service/routing/`、`backend/model/`
@@ -122,7 +122,7 @@
 实现缺口检测→请留资+转拍板人；把「检索作答 / 缺口转人 / 留资」编排成端到端闭环；落地 `dcs_knowledge_gaps`。
 
 #### 输入文档
-- `docs/02-srs.md` REQ-6、`docs/06-db-design.md`（knowledge_gaps）、`docs/design-conversation-engine.md` §2、`docs/design-knowledge-base.md` §2
+- `docs/02-srs.md` REQ-6、`docs/06-db-design.md`（knowledge_gaps）、`docs/design/conversation-engine.md` §2、`docs/design/knowledge-base.md` §2
 
 #### 修改范围
 - `backend/service/conversation/`（编排）、`backend/model/`（knowledge_gaps）
@@ -148,7 +148,7 @@
 实现两条由 P2 提至 P1 的编排边界：会话级「转人工后 AI 暂停」(REQ-10) 与「非文字消息如实告知 + 提醒」(REQ-12)。
 
 #### 输入文档
-- `docs/02-srs.md` REQ-10/12、`docs/design-conversation-engine.md` §2、`docs/design-channel-adapter.md` §2、`docs/06-db-design.md`（dcs_conversations.handoff_state）
+- `docs/02-srs.md` REQ-10/12、`docs/design/conversation-engine.md` §2、`docs/design/channel-adapter.md` §2、`docs/06-db-design.md`（dcs_conversations.handoff_state）
 
 #### 修改范围
 - `backend/service/conversation/`（编排：暂停判定 + 非文字分支）、`backend/model/`（handoff_state 读写）
@@ -175,7 +175,7 @@
 实现定时小结：聚合消息量/类型、需跟进清单（含已分给谁），生成经营者小结；支持手动触发测试。
 
 #### 输入文档
-- `docs/02-srs.md` REQ-7、`docs/07-api-spec.md` §3.4、`docs/design-routing-notification.md` §2
+- `docs/02-srs.md` REQ-7、`docs/07-api-spec.md` §3.4、`docs/design/routing-notification.md` §2
 
 #### 修改范围
 - `backend/service/summary/`、调度配置（待确认 APScheduler/cron）
@@ -201,7 +201,7 @@
 端到端串联 P1 全流程；若 Sprint-0 验证通过，接入企业微信真实通道并重放 Demo；否则固化模拟器演示路径。
 
 #### 输入文档
-- `docs/03-prd.md` §3（Demo 脚本）、`docs/design-channel-adapter.md` §2、Sprint-0 结论
+- `docs/03-prd.md` §3（Demo 脚本）、`docs/design/channel-adapter.md` §2、Sprint-0 结论
 
 #### 修改范围
 - `backend/channels/wework/`（仅当通过）、集成测试 `tests/`
@@ -214,7 +214,7 @@
 
 #### 验收记录（2026-06-21）
 - 已实现：端到端 Demo 集成测试 `tests/test_demo_flow.py`（monkeypatch fake 检索，SQLite 串联 03 §3 Demo 步骤 1-5：作答→缺口转交→留资→小结→非文字→暂停）；真实环境 Demo 脚本 `scripts/demo.py`（固化模拟器演示路径）。
-- **企业微信**：Sprint-0 已核实客户群群内自动回复路径**不成立**（见 `docs/sprint-0-wework-findings.md`），Sprint-7 **不接企微**，固化模拟器 Demo；真实通道（微信客服/智能机器人入外部群）待人工选定替代方案，属愿景。
+- **企业微信**：Sprint-0 已核实客户群群内自动回复路径**不成立**（见 `docs/research/sprint-0-wework-findings.md`），Sprint-7 **不接企微**，固化模拟器 Demo；真实通道（微信客服/智能机器人入外部群）待人工选定替代方案，属愿景。
 - 自动化测试：`pytest -q` → **27 passed**（+Demo 串联 1）；各环节真实端到端已在 Sprint-2~6 验证（检索/留资转交/编排闭环/暂停非文字/小结）。
 - **03 §3 Demo 步骤 1-5 走通**（模拟器通道）；步骤 6（企微）跳过。
 - **P1 全部 REQ 可验证口径通过**：REQ-1/2/3/4/5/6/7/8/10/12。**🎯 P1（MVP）收官。**
@@ -244,7 +244,7 @@
 定制询盘堆叠多要求时，拆项 → 多轮状态机逐条确认 → 收集后整理为可核价摘要转交。
 
 #### 输入文档
-- `docs/02-srs.md` REQ-9、`docs/design-conversation-engine.md` §3（P2 多轮骨架）、`docs/06-db-design.md`（conversations 多轮状态字段）
+- `docs/02-srs.md` REQ-9、`docs/design/conversation-engine.md` §3（P2 多轮骨架）、`docs/06-db-design.md`（conversations 多轮状态字段）
 
 #### 修改范围
 - `backend/service/conversation/`（多轮状态机）、`backend/model/`（状态字段）
@@ -270,7 +270,7 @@
 被问「是不是 AI/机器人」时，按既定口径自然承认身份，不喧宾夺主。
 
 #### 输入文档
-- `docs/02-srs.md` REQ-11、`docs/design-conversation-engine.md` §3（P2 身份骨架）
+- `docs/02-srs.md` REQ-11、`docs/design/conversation-engine.md` §3（P2 身份骨架）
 
 #### 修改范围
 - `backend/service/conversation/`（身份意图识别 + 既定话术）
@@ -296,7 +296,7 @@
 拍板人答复缺口后 → 生成 pending 条目 → 征询确认 → 经确认页面 confirm → confirmed；落地知识确认轻量页面（前端）。
 
 #### 输入文档
-- `docs/02-srs.md` REQ-13、`docs/design-knowledge-base.md` §3（P2 回写骨架）、`docs/07-api-spec.md` §3.5（POST /knowledge/{id}/confirm）
+- `docs/02-srs.md` REQ-13、`docs/design/knowledge-base.md` §3（P2 回写骨架）、`docs/07-api-spec.md` §3.5（POST /knowledge/{id}/confirm）
 
 #### 修改范围
 - `backend/service/knowledge/`（回写 pending→confirmed）、`backend/app/api/`（confirm 接口）、`frontend/`（知识确认页面）
@@ -322,7 +322,7 @@
 扫描「客户消息 → 首次应答」间隔，对 > 阈值（愿景口径 30 分钟）未回复者提示。
 
 #### 输入文档
-- `docs/02-srs.md` REQ-14、`docs/design-routing-notification.md` §3（P2 时效骨架）
+- `docs/02-srs.md` REQ-14、`docs/design/routing-notification.md` §3（P2 时效骨架）
 
 #### 修改范围
 - `backend/service/`（时效扫描，候选 sla/ 或复用 summary 调度）、调度配置
@@ -349,7 +349,7 @@
 P1 会话级暂停 → 话题（thread）级精化：会话内某话题 handed_off 只暂停该话题，其他话题不暂停。
 
 #### 输入文档
-- `docs/02-srs.md` REQ-10、`docs/design-conversation-engine.md` §2、`docs/06-db-design.md`（conversations.topic_key）
+- `docs/02-srs.md` REQ-10、`docs/design/conversation-engine.md` §2、`docs/06-db-design.md`（conversations.topic_key）
 
 #### 修改范围
 - `backend/service/conversation/`（话题级暂停判定）、`backend/model/`（topic_key 读写）
@@ -401,6 +401,6 @@ P1 会话级暂停 → 话题（thread）级精化：会话内某话题 handed_o
 
 ### 通道验证路线（非功能 · 对比研究）
 
-> 真实数据的 I/O 载体验证，**非商用、不进功能范围**。完整路线与对比矩阵见 `docs/channel-validation-plan.md`；决定见 `docs/open-decisions.md` DEC-7。
+> 真实数据的 I/O 载体验证，**非商用、不进功能范围**。完整路线与对比矩阵见 `docs/research/channel-validation-plan.md`；决定见 `docs/decisions/open-decisions.md` DEC-7。
 > - **Step 一（模拟器）**：＝ Sprint-1，验证整体架构（先行、不阻塞）。
 > - **Step 二（真实微信号 wxautox4 式）/ Step 三（合规：会话存档采集 + 飞书通知 + 微信客服回复）**：MVP 架构跑通后，作为**两个并行 Spike**，用真实数据做对比。具体 Sprint 待 MVP 完成后在此**原位追加**。

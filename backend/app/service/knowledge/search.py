@@ -1,6 +1,6 @@
 """知识检索：query → embedding → pgvector 相似检索 → 阈值判定命中/未命中。
 
-对应 docs/design-knowledge-base.md §2、docs/07-api-spec.md §3.2。
+对应 docs/design/knowledge-base.md §2、docs/07-api-spec.md §3.2。
 命中口径：status=confirmed 且 cosine 相似度 ≥ 阈值；未命中 hit=False。
 """
 from dataclasses import dataclass

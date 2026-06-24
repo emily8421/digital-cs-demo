@@ -1,6 +1,6 @@
 """灌入知识库种子数据（灯带/驱动 FAQ）。
 
-对应 docs/design-knowledge-base.md §2「种子数据」。幂等：按 question_pattern
+对应 docs/design/knowledge-base.md §2「种子数据」。幂等：按 question_pattern
 存在则更新答案与向量，不存在则新增。首次运行会加载 BGE 模型（下载约百兆，稍慢）。
 
 用法（仓库根目录，需已装依赖、PG+pgvector 已起、backend/.env 配好）：

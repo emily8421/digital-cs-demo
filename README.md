@@ -44,7 +44,7 @@ docker compose -f docker/docker-compose.yml up -d   # pgvector + TEI
 
 - `docs/00-09` + `docs/design-*.md`：需求 / 架构 / 技术方案 / DB / API / 开发计划 / 验证 + 子系统设计
 - `docs/vision/product-vision.md`：产品愿景叙事（工程文档输入）
-- `docs/context-and-constraints.md`：背景与选型依据
+- `docs/env/context-and-constraints.md`：背景与选型依据
 - `ai/`：AI 行为规范（`global-rules.md` 通用 + `project-rules.md` 项目专属，入口 `ai/index.md`）
 - AI 工具入口：`CLAUDE.md` / `AGENTS.md` / `.cursor/`
 

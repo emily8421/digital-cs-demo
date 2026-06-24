@@ -79,10 +79,10 @@ flowchart TD
 
 | 子系统 | 职责 | 阶段 | 状态 | 指向详细设计 |
 |---|---|---|---|---|
-| 通道适配层（Channel Adapter） | 对接三种通道（模拟器/真实微信号/合规途径），消息归一化与出站适配，隔离平台与合规差异 | P1（模拟器）；真实通道为对比 Spike | P1-骨架 | `docs/design-channel-adapter.md` |
-| 对话编排（Conversation Engine） | 单条消息的处理编排：走知识问答 / 留资 / 缺口 / 转交，及转人工暂停·非文字处理（P1）、多轮·身份（P2）分支 | P1 主体 + P2 分支 | P1-骨架 | `docs/design-conversation-engine.md` |
-| 知识库（Knowledge Base / RAG） | 知识检索与作答、缺口检测；P2 增确认回写 | P1 + P2 回写 | P1-骨架 | `docs/design-knowledge-base.md` |
-| 路由与通知（Routing & Notification） | 场景→角色路由、口语化员工提醒、定时小结；P2 增时效监控 | P1 + P2 监控 | P1-骨架 | `docs/design-routing-notification.md` |
+| 通道适配层（Channel Adapter） | 对接三种通道（模拟器/真实微信号/合规途径），消息归一化与出站适配，隔离平台与合规差异 | P1（模拟器）；真实通道为对比 Spike | P1-骨架 | `docs/design/channel-adapter.md` |
+| 对话编排（Conversation Engine） | 单条消息的处理编排：走知识问答 / 留资 / 缺口 / 转交，及转人工暂停·非文字处理（P1）、多轮·身份（P2）分支 | P1 主体 + P2 分支 | P1-骨架 | `docs/design/conversation-engine.md` |
+| 知识库（Knowledge Base / RAG） | 知识检索与作答、缺口检测；P2 增确认回写 | P1 + P2 回写 | P1-骨架 | `docs/design/knowledge-base.md` |
+| 路由与通知（Routing & Notification） | 场景→角色路由、口语化员工提醒、定时小结；P2 增时效监控 | P1 + P2 监控 | P1-骨架 | `docs/design/routing-notification.md` |
 | 会话与记录（Session & Records） | 会话/转交/留资/缺口/通知的持久化；订单/进度骨架 | P1 + 愿景订单 | P1-骨架 | `docs/06-db-design.md` |
 | 定时任务（Scheduler） | 触发定时小结；P2 触发时效检查 | P1 + P2 | P1-骨架 | `docs/08-dev-plan.md`（Sprint-5） |
 
@@ -92,7 +92,7 @@ flowchart TD
 
 > 具体版本见 `docs/05-tech-spec.md`；本节讲「为什么」。
 
-- **通道适配层先行（而非直连企业微信）**：企业微信外部群机器人能力 Sprint-0 **已核实不成立**（见 `docs/sprint-0-wework-findings.md`）。把平台依赖收敛到一层适配器、内置模拟器，使核心对话价值先行验证、不被平台风险阻塞；真实通道走「真实微信号 vs 合规途径」对比（见 `docs/channel-validation-plan.md`）。
+- **通道适配层先行（而非直连企业微信）**：企业微信外部群机器人能力 Sprint-0 **已核实不成立**（见 `docs/research/sprint-0-wework-findings.md`）。把平台依赖收敛到一层适配器、内置模拟器，使核心对话价值先行验证、不被平台风险阻塞；真实通道走「真实微信号 vs 合规途径」对比（见 `docs/research/channel-validation-plan.md`）。
 - **单轮 RAG 作为 P1 答疑主路径**：愿景中绝大多数客户问题是「产品参数/选型/标准 FAQ」（单轮可答），RAG 足以覆盖；多轮定制引导（需状态机）推迟 P2，避免首版过度复杂。
 - **「答不上→留资转人」而非「硬答」**：愿景反复强调不编造、不乱猜（语音/订单进度/防雷参数都走转人）。架构上把「缺口检测」作为一等公民，与「检索作答」并列。
 - **通知走消息通道、不建独立功能前端**：愿景明确员工/经营者「无需打开别的页面」。P1 不做功能前端（P2 仅在「知识确认」必要时评估功能页面）；P1/P2 收官后补了**演示交互界面**（3 页：`/ui` PC 控制台 + `/ui/h5.html` 客户 H5 扫码 + `/ui/confirm.html` 知识确认，演示工具、非功能前端），不改此原则。

@@ -1,4 +1,4 @@
-"""定制询盘多轮引导（REQ-9，Sprint-8）。对应 docs/design-conversation-engine.md §3.1。
+"""定制询盘多轮引导（REQ-9，Sprint-8）。对应 docs/design/conversation-engine.md §3.1。
 
 纯规则识别 + 拆项（抽维度+抽值预填）+ 状态机 + 摘要；**不引 LLM**（守 §2 可控性）。
 

@@ -1,6 +1,6 @@
 """角色路由：scenario → target_role → 在岗 staff。REQ-8。
 
-对应 docs/design-routing-notification.md §2。规则可经 dcs_routing_rules 配置。
+对应 docs/design/routing-notification.md §2。规则可经 dcs_routing_rules 配置。
 """
 from dataclasses import dataclass
 

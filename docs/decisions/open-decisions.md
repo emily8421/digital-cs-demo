@@ -8,7 +8,7 @@
 
 ## DEC-1 真实消息通道选型（对应 REQ-15） `[待定]` `[最高优先]`
 
-**背景**：Sprint-0 已核实——愿景原前提「企业微信客户群内 AI 被动接收并自动回复外部用户消息」在标准能力下**不成立**（客户群不能加群机器人、会话存档禁止用于自动回复）。**2026-06-21 v2 加固：直读官方原文 4 篇**，关键证据——智能机器人接收消息回调的 `from.userid` 为「企业主体下的userid」、全文无「外部联系人/客户群」（path/100719）；微信客服有完整收发 API + 自带知识库问答（path/94638）。详见 `docs/sprint-0-wework-findings.md`。MVP 不受影响（走内置模拟器 REQ-1），但真实生产通道需另选方案。
+**背景**：Sprint-0 已核实——愿景原前提「企业微信客户群内 AI 被动接收并自动回复外部用户消息」在标准能力下**不成立**（客户群不能加群机器人、会话存档禁止用于自动回复）。**2026-06-21 v2 加固：直读官方原文 4 篇**，关键证据——智能机器人接收消息回调的 `from.userid` 为「企业主体下的userid」、全文无「外部联系人/客户群」（path/100719）；微信客服有完整收发 API + 自带知识库问答（path/94638）。详见 `docs/research/sprint-0-wework-findings.md`。MVP 不受影响（走内置模拟器 REQ-1），但真实生产通道需另选方案。
 
 **核心取舍**：是否接受「客户侧体验」从**群内自动回复**变为**1:1 咨询**。
 
@@ -27,7 +27,7 @@
 - 微信客服的频控、会话时效、能否承载 AI 全自动应答？
 - 所选方案是否强制企业认证、具体权限项？
 
-**关联文档**：`docs/sprint-0-wework-findings.md`、`docs/02-srs.md` REQ-15、`docs/03-prd.md` §3、`docs/design-channel-adapter.md`。
+**关联文档**：`docs/research/sprint-0-wework-findings.md`、`docs/02-srs.md` REQ-15、`docs/03-prd.md` §3、`docs/design/channel-adapter.md`。
 
 ---
 
@@ -37,7 +37,7 @@
 - **Step 一·模拟器**：验证整体架构可行性（＝ Sprint-1，先行、不阻塞）。
 - **Step 二·真实微信号（wxautox4 式）** 与 **Step 三·合规途径（企业微信会话存档采集 + 飞书通知 + 微信客服回复）**：**并列**、用真实数据验证、**做对比**、**非直接商用**。
 
-**认知前提**：合规风险集中在 I/O 边界（采集 + 自动回复）；中间架构合规中性。详见 `docs/channel-validation-plan.md`、`docs/design-channel-adapter.md`。
+**认知前提**：合规风险集中在 I/O 边界（采集 + 自动回复）；中间架构合规中性。详见 `docs/research/channel-validation-plan.md`、`docs/design/channel-adapter.md`。
 
 **灰路径（Step 二）风险承担边界**（非商用下可控，但必须管）：
 - 专用测试号（不用真实业务号/客户号）；隔离测试群（不拿真实客户群喂灰路径）。
@@ -50,7 +50,7 @@
 - 灰路径用哪个微信测试号？能否搞到隔离的测试群？
 - Step 三是否走「企业微信会话存档」（需企业认证 + 付费 + 客户同意）？
 
-**关联文档**：`docs/channel-validation-plan.md`、`docs/design-channel-adapter.md`、`docs/sprint-0-wework-findings.md`、`docs/08-dev-plan.md`（通道验证路线节）。
+**关联文档**：`docs/research/channel-validation-plan.md`、`docs/design/channel-adapter.md`、`docs/research/sprint-0-wework-findings.md`、`docs/08-dev-plan.md`（通道验证路线节）。
 
 ---
 
@@ -60,7 +60,7 @@
 
 - **DEC-2 技术栈版本/选型** `[部分已定·待补]`：已定——向量库=**pgvector**、部署=**本机原型先**（公司 Linux 服务器后续）、员工通知=**飞书机器人**、LLM 对话=**经中转站（GLM-5.2/DeepSeek）**、embedding＝**本地 BGE via Docker TEI**（Sprint-2 定，见 `context-and-constraints.md` §3）、任务调度＝**外部 cron**（Sprint-6 定，应用不内嵌）。**待定**：各组件版本；海外 API 备选。
 - **DEC-3 `project-rules` §0–§5 草稿确认** `[部分确认]`：尤其 §1 Phase 边界、§2 技术栈、§3 frontend（**演示辅助 UI 启用**，P1 收官后补、非功能前端）——见 `ai/project-rules.md`。
-- **DEC-4 路由默认场景映射** `[待定]`：售前→sales、未知问题→owner(拍板人)、订单→跟单、售后→tech，是否符合实际组织分工——见 `docs/design-routing-notification.md` §2。
+- **DEC-4 路由默认场景映射** `[待定]`：售前→sales、未知问题→owner(拍板人)、订单→跟单、售后→tech，是否符合实际组织分工——见 `docs/design/routing-notification.md` §2。
 - **DEC-5 合规细节** `[待定]`：留资脱敏 + `contact_value_enc` 加密存储方案、企业微信回调签名校验/鉴权方案——见 `docs/06-db-design.md`（dcs_leads）、`docs/07-api-spec.md` §1。
 - **DEC-6 转人工暂停粒度** `[已决议]`：P1 会话级（2026-06-21）+ P2 话题级精化（2026-06-23，Sprint-12，`dcs_topic_handoffs` + `POST /topic-handoff`）均已实现。
 - **DEC-8 企业微信认证（真实通道前置）** `[已定·待执行]`：项目方**计划认证**（当前未认证、未用客户群）。微信客服 API / 会话内容存档等真实通道均需认证（存档另需付费）。**MVP（模拟器）不受影响**；真实通道开工前须完成认证。

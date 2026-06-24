@@ -1,6 +1,6 @@
 """编排决策树：检索 → 命中作答 / 未命中缺口（请留资 + 转拍板人）。REQ-6。
 
-对应 docs/design-conversation-engine.md §1/§2。
+对应 docs/design/conversation-engine.md §1/§2。
 
 - act_on_search：纯编排副作用（给定检索结果），可单测（SQLite，不依赖 TEI/pgvector）。
 - orchestrate：检索（knowledge_search，需 TEI）+ act_on_search，端到端用。
