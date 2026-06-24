@@ -55,7 +55,7 @@
 - 后端语言/框架：Python + FastAPI（版本待确认）
 - 数据库：PostgreSQL（版本待确认）
 - 向量检索/RAG：**pgvector**（复用 PG，pg16；向量列 `vector(512)`）— 已定，免独立向量引擎
-- LLM（对话生成）：**预留·未启用**——作答＝知识库检索 answer 原文（可控性红线：不 LLM 生成、不编造，见 design-conversation-engine §2）；中转站 GLM-5.2/DeepSeek 为候选，未来接入
+- LLM（对话生成）：**Demo 阶段未启用**——作答＝知识库检索 answer 原文直回（保「不编造」产品红线：无依据不生成事实，见 design-conversation-engine §2）；未来可在 RAG 限定内引入 LLM（润色/措辞，不生成新事实）；中转站 GLM-5.2/DeepSeek 为候选
 - 消息平台：企业微信开放 API（⚠️ 客户群对外部用户收发能力 Sprint-0 已**证伪**，见 REQ-15 / `sprint-0-wework-findings.md`；真实通道待替代）
 - 部署：Docker（docker/）
 - 任务调度：**外部 cron**（应用不内嵌 APScheduler）— 已定（Sprint-6 收敛）

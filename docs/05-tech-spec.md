@@ -9,7 +9,7 @@
 | 后端语言/框架 | Python + FastAPI | 待确认 | P1 | Python 是团队较熟语言；FastAPI 适合 Webhook + REST |
 | 数据库 | PostgreSQL | 待确认 | P1 | 关系型承载会话/留资/转交/缺口/知识元数据 |
 | 向量检索/RAG | **pgvector**（pgvector/pgvector:pg16，向量列 `vector(512)`） | pg16 | P1 | 据背景约束选定，免独立向量引擎 |
-| LLM（对话生成） | **预留·未启用**（中转站 GLM-5.2/DeepSeek 候选） | n/a | 预留 | 作答＝知识库检索 answer 原文（可控性：不 LLM 生成、不编造）；embedding 另见下行 |
+| LLM（对话生成） | **Demo 未启用**（中转站 GLM-5.2/DeepSeek 候选） | n/a | Demo | 作答＝检索 answer 原文直回（保「不编造」红线）；未来可在 RAG 限定内引入 LLM 润色/措辞；embedding 另见下行 |
 | Embedding | **本地 BGE via Docker TEI**（bge-small-zh-v1.5，512 维） | — | P1 | Sprint-2 定；Python 3.14+Windows 进程内 torch 失败改 TEI（见 context-and-constraints §3） |
 | 消息平台（客户侧） | 企业微信开放 API | n/a | 愿景·待验证 | 群内自动回复 Sprint-0 已核实不成立；**当前企业微信未认证→真实通道需先认证**（见背景约束） |
 | 员工通知出站 | **飞书机器人**（custom robot webhook）— 代码已实现·**默认关闭** | — | P1 | webhook 代码有（`feishu.py`）；`FEISHU_WEBHOOK_URL` 空→只落 `Notification` 库不发（demo）；配 URL 即发 |
