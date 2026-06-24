@@ -36,11 +36,13 @@
 - 派生项目根 `README.md` 是项目专属文档，不参与模板下行同步；它由 `scripts/new-project.sh` 初始化生成，后续由项目自行维护。
 - 新增方法论入口、脚本、规则文件时，必须同时更新 `template-sync.json` 和自检断言。
 - 删除同步文件时，必须确认派生项目旧版本同步脚本不会因此失败。
+- `scripts/check-template.sh` / `scripts/check-template.ps1` 只用于模板仓库完整性自检；派生项目同步验收使用 `scripts/check-derived-sync.sh` / `scripts/check-derived-sync.ps1`。
 
 ## 自检与 CI
 
 - 本地自检入口：`powershell -ExecutionPolicy Bypass -File scripts/check-template.ps1`。
 - Bash 入口：`bash scripts/check-template.sh`。
+- 派生项目同步边界检查入口：`powershell -ExecutionPolicy Bypass -File scripts/check-derived-sync.ps1` 或 `bash scripts/check-derived-sync.sh`。
 - CI：`.github/workflows/template-check.yml` 在 PR 和 `main` push 上运行空白检查与模板自检。
 - 自检可以包含结构性断言，不应过度绑定长文案；新增文案检查时优先选择稳定关键词。
 
