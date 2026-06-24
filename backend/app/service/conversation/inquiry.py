@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from ...models import Conversation, Handoff, Inquiry
 from ..routing.notifier import build_handoff_body, notify_handoff
 from ..routing.router import resolve_target
-from .engine import OrchestrationResult, _write_outbound
+from .engine import OrchestrationResult, write_outbound
 
 # 定制触发词（含其一即视为「定制」语境）
 _CUSTOM_TRIGGERS = ("定制", "定做", "订做", "我要做", "想定做", "需要定做", "想定制", "想要定制")
@@ -127,7 +127,7 @@ def _complete_inquiry(db: Session, inquiry: Inquiry, channel: str) -> Orchestrat
         ref_handoff_id=handoff.id,
     )
     done_msg = f"收到，已为您整理：{summary}，转给同事核价，稍后回复您 🙂"
-    _write_outbound(db, inquiry.conversation_id, channel, done_msg)
+    write_outbound(db, inquiry.conversation_id, channel, done_msg)
     return OrchestrationResult(
         hit=False,
         reply_text=done_msg,
@@ -159,7 +159,7 @@ def start_inquiry(
         else "好的，定制询盘帮您逐项确认。"
     )
     prompt = ack + _confirm_prompt(pending[0])
-    _write_outbound(db, conv.id, channel, prompt)
+    write_outbound(db, conv.id, channel, prompt)
     return OrchestrationResult(
         hit=False,
         reply_text=prompt,
@@ -193,7 +193,7 @@ def act_on_inquiry_reply(
         inquiry.items_pending = pending
         inquiry.current_item = nxt
         prompt = _confirm_prompt(nxt)
-        _write_outbound(db, inquiry.conversation_id, channel, prompt)
+        write_outbound(db, inquiry.conversation_id, channel, prompt)
         return OrchestrationResult(
             hit=False,
             reply_text=prompt,

@@ -6,7 +6,7 @@
 from sqlalchemy.orm import Session
 
 from ...models import Conversation
-from .engine import OrchestrationResult, _write_outbound
+from .engine import OrchestrationResult, write_outbound
 
 # 身份询问触发模式（明确问「你是不是AI/机器人/真人」类；弱词如单独「机器人」不收，防误判）
 _IDENTITY_PATTERNS = (
@@ -38,7 +38,7 @@ def build_identity_reply() -> str:
 def act_on_identity(db: Session, conv: Conversation, channel: str) -> OrchestrationResult:
     """身份披露：写 outbound 既定话术；单轮，不触多轮/检索/缺口/转交。"""
     reply = build_identity_reply()
-    _write_outbound(db, conv.id, channel, reply)
+    write_outbound(db, conv.id, channel, reply)
     return OrchestrationResult(
         hit=False,
         reply_text=reply,

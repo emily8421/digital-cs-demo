@@ -29,7 +29,7 @@ class OrchestrationResult:
     notification_id: int | None
 
 
-def _write_outbound(db: Session, conversation_id: int, channel: str, text: str) -> Message:
+def write_outbound(db: Session, conversation_id: int, channel: str, text: str) -> Message:
     """写一条出站消息（direction=outbound），模拟发回客户群（原型；真实通道经 OutboundChannel）。"""
     msg = Message(
         conversation_id=conversation_id,
@@ -61,7 +61,7 @@ def act_on_search(
     if hit and items:
         top = items[0]
         reply = build_answer(top.answer)
-        _write_outbound(db, conv.id, channel, reply)
+        write_outbound(db, conv.id, channel, reply)
         return OrchestrationResult(
             hit=True,
             reply_text=reply,
@@ -75,7 +75,7 @@ def act_on_search(
     gap = KnowledgeGap(conversation_id=conv.id, question_text=question_text)
     db.add(gap)
     db.flush()
-    _write_outbound(db, conv.id, channel, build_gap_reply())
+    write_outbound(db, conv.id, channel, build_gap_reply())
 
     # 转交拍板人（unknown_question→owner）+ 通知
     target = resolve_target(db, "unknown_question")
@@ -126,7 +126,7 @@ def act_on_non_text(
 ) -> OrchestrationResult:
     """非文字消息（REQ-12）：群内如实告知 + 提醒员工查看；不生成内容作答、不写 gap。"""
     reply = build_non_text_reply(content_type)
-    _write_outbound(db, conv.id, channel, reply)
+    write_outbound(db, conv.id, channel, reply)
     target = resolve_target(db, "unknown_question")
     body = build_handoff_body(
         staff_name=target.staff_name,
