@@ -21,3 +21,19 @@ def mask_phone(phone: str) -> str:
     if len(phone) != 11:
         return phone  # 非标准长度原样返回（find_phone 已保证 11 位，此处兜底）
     return f"{phone[:3]}****{phone[7:]}"
+
+
+def mask_phones_in_text(text: str | None) -> str | None:
+    """脱敏文本中所有手机号（入库前合规：避免明文手机号留存 messages 表）。"""
+    if not text:
+        return text
+    return _PHONE_RE.sub(lambda m: mask_phone(m.group(0)), text)
+
+
+def mask_phones_in_payload(payload: dict | None) -> dict | None:
+    """脱敏 raw_payload 顶层 str 值中的手机号（平台原始报文同需合规）。"""
+    if not payload:
+        return payload
+    return {
+        k: mask_phones_in_text(v) if isinstance(v, str) else v for k, v in payload.items()
+    }

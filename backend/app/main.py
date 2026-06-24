@@ -1,9 +1,12 @@
 """FastAPI 入口。注册路由 + 启动时建表 + 挂载演示 UI（/ui）。"""
+import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
 from .api import handoffs, knowledge, messages, sla, summaries
 from .db import init_db
@@ -15,7 +18,7 @@ async def lifespan(app: FastAPI):
     try:
         init_db()
     except Exception as e:  # noqa: BLE001
-        print(f"[warn] init_db 跳过（DB 未就绪？）：{e}")
+        logging.warning("init_db 跳过（DB 未就绪？）：%s", e)
     yield
 
 

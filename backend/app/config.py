@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     # 知识库检索（Sprint-2）：embedding 由 docker 的 TEI 服务提供，宿主 httpx 调用
     embedding_service_url: str = "http://localhost:18080"  # text-embeddings-inference 服务
     embedding_model: str = "BAAI/bge-small-zh-v1.5"  # TEI 加载的 BGE 中文模型（512 维，配于 docker-compose）
-    knowledge_score_threshold: float = 0.5  # 命中阈值（cosine 相似度）；按种子相似度分布初定（相关≥0.50、无关≤0.46），待真实语料复核，见 design-knowledge-base §2
+    knowledge_score_threshold: float = 0.5  # 命中阈值（cosine 相似度）；0.5 是平衡点（相关 IP67/5050≥0.50、无关≤0.46）；打磨批次3 试上调 0.55 端到端验证发现 IP67 漏召回（score∈[0.5,0.55)），回调 0.5；改进需 category 预筛/混合检索（非纯调阈值），留优化，见 design-knowledge-base §2
     # 转交通知出站（Sprint-3）：飞书 custom robot webhook；空则通知只落库不发送（本机原型）
     feishu_webhook_url: str = ""
     # 响应时效 SLA 阈值（REQ-14）：客户消息→首次应答 超时分钟数（愿景口径 30）

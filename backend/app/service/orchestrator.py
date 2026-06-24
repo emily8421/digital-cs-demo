@@ -3,8 +3,10 @@
 Sprint-1：解析会话 + 入站消息入库。
 Sprint-3：文本消息顺带抽取留资（REQ-4）。
 后续 Sprint 在此扩展分支：检索作答 / 缺口 / 转交 / 转人工暂停 / 非文字处理……
-（都挂在 handle_inbound 里，保持“一条消息进来 → 一处编排”的单一入口。）
+（都挂在 handle_inbound 里，保持"一条消息进来 → 一处编排"的单一入口。）
 """
+import logging
+
 from sqlalchemy.orm import Session
 
 from ..channels.base import NormalizedMessage
@@ -22,6 +24,7 @@ from .conversation.inquiry import (
     get_active_inquiry,
     start_inquiry,
 )
+from .leads.detector import mask_phones_in_payload, mask_phones_in_text
 from .leads.service import capture_lead
 
 
@@ -46,14 +49,15 @@ def handle_inbound(
         db.flush()  # 拿到 conv.id，先不 commit
     conv.last_active_at = msg.received_at
 
+    # 入库前脱敏手机号（合规：messages 表不留明文手机号；留资抽取与编排用明文 msg.content_text）
     message = Message(
         conversation_id=conv.id,
         direction="inbound",
         channel=channel_name,
         sender_external_id=msg.sender_external_id,
         content_type=msg.content_type,
-        content_text=msg.content_text,
-        raw_payload=msg.raw_payload,
+        content_text=mask_phones_in_text(msg.content_text),
+        raw_payload=mask_phones_in_payload(msg.raw_payload),
         received_at=msg.received_at,
     )
     db.add(message)
@@ -78,7 +82,7 @@ def handle_inbound(
         try:  # REQ-12：非文字如实告知 + 提醒员工查看
             orchestration = act_on_non_text(db, conv, msg.content_type, channel_name)
         except Exception as e:  # noqa: BLE001
-            print(f"[warn] 非文字处理跳过：{e}")
+            logging.warning("非文字处理跳过：%s", e)
     elif msg.content_text:
         try:  # REQ-11 身份披露优先 → REQ-9 多轮 → REQ-6 检索作答/缺口
             if detect_identity_question(msg.content_text):  # 被问身份：按既定口径承认
@@ -95,7 +99,7 @@ def handle_inbound(
                     else:  # 普通文本：检索作答 / 未命中缺口
                         orchestration = orchestrate(db, conv, msg.content_text, channel_name)
         except Exception as e:  # noqa: BLE001
-            print(f"[warn] 编排跳过（检索不可用？）：{e}")
+            logging.warning("编排跳过（检索不可用？）：%s", e)
 
     db.commit()
     db.refresh(message)
