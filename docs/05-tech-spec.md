@@ -9,10 +9,10 @@
 | 后端语言/框架 | Python + FastAPI | 待确认 | P1 | Python 是团队较熟语言；FastAPI 适合 Webhook + REST |
 | 数据库 | PostgreSQL | 待确认 | P1 | 关系型承载会话/留资/转交/缺口/知识元数据 |
 | 向量检索/RAG | **pgvector**（pgvector/pgvector:pg16，向量列 `vector(512)`） | pg16 | P1 | 据背景约束选定，免独立向量引擎 |
-| LLM（对话） | 经公司**中转站**：GLM-5.2 / DeepSeek（OpenAI 兼容） | 待确认 | P1 | 复用已有账号；embedding 另见下行 |
+| LLM（对话生成） | **预留·未启用**（中转站 GLM-5.2/DeepSeek 候选） | n/a | 预留 | 作答＝知识库检索 answer 原文（可控性：不 LLM 生成、不编造）；embedding 另见下行 |
 | Embedding | **本地 BGE via Docker TEI**（bge-small-zh-v1.5，512 维） | — | P1 | Sprint-2 定；Python 3.14+Windows 进程内 torch 失败改 TEI（见 context-and-constraints §3） |
 | 消息平台（客户侧） | 企业微信开放 API | n/a | 愿景·待验证 | 群内自动回复 Sprint-0 已核实不成立；**当前企业微信未认证→真实通道需先认证**（见背景约束） |
-| 员工通知出站 | **飞书机器人**（custom robot webhook） | 待确认 | P1 | 据背景约束（内部 IM=飞书）；MVP 可用飞书 custom robot，接入简单 |
+| 员工通知出站 | **飞书机器人**（custom robot webhook）— 代码已实现·**默认关闭** | — | P1 | webhook 代码有（`feishu.py`）；`FEISHU_WEBHOOK_URL` 空→只落 `Notification` 库不发（demo）；配 URL 即发 |
 | 任务调度 | **外部 cron**（应用不内嵌） | — | P1 | 定时小结；应用只提供 `POST /summaries/daily` 接口，定时由部署层 cron/systemd/k8s 调用（Sprint-6 定，少组件、生产更稳） |
 | 部署 | **本机原型**（Docker Desktop / 本地 Python）；公司 Linux 服务器＝后续 | 待确认 | P1 | 据背景约束：本机先跑通，公司服务器后续 |
 | 测试 | pytest（待确认） | 待确认 | P1 | tests/ 目录 |
@@ -25,7 +25,7 @@
 - **通道抽象优先**：定义统一「归一化消息」内部契约，企业微信/模拟器各自实现适配；业务逻辑只依赖契约，不感知平台（→ `design-channel-adapter.md`）。这是抵御 ⚠️ 平台风险的核心决策。
 - **单轮 RAG 为主，编排驱动分支**：P1 主路径＝检索→作答；编排器在「未命中」时切到缺口/留资/转交分支，而非让 LLM 自由发挥，确保不编造。
 - **留资/缺口结构化优先于自然语言解析**：手机号等用可校验模式抽取并脱敏存储；缺口问题原文留存供拍板人确认。
-- **通知为消息、非系统**：员工/经营者提醒与小结都经出站通道发为普通消息，P1 不引入**功能**前端会话（与愿景一致）；P1 收官后补演示辅助 UI（`/ui`，演示工具）不改此原则。
+- **通知为消息、非系统**：员工/经营者提醒与小结都经出站通道发为普通消息，P1 不引入**功能**前端会话（与愿景一致）；P1/P2 收官后补**演示交互界面**（`/ui` PC 控制台 + `/ui/h5.html` 客户 H5 + `/ui/confirm.html` 知识确认，演示工具）不改此原则。
 - **LLM 可控性**：作答限定在检索到的知识范围内（带来源/置信度），未命中不生成参数；为 P2 多轮与 P-愿景售后推理留可控接口。
 
 ## 3. Phase 技术约束（与 project-rules §1、§2 一致）
