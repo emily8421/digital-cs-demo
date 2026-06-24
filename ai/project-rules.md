@@ -54,11 +54,11 @@
 
 - 后端语言/框架：Python + FastAPI（版本待确认）
 - 数据库：PostgreSQL（版本待确认）
-- 向量检索/RAG：待确认（候选：pgvector 复用 PG / 独立 Qdrant）
-- LLM：待确认（候选：Claude 系列或国产大模型——需兼顾中文客服语境、合规与延迟）
-- 消息平台：企业微信开放 API（⚠️ 客户群对外部用户收发能力**待技术验证**，见 REQ-15 / Sprint-0）
+- 向量检索/RAG：**pgvector**（复用 PG，pg16；向量列 `vector(512)`）— 已定，免独立向量引擎
+- LLM：经公司**中转站** GLM-5.2 / DeepSeek（OpenAI 兼容）— 已定（复用已有账号；embedding 另行）
+- 消息平台：企业微信开放 API（⚠️ 客户群对外部用户收发能力 Sprint-0 已**证伪**，见 REQ-15 / `sprint-0-wework-findings.md`；真实通道待替代）
 - 部署：Docker（docker/）
-- 任务调度：待确认（候选：APScheduler / 外部 cron）
+- 任务调度：**外部 cron**（应用不内嵌 APScheduler）— 已定（Sprint-6 收敛）
 
 禁止引入的替代品：
 - 个人微信的非官方自动化（pyautogui/协议库等）——永久禁止
