@@ -64,6 +64,16 @@
 - 个人微信的非官方自动化（pyautogui/协议库等）——永久禁止
 - 不在本期引入独立**功能**前端框架（通知走消息通道，见 §3）；演示辅助 UI（纯 HTML/JS 无框架，挂载 `/ui`）于 P1 收官后补，不在此列；如 P2 评估需要「知识确认」**功能**页面再议
 
+### 2.5 运行环境与资源约束
+
+> 本机环境事实见 `docs/env/local-env.md`（`collect-env.ps1` 自动采集 + 人工确认项）。以下待人工确认，不虚构：
+- 本机 Demo 必须运行：后端（FastAPI/uvicorn）+ Docker（PG pgvector + TEI embedding）
+- 允许降级/Mock：TEI 不可用时编排跳过检索（`try/except + logging.warning`）；SQLite 内存库用于单测（不依赖 Docker）
+- 禁止本机重资源：进程内 torch（Python 3.14+Windows DLL 失败，已改 Docker TEI，见 `docs/env/context-and-constraints.md` §3）
+- 是否允许联网：**待确认**（拉 BGE 模型 / 中转站 LLM / 飞书 webhook 需联网；Demo 默认本机）
+- 是否允许安装依赖：**待确认**（Python 包 / Docker Desktop）
+- 是否允许公司服务器 / 资源申请口径：**待确认**（本机原型先行，公司 Linux 服务器后续，见 05 §1）
+
 ## 3. 项目形态与文档裁剪
 
 - 是否有持久化存储：**有**（关系型数据库 PostgreSQL）
@@ -81,12 +91,12 @@
 ## 4. 目录规范的项目特例
 
 无重大差异，遵循 global-rules.md 通用目录标准。补充：
-- 新增 `docs/design-<子系统>.md` 子系统详细设计文件（不占用 00-09 编号），见 `docs/04-architecture.md` §2 指向。
+- 子系统详细设计进 `docs/design/<子系统>.md`（不占用 00-09 编号，v1.6.9 分区规则，见 `docs/README.md` + `docs/04-architecture.md` §2）。**不得把新增项目文档直接堆 `docs/` 根**（00-09/README 除外）。
 
 ## 5. 编码约定与禁区
 
 > Phase 级功能禁止见 §1，技术栈替代品禁止见 §2，本节只管代码层。
-> P1+P2 已收官（2026-06-23），本节反映代码现状（非占位）。错误处理现状＝编排层 `try/except + print("[warn]…")` 优雅降级（TEI 不可用跳过检索等，见 `orchestrator.py`）；统一日志格式/异常类型规范待愿景阶段或专门 logging 任务细化。
+> P1+P2 已收官（2026-06-23），本节反映代码现状（非占位）。错误处理现状＝编排层 `try/except + logging.warning` 优雅降级（TEI 不可用跳过检索等，见 `orchestrator.py`；打磨批次3 print→logging）；统一日志格式/异常类型规范待愿景阶段或专门 logging 任务细化。
 
 ### 5.1 既有约定（新代码必须向其看齐）
 - 命名：后端 snake_case（含 DB 字段、函数、模块）；类 PascalCase；常量 UPPER_SNAKE。表前缀统一 `dcs_`。
