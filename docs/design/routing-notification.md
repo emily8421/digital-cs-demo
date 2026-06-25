@@ -22,7 +22,7 @@
 - **口语化提醒（REQ-5）**：
   - 模板示例（售前）：「{时间}，{客户}对{主题}满意并留了联系方式（{脱敏号}），可能需要您跟进{动作}。」
   - 经出站通道发为普通消息；同时写 `dcs_handoffs` + `dcs_notifications`。
-  - **员工侧出站通道＝飞书机器人**〔据 `docs/env/context-and-constraints.md`：内部 IM=飞书〕；MVP 可用飞书 custom robot webhook（接入简单），日报同走飞书。
+  - **员工侧出站通道＝飞书机器人**〔据 `docs/env/context-and-constraints.md`：内部 IM=飞书〕；Demo 可用飞书 custom robot webhook（接入简单），日报同走飞书。
 - **定时小结（REQ-7）**：
   - 调度触发 `POST /api/v1/summaries/daily`（也可手动触发测试）；
   - 聚合 `dcs_messages`（量/类型）、`dcs_handoffs`（需跟进清单 + 目标）；
