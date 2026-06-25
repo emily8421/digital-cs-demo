@@ -1,6 +1,6 @@
 # DigitalCustomerService_Demo（数字客服 · 演示）
 
-> 派生自 [ai-project-template](https://github.com/emily8421/ai-project-template)；方法论已 sync 至 **v1.6.9**。
+> 派生自 [ai-project-template](https://github.com/emily8421/ai-project-template)；方法论已 sync 至 **v1.7.0**。
 
 数字客服 Demo——**群里消息有人接、该跟的已分给该跟的人、经营者收到「今天关注什么」的小结**。
 后端编排闭环 + 演示 UI，本机原型（真实通道企业微信 Sprint-0 已核实不成立，待替代方案）。
@@ -53,7 +53,7 @@ docker compose -f docker/docker-compose.yml up -d   # pgvector + TEI
 
 派生自 [ai-project-template](https://github.com/emily8421/ai-project-template) v1.4：
 - 方法论同步（模板 ⇄ 项目）：见 `CONTRIBUTING.md`、`git-guide.md`、`scripts/sync-template.sh`
-- 模板优化提案：v1.5/v1.6 已回流归档（`_proposals/archive/`）；`_proposals/` 现有 sync-dryrun-direction、phasing-v1.6.9 待回流
+- 模板优化提案：v1.5 / v1.6 / sync-dryrun(v1.6.3) / phasing(v1.7.0) 均已回流模板并归档至 `_archive/proposals/`；`_proposals/` 仅留未处理提案
 
 ## 进度
 
