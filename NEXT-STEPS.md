@@ -3,13 +3,14 @@
 > 项目当前状态 + 下一步方向。**新对话打开本文件即可了解「做到哪了 / 下一步做什么」**。
 > 项目专属（不参与模板下行同步）；更新时机：每完成一个阶段/里程碑后。
 
-## 当前状态（2026-06-24）
+## 当前状态（2026-06-25）
 
 - ✅ **P1（Demo）收官**（2026-06-21）：REQ-1~8/10/12
 - ✅ **P2（优化扩展）收官**（2026-06-23）：REQ-9/11/13/14 + 话题级 REQ-10；55 tests passed
 - ✅ **打磨完成**：文档一致性 + 2 bug（confirm 作者归属 / 多轮跳过）+ 质量/合规（入库脱敏 / except→logging）+ 复用（write_outbound 提公共）
 - ✅ **模板同步 v1.7.0**（含 `check-derived-sync` 派生边界自检脚本；阶段双维度 §8.1）
 - ✅ **交付物形态迁移**（#15）：project-rules §1 + 03 §3 补双维度/进入退出标准；全 docs MVP→Demo 校正
+- ✅ **同步后清理**（#16）：README 版本同步 + 全 docs（含支撑文档）MVP→Demo 一致 + 提案归档合并到 `_archive/proposals/`
 - ✅ **同步后整理**：docs 分区迁移（design/decisions/research/env）+ 环境约束（`docs/env/local-env.md` + `project-rules §2.5` + 04/05/09 骨架）+ README/project-rules 校准
 - **当前交付物＝Demo**（可演示核心价值；非生产 MVP/产品，见 `docs/00-scenario.md` 交付物定位）
 - ⏸️ 远期愿景（REQ-15 企微替代通道 / REQ-16 订单 / REQ-17 售后）待技术验证，未启动
@@ -18,10 +19,8 @@
 
 ### 🔵 短期（低成本，立即可做）
 
-**B. 模板提案回流（§9 闭环）** — 推荐
-- `_proposals/TEMPLATE-UPGRADE-phasing-v1.6.9.md`（阶段双维度：功能范围 + 交付物形态 Demo/MVP/产品）
-- `_proposals/TEMPLATE-UPGRADE-sync-dryrun-direction.md`（sync dry-run 差异方向）
-- → 到 `ai-project-template` 开 PR，合并后本项目归档提案到 `_proposals/archive/`
+**B. 模板提案回流（§9 闭环）** ✅ 已完成（2026-06-25）
+- phasing（模板落地 v1.7.0）+ sync-dryrun（v1.6.3）均已回流 ai-project-template，随 v1.7.0 同步并归档至 `_archive/proposals/`（历史 v1.5/v1.6 一并合并）。
 
 **A. Demo 实演 + 环境确认**
 - 扫码跑 `docs/demo-script.md` 全流程（验证打磨 + 整理后无断链、话术准）
@@ -43,7 +42,7 @@
 
 ## 推荐路径
 
-**先 B（模板提案回流）+ A（Demo 演练）**——做完这两项，项目（Demo + 方法论）彻底干净；再定方向：产品化（D，需外部条件）还是继续打磨（E/G）。
+**B（提案回流）已完成；下一步 A（Demo 演练）**——做完 A，项目（Demo + 方法论）彻底干净；再定方向：产品化（D，需外部条件）还是继续打磨（E/G）。
 
 ## 新对话恢复指引
 
@@ -51,7 +50,7 @@
 - **运行**：后端需重启（上次 uvicorn 进程已停）；启动见 `docs/demo-script.md` §2（`docker compose up -d` + uvicorn，绑 `0.0.0.0:8000`）
 - **扫码**：`http://<本机IP>:8000/ui/h5.html`（IP 用 `ipconfig` 查，忽略 `172.28` 虚拟网卡；防火墙放行 8000）
 - **待人工确认**：`docs/env/local-env.md`（联网/依赖/服务器）+ 04/05/09 环境章节「待确认」项
-- **提案**：`_proposals/` 两提案待回流（见 B）
+- **提案**：phasing/sync-dryrun 已回流模板并归档至 `_archive/proposals/`（B 完成）；`_proposals/` 仅留未处理提案
 - **新对话第一步**：先读 `ai/index.md` 列出的规则（`global-rules.md` + `project-rules.md`），再看本文件
 
 ---
