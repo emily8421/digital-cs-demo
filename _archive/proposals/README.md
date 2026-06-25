@@ -20,11 +20,13 @@
 |---|---|---|---|
 | `TEMPLATE-UPGRADE-phasing-v1.6.9.md` | v1.7.0 | `TEMPLATE-UPGRADE-v1.7.0-phasing-deliverable.md` | 阶段双维度（功能范围 + 交付物形态）+ vision→文档生成约束；原提议 v1.6.8→v1.6.9，实际落地 v1.7.0 |
 | `TEMPLATE-UPGRADE-sync-dryrun-direction.md` | v1.6.3 | `TEMPLATE-UPGRADE-v1.6.3-sync-dry-run-direction.md` | 修正下行同步 dry-run 差异方向，使 `+/-` 对齐同步语义（本地→模板）；不触发版本号 |
+| `TEMPLATE-UPGRADE-v1.5.md`（+ `-patch`） | v1.5 | `TEMPLATE-UPGRADE-v1.5.md` | v1.5 模板优化（历史，早期回流） |
+| `TEMPLATE-UPGRADE-v1.6.md`（+ `-patch`） | v1.6 | `TEMPLATE-UPGRADE-v1.6.md` | v1.6 模板优化（历史，早期回流） |
 
-> 上述两提案均在派生项目同步至模板 v1.7.0 时归档（commit 见 git log）。
+> phasing / sync-dryrun 在派生项目同步至模板 v1.7.0 时归档；v1.5 / v1.6 为早期回流的历史提案，已从 `_proposals/archive/` 合并到本目录统一管理（commit 见 git log）。
 
-## 备注：与历史 `_proposals/archive/` 的关系
+## 历史归档位置说明
 
-本项目早期使用 `_proposals/archive/` 存放已归档提案（v1.5、v1.6 等）。
-模板标准化后，规范归档位置改为顶层 `_archive/proposals/`（见 `ai/global-rules.md` §9）。
-历史 `_proposals/archive/` 中的提案可择机合并到本目录统一管理；合并前二者并存，不互相覆盖。
+本项目早期曾用 `_proposals/archive/` 存放已归档提案。模板标准化后，规范归档位置改为
+顶层 `_archive/proposals/`（见 `ai/global-rules.md` §9）。历史提案（v1.5、v1.6）
+已全部合并到本目录，`_proposals/` 仅保留待处理提案收件箱。

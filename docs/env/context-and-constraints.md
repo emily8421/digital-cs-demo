@@ -29,8 +29,8 @@
 - **AI 向量 embedding（已定，Sprint-2）**：**本地 BGE via Docker TEI（text-embeddings-inference）**。
   - 选定 (B) 本地 BGE：原拟「进程内 sentence-transformers」，但 Python 3.14 + Windows 下 torch/onnxruntime 原生 DLL（`c10.dll`/pybind）加载失败（`WinError 1114`），改容器内 Linux 跑 TEI、宿主以 httpx 调用（`POST /embed`，512 维 bge-small-zh-v1.5）；向量库 pgvector。
   - (A) 中转站 `/v1/embeddings` 未采用（待测、未必支持）；海外 API 仍作备选，注意客户数据出境合规。
-- **企业微信计划认证**：MVP（模拟器）不受影响；真实接客户（微信客服/会话存档）需认证完成（见 DEC-8）。
-- **内部 IM＝飞书**：员工侧「转交提醒 / 日报」出站通道＝**飞书机器人**（custom robot webhook，接入简单），MVP 即可用。
+- **企业微信计划认证**：Demo（模拟器）不受影响；真实接客户（微信客服/会话存档）需认证完成（见 DEC-8）。
+- **内部 IM＝飞书**：员工侧「转交提醒 / 日报」出站通道＝**飞书机器人**（custom robot webhook，接入简单），Demo 即可用。
 - **部署＝本机原型优先**：当前在**本机**跑通原型（Docker Desktop + 本地 Python），**暂不启用公司服务器**——即当前无需折腾服务器访问/Docker-on-server。公司 Linux 服务器作为后续部署资源，原型稳定后再上。
 
 ## 4. 据此的技术取向（给 04 / 05 的输入）

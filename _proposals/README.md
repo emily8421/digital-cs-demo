@@ -5,7 +5,7 @@
 ## 结构约定
 
 - **根目录**：未提交 / 待处理的提案（`TEMPLATE-UPGRADE-vX.Y.md` + 可选 `-patch.md`）。新发现的模板优化点起草于此。
-- **`archive/`**：已合并并下行同步的提案，**保留作历史记录**（变更事实以「模板版本 vX.Y + git log」为准，提案本身不再驱动开发）。
+- 已合并并下行同步的提案归档到**顶层 `_archive/proposals/`**（见 `ai/global-rules.md` §9）；本目录仅保留待处理 / 汇总中的提案收件箱，不再使用 `_proposals/archive/`。
 
 ## 区分依据
 

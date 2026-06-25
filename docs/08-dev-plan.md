@@ -4,12 +4,13 @@
 > 单 Sprint 限 1~3 文件/模块。按 global-rules §8 积累式演进：升阶段在对应 Phase 分组**原位追加**，**不删旧 Sprint**。
 > **阶段归属**取自 `docs/03-prd.md` §3（唯一来源）与 `ai/project-rules.md` §1（当前阶段指针）。
 > **P1（2026-06-21）+ P2（2026-06-23）均已收官；当前＝愿景待技术验证（未启动）。**
+> **交付物形态**（v1.7.0 §8.1）：Phase1 / Phase2 均为 **Demo**（模拟器通道 + 无 LLM + 本机 Docker）；MVP 需真实通道 + 生产要素，留愿景。
 
-> ⚠️ Sprint-0 是全局前提（企业微信外部群能力验证），先行；未通过则 MVP 以模拟器通道推进，不阻塞核心价值（见 03 §3）。
+> ⚠️ Sprint-0 是全局前提（企业微信外部群能力验证），先行；未通过则 Demo 以模拟器通道推进，不阻塞核心价值（见 03 §3）。
 
 ---
 
-## Phase1 / MVP —— ✅ 已收官（2026-06-21）
+## Phase1（Demo）—— ✅ 已收官（2026-06-21）
 
 > **纳入功能**：REQ-1/2/3/4/5/6/7/8/10/12（+ REQ-15 作为 Sprint-0 技术验证项，结论＝客户群群内路径不成立，改走模拟器通道）。
 > **收官判据**：03 §3 Demo 步骤 1–5（模拟器通道）走通；P1 全部 REQ 可验证口径通过（见 Sprint-1~7 各验收记录）。步骤 6（企微）因 Sprint-0 未通过而跳过。
@@ -137,7 +138,7 @@
 - 已实现：`KnowledgeGap` ORM（`dcs_knowledge_gaps`，status open/resolved，`resolved_knowledge_id` 留 P2 回写）；编排引擎 `service/conversation`（`act_on_search` 命中作答/未命中缺口+转交·纯编排可测；`orchestrate` 检索+编排）；`handle_inbound` 接入编排（try/except：无 TEI/pgvector 时跳过，不阻塞入库）；客户侧出站＝写 `dcs_messages`(outbound)（原型，不经 OutboundChannel）；`SimulateData` 返回编排结果（hit/reply_text/gap_id/handoff_id）。
 - 自动化测试：`pytest -q` → **21 passed**（+编排 `act_on_search` 命中/未命中 2）。
 - 真实端到端：命中问题（5050/2835）→ 作答 outbound（回标准答案）；未覆盖问题（公司地址）→ 客户侧「请留资」+ `dcs_knowledge_gaps`(open) + 转交 owner/陈总 + 通知。
-- **REQ-6 可验证口径：通过。** MVP 主路径闭环完成（Sprint-2 检索 + Sprint-3 留资/转交 + Sprint-4 串联）；03 §3 Demo 步骤 1-3 可走通。
+- **REQ-6 可验证口径：通过。** Demo 主路径闭环完成（Sprint-2 检索 + Sprint-3 留资/转交 + Sprint-4 串联）；03 §3 Demo 步骤 1-3 可走通。
 - 检索边界（待调）：灯带规格类问题（如「海里使用」）可能在阈值 0.5 下误命中同类规格条目（召回偏宽），属检索质量持续调优（Sprint-2 范畴），**编排逻辑不受影响**（缺口分支已用低相似度问题验证）。
 
 ---
@@ -217,7 +218,7 @@
 - **企业微信**：Sprint-0 已核实客户群群内自动回复路径**不成立**（见 `docs/research/sprint-0-wework-findings.md`），Sprint-7 **不接企微**，固化模拟器 Demo；真实通道（微信客服/智能机器人入外部群）待人工选定替代方案，属愿景。
 - 自动化测试：`pytest -q` → **27 passed**（+Demo 串联 1）；各环节真实端到端已在 Sprint-2~6 验证（检索/留资转交/编排闭环/暂停非文字/小结）。
 - **03 §3 Demo 步骤 1-5 走通**（模拟器通道）；步骤 6（企微）跳过。
-- **P1 全部 REQ 可验证口径通过**：REQ-1/2/3/4/5/6/7/8/10/12。**🎯 P1（MVP）收官。**
+- **P1 全部 REQ 可验证口径通过**：REQ-1/2/3/4/5/6/7/8/10/12。**🎯 P1（Demo）收官。**
 
 ---
 

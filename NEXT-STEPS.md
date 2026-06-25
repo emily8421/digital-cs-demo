@@ -5,10 +5,11 @@
 
 ## 当前状态（2026-06-24）
 
-- ✅ **P1（MVP）收官**（2026-06-21）：REQ-1~8/10/12
+- ✅ **P1（Demo）收官**（2026-06-21）：REQ-1~8/10/12
 - ✅ **P2（优化扩展）收官**（2026-06-23）：REQ-9/11/13/14 + 话题级 REQ-10；55 tests passed
 - ✅ **打磨完成**：文档一致性 + 2 bug（confirm 作者归属 / 多轮跳过）+ 质量/合规（入库脱敏 / except→logging）+ 复用（write_outbound 提公共）
-- ✅ **模板同步 v1.6.9**（含 `check-derived-sync` 派生边界自检脚本）
+- ✅ **模板同步 v1.7.0**（含 `check-derived-sync` 派生边界自检脚本；阶段双维度 §8.1）
+- ✅ **交付物形态迁移**（#15）：project-rules §1 + 03 §3 补双维度/进入退出标准；全 docs MVP→Demo 校正
 - ✅ **同步后整理**：docs 分区迁移（design/decisions/research/env）+ 环境约束（`docs/env/local-env.md` + `project-rules §2.5` + 04/05/09 骨架）+ README/project-rules 校准
 - **当前交付物＝Demo**（可演示核心价值；非生产 MVP/产品，见 `docs/00-scenario.md` 交付物定位）
 - ⏸️ 远期愿景（REQ-15 企微替代通道 / REQ-16 订单 / REQ-17 售后）待技术验证，未启动
