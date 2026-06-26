@@ -3,7 +3,7 @@
 > 项目当前状态 + 下一步方向。**新对话打开本文件即可了解「做到哪了 / 下一步做什么」**。
 > 项目专属（不参与模板下行同步）；更新时机：每完成一个阶段/里程碑后。
 
-## 当前状态（2026-06-25）
+## 当前状态（2026-06-26）
 
 - ✅ **P1（Demo）收官**（2026-06-21）：REQ-1~8/10/12
 - ✅ **P2（优化扩展）收官**（2026-06-23）：REQ-9/11/13/14 + 话题级 REQ-10；55 tests passed
@@ -13,6 +13,7 @@
 - ✅ **同步后清理**（#16）：README 版本同步 + 全 docs（含支撑文档）MVP→Demo 一致 + 提案归档合并到 `_archive/proposals/`
 - ✅ **Demo 实演验证**（2026-06-25）：后端 + Docker 起好，全 REQ 闭环跑通（作答/留资/缺口转人/多轮/身份/非文字/小结/SLA），健康无断链（详见「Demo 验证记录」）
 - ✅ **同步后整理**：docs 分区迁移（design/decisions/research/env）+ 环境约束（`docs/env/local-env.md` + `project-rules §2.5` + 04/05/09 骨架）+ README/project-rules 校准
+- ✅ **环境确认完成**（2026-06-26）：local-env 9 项 + 服务器资源预案写入实测值（`docs/env/local-env.md`）；同步 `project-rules.md` §2.5 三项；修正 demo-script §4.3 缺口造例（换冷门问句，避免被历史回写条目命中）
 - **当前交付物＝Demo**（可演示核心价值；非生产 MVP/产品，见 `docs/00-scenario.md` 交付物定位）
 - ⏸️ 远期愿景（REQ-15 企微替代通道 / REQ-16 订单 / REQ-17 售后）待技术验证，未启动
 
@@ -23,11 +24,11 @@
 **B. 模板提案回流（§9 闭环）** ✅ 已完成（2026-06-25）
 - phasing（模板落地 v1.7.0）+ sync-dryrun（v1.6.3）均已回流 ai-project-template，随 v1.7.0 同步并归档至 `_archive/proposals/`（历史 v1.5/v1.6 一并合并）。
 
-**A. Demo 实演 + 环境确认**
+**A. Demo 实演 + 环境确认** ✅ 已完成（2026-06-26）
 - ✅ **Demo 实演已完成**（2026-06-25）：后端 + Docker 起好，`POST /api/v1/messages/simulate` + 管理侧 API 逐条验证全 REQ 闭环通过（见「Demo 验证记录」）。剩手机扫码 UI 演练（可选）。
-- ⏳ **环境确认（local-env 9 项待人工拍板）**——建议值见下表，确认后写入 `docs/env/local-env.md`（顺手修 demo-script 两处小发现，一个文档 PR）。
+- ✅ **环境确认已完成**（2026-06-26）：local-env 9 项 + 服务器资源预案写入实测值（`docs/env/local-env.md`）；同步 `project-rules.md` §2.5 三项；修正 demo-script §4.3 缺口造例（换冷门问句，避免被历史回写条目命中）。**短期已彻底干净。**
 
-  local-env 9 项建议值（2026-06-25 实跑实测，待人工确认）：
+  local-env 9 项建议值（2026-06-25 实跑实测，已确认写入 `docs/env/local-env.md`）：
 
   | 项 | 建议值 | 依据 |
   |---|---|---|
@@ -64,14 +65,14 @@
 
 ## 推荐路径
 
-**B 已完成；A 的 Demo 实演也已完成（2026-06-25）**，剩 local-env 9 项确认即「彻底干净」；然后定方向：产品化（D，需外部条件）还是继续打磨（E/G）。
+**B、A 均已完成（2026-06-26）**，短期「彻底干净」；下一步定方向：产品化（D，需外部条件）还是继续打磨（E/G）。
 
 ## 新对话恢复指引
 
 - **分支**：`main`（与 `origin/main` 同步）
 - **运行**：后端**可能仍在后台运行**（uvicorn :8000）；先 `curl localhost:8000/health` 验证——未跑则按 `docs/demo-script.md` §2 起（docker + uvicorn）。
 - **扫码**：`http://<本机IP>:8000/ui/h5.html`（IP 用 `ipconfig` 查，忽略 `172.28` 虚拟网卡；防火墙放行 8000）
-- **待人工确认**：`docs/env/local-env.md` 9 项（建议值见上「下一步建议 A」表）+ 04/05/09 环境章节「待确认」项
+- **环境确认**：`docs/env/local-env.md` 9 项已确认（2026-06-26）；剩 04/05/09 环境章节零散「待确认」项（属中期整理，非阻塞）
 - **提案**：phasing/sync-dryrun 已回流模板并归档至 `_archive/proposals/`（B 完成）；`_proposals/` 仅留未处理提案
 - **清理**：旧远程分支 `chore/sync-template-v1.6.8`（会话前遗留）可删：`git push origin --delete chore/sync-template-v1.6.8`
 - **新对话第一步**：先读 `ai/index.md` 列出的规则（`global-rules.md` + `project-rules.md`），再看本文件
