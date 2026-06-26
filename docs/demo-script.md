@@ -17,6 +17,7 @@
 ### 1.1 依赖
 - **Docker Desktop**（起 PG + TEI 容器）
 - **Python 3.14 + 项目 `.venv`**（后端依赖；统一用 `.venv/Scripts/python.exe`）
+- **`qrcode[pil]`**（仅 §3.3 一键生成二维码脚本用，**非后端运行依赖**）：`.venv/Scripts/python -m pip install 'qrcode[pil]'`
 
 ### 1.2 旧库迁移提醒
 本项目原型用 `Base.metadata.create_all` 建表（不自动迁移）。若 PG 库是早期建的，P2 新增列/约束需手动 ALTER（各 Sprint 验收时已执行）：
@@ -68,6 +69,21 @@ ipconfig | findstr IPv4
 - **PC 控制台**：`http://<IP>:8000/ui`
 
 贴地址到在线二维码工具生成码，手机扫码即开。
+
+### 3.3 一键生成二维码（推荐，免手动查 IP）
+
+`scripts/gen_demo_qrcodes.py` 自动探测本机局域网 IP（UDP 路由探测，不联网），一次性把上面三个地址生成 PNG 到项目根：
+
+```
+.venv/Scripts/python scripts/gen_demo_qrcodes.py
+```
+
+输出 `demo-h5-qrcode.png` / `demo-ui-qrcode.png` / `demo-confirm-qrcode.png`，双击打开即可扫码。
+**IP 变了（换 WiFi / 路由器重启）再跑一次即刷新全部码**，无需手动 `ipconfig`。依赖 `qrcode[pil]`（未装：`.venv/Scripts/python -m pip install 'qrcode[pil]'`）。
+
+### 3.4 让二维码长期有效（可选）
+
+本机 IP 由路由器 DHCP 动态分配，同一 WiFi 下通常稳定（租约续约），换网络才会变。想一劳永逸：路由器后台把电脑 MAC 绑定到固定 IP（DHCP「地址保留」），此后该 WiFi 下 IP 不变，三张码长期有效；换网络时再用 §3.3 脚本一键刷新。
 
 ## 4. 演示场景
 
@@ -134,7 +150,7 @@ H5 右上「▶ 演示」→ 自动跑：问答→缺口转人→留资→语音
 | 现象 | 原因 | 解决 |
 |---|---|---|
 | 手机扫码打不开 | 防火墙未放行 8000 | 管理员加规则（§1.3） |
-| 打不开（规则已加） | IP 变了（调过网络） | `ipconfig` 重查，用新 `192.168.x.x` |
+| 打不开（规则已加） | IP 变了（调过网络） | `ipconfig` 重查用新 `192.168.x.x`，或直接跑 §3.3 脚本一键刷新码 |
 | `/health` 连不上 | uvicorn 没起 / 端口占用 | 重起 uvicorn（§2.2）；`netstat -ano\|findstr :8000` 查占用 |
 | 检索全 `hit:false` | TEI 没起 / 没 Ready | `docker logs dcs-embeddings` 看 Ready；`docker compose ... up -d embeddings` |
 | `uvicorn: command not found` | 没用 .venv | 用 `.venv/Scripts/python.exe -m uvicorn`（§2.2） |

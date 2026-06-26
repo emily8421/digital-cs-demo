@@ -44,3 +44,6 @@ node_modules/
 *.db
 *.sqlite
 *.sqlite3
+
+# 演示二维码产物（scripts/gen_demo_qrcodes.py 生成，本地演示用，不入库）
+demo-*-qrcode.png
