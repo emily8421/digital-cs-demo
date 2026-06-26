@@ -72,9 +72,9 @@
 - 本机 Demo 必须运行：后端（FastAPI/uvicorn）+ Docker（PG pgvector + TEI embedding）
 - 允许降级/Mock：TEI 不可用时编排跳过检索（`try/except + logging.warning`）；SQLite 内存库用于单测（不依赖 Docker）
 - 禁止本机重资源：进程内 torch（Python 3.14+Windows DLL 失败，已改 Docker TEI，见 `docs/env/context-and-constraints.md` §3）
-- 是否允许联网：**待确认**（拉 BGE 模型 / 中转站 LLM / 飞书 webhook 需联网；Demo 默认本机）
-- 是否允许安装依赖：**待确认**（Python 包 / Docker Desktop）
-- 是否允许公司服务器 / 资源申请口径：**待确认**（本机原型先行，公司 Linux 服务器后续，见 05 §1）
+- 是否允许联网：**Demo 不联网**（作答＝本地检索；拉 BGE 模型 / 中转站 LLM / 飞书 webhook 需联网属 MVP，Demo 默认本机）
+- 是否允许安装依赖：**允许（已装齐）**（Docker Desktop + `.venv` 就绪；新增依赖须先确认，见 §5.2）
+- 是否允许公司服务器 / 资源申请口径：**Demo 不需要**（本机原型先行；公司 Linux 服务器属 MVP / 部署，见 05 §1）
 
 ## 3. 项目形态与文档裁剪
 
