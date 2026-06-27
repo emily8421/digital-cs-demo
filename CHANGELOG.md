@@ -6,6 +6,28 @@
 
 模板版本采用三段式 `vMAJOR.MINOR.PATCH`，以根目录 `VERSION` 为单一审计入口。任何会影响下游同步判断的模板合并都应递增版本；`ai/global-rules.md` 顶部仅记录全局规则自身版本。
 
+## v1.9.0（2026-06-26）
+
+- 拆分 Prompt Library：`INIT-PROMPT.md` 改为轻量索引，完整可复制 Prompt 迁移到 `ai/prompts/` 并按 docs / dev / review / planning / setup / git / maintainers 分类。
+- `template-sync.json` 与 `scripts/sync-template.sh` 兜底清单纳入 `ai/prompts/`、`ai/document-lifecycle-rules.md` 与 `docs/inputs/README.md`，避免下行同步漏文件。
+- 更新 `SOP.md`、`README.md`、`scripts/new-project.sh`、`CONTRIBUTING.md` 和自检脚本，统一指向拆分后的 Prompt 文件路径。
+
+## v1.8.0（2026-06-26）
+
+- 新增 `ai/document-lifecycle-rules.md`，定义多入口生成、文档剖面、生成矩阵、全链追溯、变更传播、横切事实权威源和外部文档接入规则。
+- `ai/index.md` 追加文档生命周期规则，`template-sync.json` 将其纳入下行同步清单。
+- `INIT-PROMPT.md` §0 从 vision-first 扩展为 inputs-first，并在单任务、审查、单文档修订、文档反向同步和 docs 验收 checklist 中引用追溯链与变更传播规则。
+- `INIT-PROMPT.md` §1 重构为输入材料评审与入口判定，支持粘贴正文、文件路径和文件夹路径，并引导小工具 / 小系统使用 Lean 剖面。
+- `README.md` 与 `scripts/new-project.sh` 轻量改为“多入口生成 / 补齐文档体系”表述，避免普通使用者入口只绑定愿景起步。
+- 新增 `docs/inputs/README.md` 原始输入包目录说明；`docs/README.md` 补充外部接入文档锚定与分区要求，避免策略 / 调研 / 决策文档成为无引用孤岛。
+
+## v1.7.1（2026-06-25）
+
+- 跟进 v1.7.0 阶段双维度规则，修正 `scripts/new-project.sh` 生成的派生 README，避免继续把 Phase1 默认写成 MVP。
+- 更新 `_examples/` 三个样例的 PRD 与验证计划，补齐交付物形态和退出标准。
+- 增强 `scripts/check-template.sh`，将新项目 README 与样例交付物形态纳入自检，防止 Demo/MVP/产品语义回退。
+- README 与 `INIT-PROMPT.md` §15 补充同步 v1.7+ 后应审计交付物形态与验证矩阵。
+
 ## v1.7.0（2026-06-24）
 
 - `ai/global-rules.md` §8 新增阶段双维度：功能范围（P1/P2/愿景）与交付物形态（Demo/MVP/产品）必须同时声明。

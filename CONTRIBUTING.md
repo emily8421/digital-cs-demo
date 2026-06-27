@@ -14,7 +14,7 @@
 
 需要回流 / 同步到所有派生项目的，才算模板改动。判断标准（与 `ai/global-rules.md` 通用层一致）：换到完全不同的项目上是否还成立——成立就属于模板，不成立就属于派生项目的 `ai/project-rules.md`。
 
-典型模板改动：`ai/global-rules.md` 原则、`docs/` 骨架编号 / 结构、`INIT-PROMPT.md`、`ai/project-rules.md` 的**模板骨架**、`scripts/`、本治理流程、`git-guide.md`。
+典型模板改动：`ai/global-rules.md` 原则、`docs/` 骨架编号 / 结构、`INIT-PROMPT.md` / `ai/prompts/`、`ai/project-rules.md` 的**模板骨架**、`scripts/`、本治理流程、`git-guide.md`。
 
 ## 2. 禁止
 
@@ -59,7 +59,7 @@
 1. 在派生项目 `_proposals/` 中把优化写成「去项目化」提案：TEMPLATE-UPGRADE-*.md
    （动机 / 拟改文件 / 版本影响 / 影响面 / 验证方式），可选附 TEMPLATE-UPGRADE-*-patch.md
 2. 到【模板仓库】开分支，把提案文件提交到模板仓库 `_proposals/` 收件箱（临时记录）
-3. 模板维护者使用 INIT-PROMPT.md「模板优化汇总」读取 `_proposals/` 全部提案，输出去重 / 冲突 / 依赖分析与优化计划
+3. 模板维护者使用 `ai/prompts/maintainers/11-template-proposal-summary.md` 读取 `_proposals/` 全部提案，输出去重 / 冲突 / 依赖分析与优化计划
 4. 按优化计划修改模板文件，走 §3 的 PR 流程评审、合并
 5. 合并后下行同步回原派生项目（及其他项目）
 6. 派生项目里已处理的提案可移动到项目历史记录或删除；模板仓库 `_proposals/` 中已处理提案必须归档到 `_archive/proposals/`，变更事实以根目录 `VERSION`、README 版本记录和 git log 为准
@@ -74,7 +74,7 @@
 
 ## 5. 下行同步（模板 → 项目）
 
-操作 SOP 以 `git-guide.md` §5 为准；README「方法论同步（模板 ⇄ 项目）」记录同步文件清单，`INIT-PROMPT.md` §12 提供可复制给 AI 执行的 Prompt。提交信息：`sync template vX.Y.Z`。审计：比对各项目根目录 `VERSION`。
+操作 SOP 以 `git-guide.md` §5 为准；README「方法论同步（模板 ⇄ 项目）」记录同步文件清单，`ai/prompts/maintainers/12-sync-template.md` 提供可复制给 AI 执行的 Prompt。提交信息：`sync template vX.Y.Z`。审计：比对各项目根目录 `VERSION`。
 
 > 注：`sync-template.sh` 是**下行获取**：派生项目拉取模板最新方法论并覆盖本地同步清单；派生项目是接收方，不会修改模板仓库。模板的改进只通过 §3 / §4 的模板仓库 PR 产生。
 
@@ -103,7 +103,7 @@
 
 - 2026-06-23：版本治理升级为根目录 `VERSION` 三段式；所有模板修改必须先形成 `TEMPLATE-UPGRADE-*.md` 提案，完成后归档到 `_archive/proposals/`。
 - 2026-06-23：下行同步安全增强——派生项目同步前先 bootstrap 最新 `scripts/sync-template.sh`；脚本自身会对比远端版本，不一致时停止并提示更新，避免旧脚本漏同步。
-- 2026-06-22：新增模板优化提案收件箱工作流——模板仓库 `_proposals/` 收集派生项目去项目化提案，`INIT-PROMPT.md` 增加模板优化汇总 Prompt，`scripts/new-project.sh` 为派生项目创建本地提案起草区并项目化 README。
+- 2026-06-22：新增模板优化提案收件箱工作流——模板仓库 `_proposals/` 收集派生项目去项目化提案，Prompt Library 增加模板优化汇总 Prompt，`scripts/new-project.sh` 为派生项目创建本地提案起草区并项目化 README。
 - 2026-06-21：增强示例完整性自检——`scripts/check-template.sh` 增加 `_examples` 检查，固定验证 `vision-to-product`、`quick-script`、`todo-api` 三个入口及旧示例目录已清理。
 - 2026-06-21：清理旧示例项目——删除 `_examples/text-cleaner-cli/`、`_examples/text-normalizer-lib/`、`_examples/md-notes-frontend/`，保留 `vision-to-product`、`quick-script`、`todo-api` 三个清晰入口。
 - 2026-06-21：更新 Todo API 示例验证闭环——`_examples/todo-api/` 补 `OVERVIEW.md` 与 `docs/09-verification.md`，并同步新版 `project-rules.md` 结构，用作 DB + REST API 完整参考。

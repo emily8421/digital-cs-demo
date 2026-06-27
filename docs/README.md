@@ -6,6 +6,8 @@
 
 本目录保存项目事实、需求、设计、计划与验证材料。AI 新增文档前必须先判断文档类型，放入对应子目录；不得把临时文档、调研记录或详细设计直接堆到 `docs/` 根目录。
 
+文档内容生成、上游输入、追溯链、横切事实一致性与下游影响规则见 `ai/document-lifecycle-rules.md`。
+
 ## 根目录只放核心文档
 
 `docs/` 根目录只放：
@@ -20,6 +22,7 @@
 | 子目录 | 放什么 | 命名建议 |
 |---|---|---|
 | `docs/vision/` | 产品愿景、叙事、业务背景等输入材料 | `product-vision.md`、`market-notes.md` |
+| `docs/inputs/` | 尚未归类、尚未转成 00-09 的原始输入包，如小工具 brief、客户 PRD/SRS、外部需求包、现有系统说明 | `initial-brief.md`、`client-prd.md`、`<topic>/README.md` |
 | `docs/design/` | 子系统 / 模块详细设计 | `<subsystem>.md`、`auth.md`、`workflow-engine.md` |
 | `docs/decisions/` | 架构决策记录（ADR）和重要取舍 | `ADR-0001-title.md` |
 | `docs/research/` | 技术调研、竞品分析、实验结论 | `topic-summary.md` |
@@ -55,6 +58,8 @@ AI 判断需要新增文档时，必须按以下顺序处理：
 3. 在回复中说明：文档类型、建议路径、为什么不能写入现有文档。
 4. 等待人工确认后再创建文件。
 5. 新文档必须在标题下写明定位：输入材料 / 详细设计 / 决策记录 / 调研记录 / 会议记录 / 归档。
+
+外部接入文档（策略、调研、决策、会议、接口或客户输入材料）必须先写明与本仓库 docs 的映射、定位声明和影响范围。尚未归类的原始输入先放 `docs/inputs/`；评审后，策略 / 决策类放 `docs/decisions/`，调研 / 实验类放 `docs/research/`，会议或访谈放 `docs/meetings/`，不要误放入 `docs/vision/`。
 
 ## 裁剪决策表
 
