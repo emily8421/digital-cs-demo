@@ -45,7 +45,7 @@
 ## 4. 本机资源验证
 
 > Demo 在本机资源范围内可运行的验证：
-- `docker compose up -d`（PG pgvector + TEI）+ uvicorn + `curl /health` ok（见 `docs/demo-script.md` §2）
+- `docker compose up -d`（PG pgvector + TEI）+ uvicorn + `curl /health` ok（见 `demo-script.md` §2）
 - `pytest -q` 55 passed（SQLite 内存库，不依赖 Docker/torch）
 - 真实端到端：见 `docs/08-dev-plan.md` 各 Sprint 验收记录；资源边界（TEI 模型加载/PG 端口）见 `docs/env/local-env.md`
 
