@@ -3,7 +3,7 @@
 > 项目当前状态 + 下一步方向。**新对话打开本文件即可了解「做到哪了 / 下一步做什么」**。
 > 项目专属（不参与模板下行同步）；更新时机：每完成一个阶段/里程碑后。
 
-## 当前状态（2026-06-26）
+## 当前状态（2026-06-27）
 
 - ✅ **P1（Demo）收官**（2026-06-21）：REQ-1~8/10/12
 - ✅ **P2（优化扩展）收官**（2026-06-23）：REQ-9/11/13/14 + 话题级 REQ-10；55 tests passed
@@ -14,7 +14,9 @@
 - ✅ **Demo 实演验证**（2026-06-25）：后端 + Docker 起好，全 REQ 闭环跑通（作答/留资/缺口转人/多轮/身份/非文字/小结/SLA），健康无断链（详见「Demo 验证记录」）
 - ✅ **同步后整理**：docs 分区迁移（design/decisions/research/env）+ 环境约束（`docs/env/local-env.md` + `project-rules §2.5` + 04/05/09 骨架）+ README/project-rules 校准
 - ✅ **环境确认完成**（2026-06-26）：local-env 9 项 + 服务器资源预案写入实测值（`docs/env/local-env.md`）；同步 `project-rules.md` §2.5 三项；修正 demo-script §4.3 缺口造例（换冷门问句，避免被历史回写条目命中）
-- ✅ **文档体系诊断 + 横切一致性提案**（2026-06-26）：诊断 sprint-0 回写遗漏 / wxautox4 定性二分裂 / STR-01 孤岛三症状（根因＝缺「横切约束变更回梳」环节）；起草 `_proposals/TEMPLATE-UPGRADE-cross-cutting-consistency.md` 补充提案（PR#20，待回流模板）；STR-01 保命入库（PR#21）
+- ✅ **文档体系诊断 + 横切一致性提案**（2026-06-26）：诊断 sprint-0 回写遗漏 / wxautox4 定性二分裂 / STR-01 孤岛三症状（根因＝缺「横切约束变更回梳」环节）；起草 `_proposals/TEMPLATE-UPGRADE-cross-cutting-consistency.md` 补充提案（PR#20）；STR-01 保命入库（PR#21）
+- ✅ **模板同步 v1.9.0**（#24，2026-06-27）：v1.7.0→v1.9.0；新增 `ai/document-lifecycle-rules.md`（v1.8.0 横切一致性/变更传播/外部文档接入）+ Prompt Library 拆分（v1.9.0，INIT-PROMPT 改索引）；cross-cutting-consistency 提案已被 v1.8.0 采纳并归档至 `_archive/proposals/`
+- ✅ **同步后整理**（#25，2026-06-27）：`demo-script.md` 移出 docs/ 根 + 5 处链接更新 + README 版本号/版块校准 + 05 §4 编号修复 + project-rules 引用更新；业务代码零改动
 - **当前交付物＝Demo**（可演示核心价值；非生产 MVP/产品，见 `docs/00-scenario.md` 交付物定位）
 - ⏸️ 远期愿景（REQ-15 企微替代通道 / REQ-16 订单 / REQ-17 售后）待技术验证，未启动
 
@@ -43,9 +45,9 @@
   | 本机必须跑通 | 后端 + Docker(PG pgvector+TEI) + 模拟器；8 类 REQ（已验证） | 本次实跑 |
   | 可 Mock/远程 | TEI 不可用→编排跳过检索；单测用 SQLite 内存库 | orchestrator 现状 |
 
-**C. 文档体系一致性修复**（待模板方向）
+**C. 文档体系一致性修复**（模板规则已就绪·v1.8.0，待用新规则回梳三症状）
 - 三症状待修：① sprint-0 回写遗漏（`01:72` / `03:34` / `vision:19` 标签对齐）；② wxautox4 定性二分裂（**已裁决：非商用验证例外**——禁商用，非商用验证受 DEC-7 边界约束，待落地）；③ STR-01 锚定（已入库 `docs/vision/`，锚定/移位待做）。
-- **策略**：等模板综合横切一致性提案（`_proposals/`）后，作为提案 §5「首案例」用新规则回梳（避免重蹈 §4 抑制连带的覆辙），不提前零散发改。
+- **策略**：模板横切一致性规则已落地（`ai/document-lifecycle-rules.md` §7/§8/§9，v1.8.0）。下一步作为「首案例」用新规则回梳三症状（局部/横切变更分类 → SSOT 权威源 → 引用同步 → 一致性验证），不提前零散发改。
 
 ### 🟡 中期（Demo → MVP，需外部条件 + 方向决策）
 
@@ -70,7 +72,7 @@
 
 ## 推荐路径
 
-**B、A 均已完成（2026-06-26）**，短期「彻底干净」。下一步两条线：① 文档体系一致性修复（C，等模板方向）；② 定方向：产品化（D，需外部条件）还是继续打磨（E/G）。
+**B、A、模板同步 v1.9.0、同步后整理均已完成（2026-06-27）**，短期「彻底干净」。下一步两条线：① 文档体系一致性修复（C，模板规则已就绪，待用新规则回梳三症状）；② 定方向：产品化（D，需外部条件）还是继续打磨（E/G）。
 
 ## 新对话恢复指引
 
@@ -78,7 +80,7 @@
 - **运行**：后端**可能仍在后台运行**（uvicorn :8000）；先 `curl localhost:8000/health` 验证——未跑则按 `demo-script.md` §2 起（docker + uvicorn）。
 - **扫码**：`http://<本机IP>:8000/ui/h5.html`（IP 用 `ipconfig` 查，忽略 `172.28` 虚拟网卡；防火墙放行 8000）
 - **环境确认**：`docs/env/local-env.md` 9 项已确认（2026-06-26）；剩 04/05/09 环境章节零散「待确认」项（属中期整理，非阻塞）
-- **提案**：phasing/sync-dryrun 已回流并归档（B 完成）；`_proposals/TEMPLATE-UPGRADE-cross-cutting-consistency.md`（横切一致性补充提案，PR#20）待回流模板，与 lifecycle 提案一起综合
+- **提案**：phasing/sync-dryrun/cross-cutting-consistency 均已回流模板并归档至 `_archive/proposals/`（cross-cutting-consistency 被模板 v1.8.0 采纳，落地于 `ai/document-lifecycle-rules.md`）；`_proposals/` 现仅留收件箱说明
 - **STR-01**：外部策略文档已保命入库（`docs/vision/数字客服_交互层输入输出策略_V1_0.md`，PR#21）；锚定/分区待提案 §2.3 落地
 - **清理**：旧分支 `chore/sync-template-v1.6.8`、`demo_verify*.txt` 已清（2026-06-26）
 - **新对话第一步**：先读 `ai/index.md` 列出的规则（`global-rules.md` + `project-rules.md`），再看本文件
