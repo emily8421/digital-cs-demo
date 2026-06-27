@@ -121,7 +121,7 @@ done
 echo
 if [[ "$FAILURES" -eq 0 ]]; then
   echo "✅ 派生项目同步边界检查通过。"
-  echo "   下一步：若需要整理项目内容，另开分支执行 INIT-PROMPT.md §15 第一段，只审计并输出迁移计划。"
+  echo "   下一步：若需要整理项目内容，另开分支执行 ai/prompts/maintainers/15-post-sync-cleanup.md，先审计并输出迁移计划。"
 else
   echo "❌ 派生项目同步边界检查失败：$FAILURES 项。" >&2
   echo "   请不要把 scripts/check-template.sh/.ps1 作为派生项目验收；它是模板仓库完整性自检。" >&2

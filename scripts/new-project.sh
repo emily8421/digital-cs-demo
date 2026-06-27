@@ -95,8 +95,9 @@ cat > "$TARGET/README.md" <<EOF
 
 ## 当前阶段
 
-- 当前阶段：Phase1 / MVP（待确认）
-- 阶段目标：（说明当前阶段要演示的最小闭环）
+- 当前阶段：Phase1（待确认）
+- 交付物形态：Demo / MVP / 产品（待确认；Phase1 不默认等于 MVP）
+- 阶段目标：（说明当前阶段要演示、上线或生产化到什么程度）
 - 非目标：（说明当前阶段明确不做什么）
 
 ## 当前能力
@@ -106,15 +107,16 @@ cat > "$TARGET/README.md" <<EOF
 ## 快速开始
 
 1. 运行 \`powershell -ExecutionPolicy Bypass -File scripts/collect-env.ps1\` 生成 \`docs/env/local-env.md\`，补齐本机可运行边界、允许降级 / Mock 项与服务器预案。
-2. 把产品愿景写入 \`docs/vision/product-vision.md\`，只写业务叙事、目标用户、核心场景、非目标与远期想法。
+2. 准备可审计上游输入：可先把产品愿景写入 \`docs/vision/product-vision.md\`，或把尚未归类的小工具 brief、PRD / SRS、任务单、现有系统说明放入 \`docs/inputs/\`。
 3. 初填 \`ai/project-rules.md\` 的项目名称、Phase1 目标、技术栈倾向、运行环境约束与项目形态裁剪；不确定项标“待确认”。
-4. 复制 \`INIT-PROMPT.md\` §0 给 AI，让 AI 基于 product-vision + local-env 一次性生成 / 修订 \`docs/00-09\`、必要的 \`docs/design/\` 详细设计、项目 README 与 Sprint1。
-5. 人工确认 \`docs/03-prd.md\` §3 阶段路线图和 \`docs/05-tech-spec.md\` 的本机 Demo 可行性；确认后进入 Sprint 开发。
+4. 复制 \`ai/prompts/docs/01-review-inputs.md\` 给 AI 评审输入材料；评审通过后复制 \`ai/prompts/docs/00-generate-or-complete-docs.md\` 多入口生成 / 补齐 \`docs/00-09\`、必要的 \`docs/design/\` 详细设计、项目 README 与 Sprint1。
+5. 人工确认 \`docs/03-prd.md\` §3 阶段路线图、交付物形态和 \`docs/05-tech-spec.md\` 的本机 Demo 可行性；确认后进入 Sprint 开发。
 
 ## 文档入口
 
 - \`docs/00-scenario.md\`：场景
 - \`docs/vision/product-vision.md\`：产品愿景叙事源文档
+- \`docs/inputs/\`：尚未归类、尚未转成 00-09 的原始输入包
 - \`docs/01-user-requirements.md\`：用户需求
 - \`docs/02-srs.md\`：软件需求规格
 - \`docs/03-prd.md\`：产品需求与阶段路线图
@@ -133,7 +135,7 @@ cat > "$TARGET/README.md" <<EOF
 ## 开发计划
 
 - 当前 Sprint：见 \`docs/08-dev-plan.md\`
-- 执行单个任务时使用 \`INIT-PROMPT.md\` §2
+- 执行单个任务时使用 \`ai/prompts/dev/02-run-task.md\`
 
 ## 验证方式
 
@@ -144,6 +146,7 @@ cat > "$TARGET/README.md" <<EOF
 
 - 通用方法论来自 \`ai-project-template\`。
 - 当前同步到的模板版本记录在 \`VERSION\`。
+- 文档生成、追溯链、变更传播与多入口规则见 \`ai/document-lifecycle-rules.md\`；可复制 Prompt 见 \`INIT-PROMPT.md\` 索引与 \`ai/prompts/\`。
 - 根 \`README.md\` 是项目专属文档，不参与模板下行同步。
 - 模板方法论文件由 \`template-sync.json\` 定义，执行 \`scripts/sync-template.*\` 时可能被覆盖。
 - 项目专属规则写在 \`ai/project-rules.md\`。
