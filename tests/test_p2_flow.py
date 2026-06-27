@@ -1,7 +1,7 @@
 """Sprint-13 P2 端到端集成测试：串联多轮引导 / 身份披露 / 话题级暂停 / 知识回写。
 
 SQLite 内存库 + fake search/embedder（不依赖 TEI/pgvector）。
-P1 端到端见 test_demo_flow.py；真实环境（TEI+pgvector）见 docs/demo-script.md。
+P1 端到端见 test_demo_flow.py；真实环境（TEI+pgvector）见 demo-script.md。
 """
 import os
 

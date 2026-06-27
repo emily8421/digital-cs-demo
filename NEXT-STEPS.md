@@ -75,7 +75,7 @@
 ## 新对话恢复指引
 
 - **分支**：`main`（与 `origin/main` 同步）
-- **运行**：后端**可能仍在后台运行**（uvicorn :8000）；先 `curl localhost:8000/health` 验证——未跑则按 `docs/demo-script.md` §2 起（docker + uvicorn）。
+- **运行**：后端**可能仍在后台运行**（uvicorn :8000）；先 `curl localhost:8000/health` 验证——未跑则按 `demo-script.md` §2 起（docker + uvicorn）。
 - **扫码**：`http://<本机IP>:8000/ui/h5.html`（IP 用 `ipconfig` 查，忽略 `172.28` 虚拟网卡；防火墙放行 8000）
 - **环境确认**：`docs/env/local-env.md` 9 项已确认（2026-06-26）；剩 04/05/09 环境章节零散「待确认」项（属中期整理，非阻塞）
 - **提案**：phasing/sync-dryrun 已回流并归档（B 完成）；`_proposals/TEMPLATE-UPGRADE-cross-cutting-consistency.md`（横切一致性补充提案，PR#20）待回流模板，与 lifecycle 提案一起综合
@@ -85,4 +85,4 @@
 
 ---
 
-**追溯**：开发计划 `docs/08-dev-plan.md`；验证 `docs/09-verification.md`；交付物定位 `docs/00-scenario.md`；演示手册 `docs/demo-script.md`；环境 `docs/env/`。
+**追溯**：开发计划 `docs/08-dev-plan.md`；验证 `docs/09-verification.md`；交付物定位 `docs/00-scenario.md`；演示手册 `demo-script.md`；环境 `docs/env/`。

@@ -1,6 +1,6 @@
 # DigitalCustomerService_Demo（数字客服 · 演示）
 
-> 派生自 [ai-project-template](https://github.com/emily8421/ai-project-template)；方法论已 sync 至 **v1.7.0**。
+> 派生自 [ai-project-template](https://github.com/emily8421/ai-project-template)；方法论已 sync 至 **v1.9.0**。
 
 数字客服 Demo——**群里消息有人接、该跟的已分给该跟的人、经营者收到「今天关注什么」的小结**。
 后端编排闭环 + 演示 UI，本机原型（真实通道企业微信 Sprint-0 已核实不成立，待替代方案）。
@@ -41,6 +41,18 @@ docker compose -f docker/docker-compose.yml up -d   # pgvector + TEI
 测试（不依赖 Docker，SQLite 内存库）：`pytest -q`（55 passed）。
 后端细节见 `backend/README.md`。
 
+## 运行环境
+
+- 本机 Demo：Docker（PG pgvector + TEI embedding）+ uvicorn；作答＝本地检索，不联网、不启用 LLM（见 `docs/env/local-env.md`）
+- 资源上限：内存 ≤ 1 GB / 显存 0 / 磁盘 ≤ 3 GB（2026-06-25 实演实测）；公司服务器属 MVP/部署阶段
+- 降级：TEI 不可用→编排跳过检索；单测用 SQLite 内存库（不依赖 Docker）
+
+## 验证方式
+
+- 自动化：`pytest -q`（55 passed，SQLite 内存库，不依赖 Docker/torch）
+- 端到端：按 `demo-script.md` 起后端 + Docker，逐 REQ 走查（REQ→用例矩阵见 `docs/09-verification.md`）
+- 交付物形态：当前＝Demo（非生产 MVP/产品，见 `docs/00-scenario.md`）
+
 ## 文档体系
 
 - `docs/00-09` + `docs/design/`：需求 / 架构 / 技术方案 / DB / API / 开发计划 / 验证 + 子系统设计
@@ -51,9 +63,9 @@ docker compose -f docker/docker-compose.yml up -d   # pgvector + TEI
 
 ## 模板关系
 
-派生自 [ai-project-template](https://github.com/emily8421/ai-project-template) v1.4：
+派生自 [ai-project-template](https://github.com/emily8421/ai-project-template) v1.9.0：
 - 方法论同步（模板 ⇄ 项目）：见 `CONTRIBUTING.md`、`git-guide.md`、`scripts/sync-template.sh`
-- 模板优化提案：v1.5 / v1.6 / sync-dryrun(v1.6.3) / phasing(v1.7.0) 均已回流模板并归档至 `_archive/proposals/`；`_proposals/` 仅留未处理提案
+- 模板优化提案：v1.5 / v1.6 / sync-dryrun(v1.6.3) / phasing(v1.7.0) / cross-cutting-consistency(v1.8.0) 均已回流模板并归档至 `_archive/proposals/`；`_proposals/` 现仅留收件箱说明
 
 ## 进度
 

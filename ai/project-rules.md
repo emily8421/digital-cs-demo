@@ -93,7 +93,7 @@
 ## 4. 目录规范的项目特例
 
 无重大差异，遵循 global-rules.md 通用目录标准。补充：
-- 子系统详细设计进 `docs/design/<子系统>.md`（不占用 00-09 编号，v1.6.9 分区规则，见 `docs/README.md` + `docs/04-architecture.md` §2）。**不得把新增项目文档直接堆 `docs/` 根**（00-09/README 除外）。
+- 子系统详细设计进 `docs/design/<子系统>.md`（不占用 00-09 编号，见现行 `docs/README.md` 分区规则 + `docs/04-architecture.md` §2）。**不得把新增项目文档直接堆 `docs/` 根**（00-09/README 除外）。
 
 ## 5. 编码约定与禁区
 

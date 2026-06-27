@@ -390,7 +390,7 @@ P1 会话级暂停 → 话题（thread）级精化：会话内某话题 handed_o
 #### 验收记录（2026-06-23）
 - 已实现：`tests/test_p2_flow.py`（P2 端到端集成测试：多轮引导→摘要转交、身份披露、话题级暂停(cust_A 暂停/cust_B 正常)、知识回写(缺口→补答→确认)；SQLite + fake search/embedder）+ `frontend/index.html` P2 入口（SLA 时效扫描按钮、知识确认页面链接、多轮/身份演示提示）。
 - 自动化测试：`pytest -q` → **55 passed**（+ `test_p2_flow` 4：P2 全流程串联）。
-- demo：`/ui` 控制台现可触发 P2 全功能（SLA scan、知识确认页、多轮/身份在聊天窗）；H5 客户视角不变。`docs/demo-script.md` 场景 2 补 SLA/确认页演示。
+- demo：`/ui` 控制台现可触发 P2 全功能（SLA scan、知识确认页、多轮/身份在聊天窗）；H5 客户视角不变。`demo-script.md` 场景 2 补 SLA/确认页演示。
 - **P2 收官**：全部功能 REQ（9/11/13/14 + 话题级 10）可验证口径通过；P2 端到端集成测试通过。**🎯 P2（优化扩展）收官。** 愿景（订单/售后/企微）待升阶段。
 
 ---
