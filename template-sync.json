@@ -5,6 +5,12 @@
     "VERSION",
     "CHANGELOG.md",
     "MAINTAINERS.md",
+    "template-docs/beginner-guide.md",
+    "template-docs/env-setup.md",
+    "template-docs/ai-cli-setup.md",
+    "template-docs/smoke-test.md",
+    "template-docs/smoke-test-report-template.md",
+    "template-docs/template-methodology.md",
     "template-sync.json",
     "ai/index.md",
     "ai/global-rules.md",
@@ -29,6 +35,7 @@
     "ai/prompts/README.md",
     "ai/prompts/review/03-project-review.md",
     "ai/prompts/review/10-docs-checklist.md",
+    "ai/prompts/review/16-docs-system-audit.md",
     "ai/prompts/setup/13-collect-env.md",
     "ai/prompts/setup/14-new-project.md",
     "CONTRIBUTING.md",
@@ -42,6 +49,8 @@
     "scripts/check-template.ps1",
     "scripts/check-derived-sync.sh",
     "scripts/check-derived-sync.ps1",
-    "scripts/collect-env.ps1"
+    "scripts/collect-env.ps1",
+    "scripts/check-prereqs.ps1",
+    "scripts/bootstrap-dev-env.ps1"
   ]
 }

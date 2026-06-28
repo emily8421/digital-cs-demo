@@ -37,6 +37,9 @@ extract_sync_files() {
 
 is_sync_file() {
   local changed_file="$1"
+  case "$changed_file" in
+    docs/_scaffold/*) return 0 ;;   # 模板 00-09 撰写规范镜像，由 sync-template 专用镜像步骤产生
+  esac
   local sync_file
   for sync_file in "${SYNC_FILES[@]}"; do
     if [[ "$changed_file" == "$sync_file" ]]; then

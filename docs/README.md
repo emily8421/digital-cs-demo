@@ -15,6 +15,8 @@
 - `README.md`：本文档分区规则。
 - `00-scenario.md` ~ `09-verification.md`：核心工程文档；其中 `06` / `07` 可按项目形态省略。
 
+> `docs/_scaffold/` 是模板 `00-09` 撰写规范的镜像**子目录**（见下表），不算根目录核心文档；由 `sync-template` 刷新、只读、不可手改。
+
 除上述文件外，AI 不得在 `docs/` 根目录新增文档。确需新增时，必须先说明原因、建议路径和影响范围，等待人工确认。
 
 ## 标准子目录
@@ -29,6 +31,7 @@
 | `docs/env/` | 本机环境、资源约束、服务器预案 | `local-env.md`、`server-plan.md` |
 | `docs/meetings/` | 会议纪要、访谈记录、评审记录 | `YYYY-MM-DD-topic.md` |
 | `docs/archive/` | 已废弃但需留痕的项目文档 | 保留原名或加日期前缀 |
+| `docs/_scaffold/` | 模板 `docs/00-09` 撰写规范镜像，随模板版本刷新；**只读、非项目事实、不直接驱动开发**；改动须走 `_proposals/` 回流模板 | 由 `sync-template` 自动生成，勿手改 |
 
 ## 子系统详细设计
 

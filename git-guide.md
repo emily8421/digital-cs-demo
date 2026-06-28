@@ -141,6 +141,10 @@ git branch -d <已合并分支名>
 
 无论哪种路径，`scripts/check-template.sh` / `scripts/check-template.ps1` 都是**模板仓库完整性自检**，不应作为派生项目同步成功判断。派生项目同步后只检查同步边界与最近提交。
 
+> Windows 说明：
+> 若 `scripts/sync-template.ps1` 或 `scripts/check-derived-sync.ps1` 报 Git Bash / MSYS 启动错误，优先视为本机环境问题；不要先把它理解成模板缺了新手步骤。
+> 当前 `scripts/check-template.ps1` 已在此场景下提供 PowerShell fallback，但同步和派生边界检查仍要求 Git Bash 能正常启动。
+
 ### 5.2 旧派生项目首次同步到 v1.6.8+
 
 适用于：项目里没有 `scripts/sync-template.ps1`、没有 `template-sync.json`、`VERSION` 低于 `v1.6.8`，或不确定当前同步脚本是否为新版。
@@ -166,6 +170,8 @@ git commit -m "chore: bootstrap latest sync script"
 - `ai/project-rules.md`
 - `docs/00-scenario.md` ~ `docs/09-verification.md`
 - `frontend/`、`backend/`、`tests/`、`docker/` 等业务代码或项目专属目录
+
+> 例外：`docs/_scaffold/00-09`（模板撰写规范镜像）会在本次同步中**新增**，属预期产物（见 §5.6），不等于、也不覆盖项目自己的 `docs/00-09` 项目事实。
 
 确认后执行：
 
@@ -228,7 +234,16 @@ powershell -ExecutionPolicy Bypass -File scripts/check-template.ps1       # 仅�
 - 同步文件清单以 `template-sync.json` 为准；`scripts/sync-template.sh` 会优先读取模板远端清单。
 - 同步后若 `check-derived-sync` 失败，先修复同步边界问题，再 push / PR。
 - 同步后整理项目内容时，另开分支执行 `ai/prompts/maintainers/15-post-sync-cleanup.md` 第一段，先只审计并输出迁移计划，不要混入同步提交。
+- 项目文档成型后，再用 `ai/prompts/review/16-docs-system-audit.md` 对照本次同步产出的 `docs/_scaffold` 规范基线，回溯审计整条 PLM 链路（先出报告不改文件）。完整闭环：`sync-template → 15-post-sync-cleanup → 16-docs-system-audit`。
 - 老派生项目若执行 `--dry-run` 后出现 staged 改动，说明本地 `scripts/sync-template.sh` 过旧；先恢复工作区，手动用模板最新版覆盖该脚本，再重新执行 `--dry-run`。
+
+### 5.6 `_scaffold` 规范镜像（v1.18.0+）
+
+下行同步除覆盖 `template-sync.json` 方法论文件外，还会把模板 `docs/00-09` 的**撰写规范**镜像到派生项目 `docs/_scaffold/00-09`（下划线前缀＝模板规范镜像，**只读、非项目事实**，随模板版本刷新）。
+
+- 派生项目自己的 `docs/00-09`（项目事实）**完全不动**；`docs/_scaffold/*` 与项目事实物理分离，不会互相覆盖。
+- 因此 `--dry-run` 中出现 `Δ docs/_scaffold/00-scenario.md（新增规范镜像）` 之类条目是**预期**的，`scripts/check-derived-sync.ps1` 也明确放行 `docs/_scaffold/*`；真正不能出现的是项目事实 `docs/00-09` 被改。
+- 用途：同步后用 `ai/prompts/review/16-docs-system-audit.md` 对照 `docs/_scaffold`（规范基线）回溯审计整条 PLM 链路（见 §5.5 末尾闭环）。
 
 ## 6. 常见踩坑
 
