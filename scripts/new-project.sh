@@ -4,7 +4,7 @@
 # 用法:
 #   bash scripts/new-project.sh <项目名> [--account <login>] [--visibility public|private] [--no-examples] [--local] [--no-remote]
 #     <项目名>           新项目目录名（相对当前目录，或绝对路径），默认也是 GitHub 仓库名
-#     --account <login>  建仓库的 GitHub 账号（默认取 ACCOUNT，未设置则为 emily8421）
+#     --account <login>  建仓库的 GitHub 账号（优先级高于 ACCOUNT 和当前 gh 登录账号）
 #     --visibility <v>   GitHub 仓库可见性：private 或 public（默认取 VISIBILITY，未设置则为 private）
 #     --no-examples      不复制 _archive/ 与 _examples/ 参考材料
 #     --local            走本地模板派生（默认 = 脚本所在仓库根，需自行确保 git pull 到最新）；
@@ -18,7 +18,7 @@
 # 说明: 默认从 GitHub main 派生（事实来源）；--local 走本地。两种产物等价，派生时任选。
 set -euo pipefail
 
-ACCOUNT="${ACCOUNT:-emily8421}"
+ACCOUNT="${ACCOUNT:-}"
 VISIBILITY="${VISIBILITY:-private}"
 NO_EXAMPLES=0
 USE_LOCAL=0
@@ -50,6 +50,9 @@ TARGET="$NAME"; [[ "$TARGET" = /* ]] || TARGET="$PWD/$TARGET"
 BASE="$(basename "$TARGET")"
 mkdir -p "$(dirname "$TARGET")"
 
+DEFAULT_GIT_NAME="${GIT_AUTHOR_NAME:-Codex Local Init}"
+DEFAULT_GIT_EMAIL="${GIT_AUTHOR_EMAIL:-codex-local-init@example.invalid}"
+
 if [[ "$USE_LOCAL" -eq 1 ]]; then
   TEMPLATE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
   echo "==> 模板（本地）: $TEMPLATE_DIR（请确保已 git pull 到最新）"
@@ -62,8 +65,6 @@ else
   rm -rf "$TARGET/.git"
   SOURCE="remote"
 fi
-
-echo "==> 目标: $TARGET（账号 $ACCOUNT，仓库 $ACCOUNT/$BASE，$VISIBILITY）"
 
 rm -rf "$TARGET/_proposals"
 mkdir -p "$TARGET/_proposals"
@@ -106,11 +107,12 @@ cat > "$TARGET/README.md" <<EOF
 
 ## 快速开始
 
-1. 运行 \`powershell -ExecutionPolicy Bypass -File scripts/collect-env.ps1\` 生成 \`docs/env/local-env.md\`，补齐本机可运行边界、允许降级 / Mock 项与服务器预案。
-2. 准备可审计上游输入：可先把产品愿景写入 \`docs/vision/product-vision.md\`，或把尚未归类的小工具 brief、PRD / SRS、任务单、现有系统说明放入 \`docs/inputs/\`。
-3. 初填 \`ai/project-rules.md\` 的项目名称、Phase1 目标、技术栈倾向、运行环境约束与项目形态裁剪；不确定项标“待确认”。
-4. 复制 \`ai/prompts/docs/01-review-inputs.md\` 给 AI 评审输入材料；评审通过后复制 \`ai/prompts/docs/00-generate-or-complete-docs.md\` 多入口生成 / 补齐 \`docs/00-09\`、必要的 \`docs/design/\` 详细设计、项目 README 与 Sprint1。
-5. 人工确认 \`docs/03-prd.md\` §3 阶段路线图、交付物形态和 \`docs/05-tech-spec.md\` 的本机 Demo 可行性；确认后进入 Sprint 开发。
+1. 若机器尚未准备好基础环境，先阅读 \`ENV-SETUP.md\`，运行 \`powershell -ExecutionPolicy Bypass -File scripts/check-prereqs.ps1\`，按需执行 \`scripts/bootstrap-dev-env.ps1\`。
+2. 运行 \`powershell -ExecutionPolicy Bypass -File scripts/collect-env.ps1\` 生成 \`docs/env/local-env.md\`，补齐本机可运行边界、允许降级 / Mock 项与服务器预案。
+3. 准备可审计上游输入：可先把产品愿景写入 \`docs/vision/product-vision.md\`，或把尚未归类的小工具 brief、PRD / SRS、任务单、现有系统说明放入 \`docs/inputs/\`。
+4. 初填 \`ai/project-rules.md\` 的项目名称、Phase1 目标、技术栈倾向、运行环境约束与项目形态裁剪；不确定项标“待确认”。
+5. 复制 \`ai/prompts/docs/01-review-inputs.md\` 给 AI 评审输入材料；评审通过后复制 \`ai/prompts/docs/00-generate-or-complete-docs.md\` 多入口生成 / 补齐 \`docs/00-09\`、必要的 \`docs/design/\` 详细设计、项目 README 与 Sprint1。
+6. 人工确认 \`docs/03-prd.md\` §3 阶段路线图、交付物形态和 \`docs/05-tech-spec.md\` 的本机 Demo 可行性；确认后进入 Sprint 开发。
 
 ## 文档入口
 
@@ -161,11 +163,30 @@ fi
 cd "$TARGET"
 git init -b main >/dev/null
 git add -A
-git commit -q -m "init: $BASE (based on ai-project-template)"
+if git config user.name >/dev/null 2>&1 && git config user.email >/dev/null 2>&1; then
+  git commit -q -m "init: $BASE (based on ai-project-template)"
+else
+  echo "==> 未检测到当前仓库或全局 Git 身份，使用临时本地提交身份完成初始化"
+  echo "    user.name=$DEFAULT_GIT_NAME"
+  echo "    user.email=$DEFAULT_GIT_EMAIL"
+  git -c user.name="$DEFAULT_GIT_NAME" -c user.email="$DEFAULT_GIT_EMAIL" \
+    commit -q -m "init: $BASE (based on ai-project-template)"
+fi
 
 if [[ "$NO_REMOTE" -eq 1 ]]; then
   echo "==> 跳过远端建库与推送（--no-remote）"
 else
+  if [[ -z "$ACCOUNT" ]]; then
+    ACCOUNT="$(gh api user --jq .login 2>/dev/null || true)"
+  fi
+
+  [[ -n "$ACCOUNT" ]] || {
+    echo "未获取到 GitHub 账号。请先执行 gh auth login，或显式传 --account <login>，或设置 ACCOUNT 环境变量。" >&2
+    exit 1
+  }
+
+  echo "==> 目标: $TARGET（账号 $ACCOUNT，仓库 $ACCOUNT/$BASE，$VISIBILITY）"
+
   ACTIVE="$(gh api user --jq .login 2>/dev/null || true)"
   if [[ -n "$ACTIVE" && "$ACTIVE" != "$ACCOUNT" ]]; then
     echo "==> 切换 gh 活跃账号: $ACTIVE -> $ACCOUNT"
@@ -178,6 +199,7 @@ fi
 
 echo
 if [[ "$NO_REMOTE" -eq 1 ]]; then
+  echo "==> 目标: $TARGET（本地-only，无需 GitHub 账号）"
   echo "✅ 完成：$TARGET（来源：$SOURCE，本地-only）"
 else
   echo "✅ 完成：$ACCOUNT/$BASE（来源：$SOURCE）"

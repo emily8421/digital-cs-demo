@@ -23,3 +23,5 @@
 | `setup/` | 环境采集与新建派生项目 |
 | `git/` | Commit message 辅助 |
 | `maintainers/` | 模板维护、同步和提案汇总 |
+
+> 若是第一次准备机器环境，先看 `template-docs/env-setup.md`，再运行 `scripts/check-prereqs.ps1`；环境准备脚本属于仓库脚本，不属于可复制给 AI 的 Prompt。

@@ -243,6 +243,117 @@ require_new_project_local_smoke() {
   rm -rf "$test_root"
 }
 
+require_scaffold_mirror() {
+  local test_root template_dir derived_dir
+  test_root="$(mktemp -d)"
+  template_dir="$test_root/template"
+  derived_dir="$test_root/derived"
+  mkdir -p "$template_dir/scripts" "$template_dir/ai" "$template_dir/.cursor/rules" \
+    "$template_dir/docs/inputs" \
+    "$derived_dir/scripts" "$derived_dir/ai" "$derived_dir/.cursor/rules" "$derived_dir/docs"
+
+  local d
+  # 模板仓库：当前脚本 + template-sync.json + docs/00-09 规范骨架 + 最小入口
+  (
+    cd "$template_dir"
+    git init -b main >/dev/null
+    cp "$ROOT/scripts/sync-template.sh" scripts/sync-template.sh
+    cp "$ROOT/scripts/sync-template.ps1" scripts/sync-template.ps1
+    cp "$ROOT/scripts/check-template.sh" scripts/check-template.sh
+    cp "$ROOT/scripts/check-template.ps1" scripts/check-template.ps1
+    cp "$ROOT/scripts/check-derived-sync.sh" scripts/check-derived-sync.sh
+    cp "$ROOT/scripts/check-derived-sync.ps1" scripts/check-derived-sync.ps1
+    cp "$ROOT/scripts/collect-env.ps1" scripts/collect-env.ps1
+    printf 'v9.9.9\n' > VERSION
+    cp "$ROOT/template-sync.json" template-sync.json
+    printf '# index\n' > ai/index.md
+    printf '# global\n' > ai/global-rules.md
+    printf '# lifecycle\n' > ai/document-lifecycle-rules.md
+    mkdir -p ai/prompts
+    cp -R "$ROOT/ai/prompts/." ai/prompts/
+    printf '# docs\n' > docs/README.md
+    printf '# inputs\n' > docs/inputs/README.md
+    for d in 00-scenario 01-user-requirements 02-srs 03-prd 04-architecture 05-tech-spec 06-db-design 07-api-spec 08-dev-plan 09-verification; do
+      printf '# template spec %s\n' "$d" > "docs/$d.md"
+    done
+    printf 'agent\n' > AGENTS.md
+    printf 'claude\n' > CLAUDE.md
+    printf 'cursor\n' > .cursor/rules/project-rules.mdc
+    printf 'sop\n' > SOP.md
+    printf 'init\n' > INIT-PROMPT.md
+    printf 'contrib\n' > CONTRIBUTING.md
+    printf 'guide\n' > git-guide.md
+    git add -A
+    git -c user.name=test -c user.email=test@example.com commit -m init >/dev/null
+  )
+
+  # 派生项目：自带 docs/00-09 项目事实（与模板规范不同）+ 执行 sync --commit
+  if ! (
+    cd "$derived_dir"
+    git init -b main >/dev/null
+    cp "$ROOT/scripts/sync-template.sh" scripts/sync-template.sh
+    cp "$ROOT/scripts/check-derived-sync.sh" scripts/check-derived-sync.sh
+    cp "$ROOT/scripts/check-derived-sync.ps1" scripts/check-derived-sync.ps1
+    printf 'v0.0.1\n' > VERSION
+    printf '# index\n' > ai/index.md
+    printf '# old global\n' > ai/global-rules.md
+    printf '# old docs\n' > docs/README.md
+    for d in 00-scenario 01-user-requirements 02-srs 03-prd 04-architecture 05-tech-spec 06-db-design 07-api-spec 08-dev-plan 09-verification; do
+      printf '# project fact %s\n' "$d" > "docs/$d.md"
+    done
+    printf 'agent\n' > AGENTS.md
+    printf 'claude\n' > CLAUDE.md
+    printf 'cursor\n' > .cursor/rules/project-rules.mdc
+    printf 'old sop\n' > SOP.md
+    printf 'old init\n' > INIT-PROMPT.md
+    printf 'old contrib\n' > CONTRIBUTING.md
+    printf 'old guide\n' > git-guide.md
+    git add -A
+    git -c user.name=test -c user.email=test@example.com commit -m init >/dev/null
+    GIT_AUTHOR_NAME=test GIT_AUTHOR_EMAIL=test@example.com \
+      GIT_COMMITTER_NAME=test GIT_COMMITTER_EMAIL=test@example.com \
+      TEMPLATE_REMOTE="$template_dir" bash scripts/sync-template.sh --commit
+  ) >"$test_root/sync.log" 2>&1; then
+    cat "$test_root/sync.log" >&2
+    fail "_scaffold 同步执行失败"
+    rm -rf "$test_root"
+    return
+  fi
+
+  local count
+  count="$(find "$derived_dir/docs/_scaffold" -type f 2>/dev/null | wc -l | tr -d ' ')"
+  if [[ "$count" -eq 10 ]]; then
+    pass "_scaffold 生成 10 个规范镜像"
+  else
+    fail "_scaffold 应生成 10 个规范镜像，实际 $count"
+  fi
+
+  if grep -q '# template spec 00-scenario' "$derived_dir/docs/_scaffold/00-scenario.md" 2>/dev/null; then
+    pass "_scaffold 镜像内容来自模板规范"
+  else
+    fail "_scaffold 镜像内容不是模板规范"
+  fi
+
+  local drift=0
+  for d in 00-scenario 01-user-requirements 02-srs 03-prd 04-architecture 05-tech-spec 06-db-design 07-api-spec 08-dev-plan 09-verification; do
+    grep -q "# project fact $d" "$derived_dir/docs/$d.md" 2>/dev/null || drift=1
+  done
+  if [[ "$drift" -eq 0 ]]; then
+    pass "派生 docs/00-09 项目事实未被覆盖"
+  else
+    fail "派生 docs/00-09 项目事实被覆盖（违反 _scaffold 红线）"
+  fi
+
+  if ( cd "$derived_dir" && bash scripts/check-derived-sync.sh ) >"$test_root/check.log" 2>&1; then
+    pass "check-derived-sync 接受 _scaffold 同步提交"
+  else
+    cat "$test_root/check.log" >&2
+    fail "check-derived-sync 误判 _scaffold 越界"
+  fi
+
+  rm -rf "$test_root"
+}
+
 echo "==> 检查 AI 入口文件"
 require_file "AGENTS.md"
 require_file "CLAUDE.md"
@@ -359,6 +470,11 @@ require_contains "template-sync.json" '"scripts/check-derived-sync\.sh"' "templa
 require_contains "template-sync.json" '"scripts/check-derived-sync\.ps1"' "template-sync 同步派生边界检查 PowerShell 入口"
 require_contains "ai/global-rules.md" '全局规则版本：v[0-9]+\.[0-9]+' "global-rules 含全局规则版本号"
 require_file "README.md"
+require_file "template-docs/beginner-guide.md"
+require_file "template-docs/env-setup.md"
+require_file "template-docs/ai-cli-setup.md"
+require_file "template-docs/smoke-test.md"
+require_file "template-docs/smoke-test-report-template.md"
 require_file "ai/document-lifecycle-rules.md"
 require_file "CONTRIBUTING.md"
 require_file "SOP.md"
@@ -375,6 +491,8 @@ require_file "scripts/check-template.ps1"
 require_file "scripts/check-derived-sync.sh"
 require_file "scripts/check-derived-sync.ps1"
 require_file "scripts/collect-env.ps1"
+require_file "scripts/check-prereqs.ps1"
+require_file "scripts/bootstrap-dev-env.ps1"
 require_file "_proposals/README.md"
 require_file "_archive/proposals/README.md"
 require_contains "_proposals/README.md" '模板优化提案收件箱' "_proposals README 标明提案收件箱"
@@ -384,6 +502,9 @@ require_contains "_archive/proposals/README.md" 'VERSION' "归档 README 以 VER
 require_contains "CONTRIBUTING.md" '提案 → 分支 → PR → 评审 → 合并 → 归档' "CONTRIBUTING 含提案先行流程"
 require_contains "CONTRIBUTING.md" 'vMAJOR\.MINOR\.PATCH' "CONTRIBUTING 含三段式版本规则"
 require_contains "README.md" 'SOP\.md' "README 包含 SOP 索引入口"
+require_contains "README.md" 'ENV-SETUP\.md' "README 包含环境准备入口"
+require_contains "README.md" 'SMOKE-TEST\.md' "README 包含新手烟测入口"
+require_contains "README.md" 'SMOKE-TEST-REPORT-TEMPLATE\.md' "README 包含烟测记录模板入口"
 require_contains "README.md" '5 分钟最小路径' "README 包含 5 分钟最小路径"
 require_contains "README.md" 'docs/vision/product-vision\.md' "README 最小路径从产品愿景起步"
 require_contains "README.md" 'docs/env/local-env\.md' "README 最小路径先采集本机环境"
@@ -392,9 +513,36 @@ require_contains "README.md" 'MAINTAINERS\.md' "README 指向 MAINTAINERS"
 require_contains "README.md" 'CHANGELOG\.md' "README 指向 CHANGELOG"
 require_contains "README.md" 'docs/README\.md' "README 指向 docs 分区规则"
 require_contains "README.md" 'check-template\.ps1' "README 说明 PowerShell 自检入口"
-require_contains "README.md" 'v1\.9\.0' "README 最近版本摘要包含 v1.9.0"
+require_contains "README.md" 'v1\.16\.2' "README 最近版本摘要包含 v1.16.2"
 require_contains "README.md" '阶段路线图、交付物形态' "README 最小路径提醒确认交付物形态"
+require_contains "README.md" 'template-docs/ai-cli-setup\.md' "README 包含 AI CLI 安装入口"
+require_contains "template-docs/beginner-guide.md" 'template-docs/env-setup\.md' "BEGINNER-GUIDE 指向环境准备手册"
+require_contains "template-docs/beginner-guide.md" 'template-docs/smoke-test\.md' "BEGINNER-GUIDE 指向新手烟测"
+require_contains "template-docs/beginner-guide.md" 'template-docs/smoke-test-report-template\.md' "BEGINNER-GUIDE 指向烟测记录模板"
+require_contains "template-docs/beginner-guide.md" 'lemesh_ai_model' "BEGINNER-GUIDE 指向公司中转站手册"
+require_contains "template-docs/beginner-guide.md" '官方文档安装并登录 `Claude CLI` 或 `Codex CLI`' "BEGINNER-GUIDE 区分 CLI 安装与中转站配置"
+require_contains "template-docs/beginner-guide.md" 'template-docs/ai-cli-setup\.md' "BEGINNER-GUIDE 指向 AI CLI 安装文档"
+require_contains "template-docs/env-setup.md" 'bootstrap-dev-env\.ps1' "ENV-SETUP 指向一键安装脚本"
+require_contains "template-docs/env-setup.md" 'check-prereqs\.ps1' "ENV-SETUP 指向前置检测脚本"
+require_contains "template-docs/env-setup.md" 'Claude CLI' "ENV-SETUP 包含 Claude CLI 说明"
+require_contains "template-docs/env-setup.md" 'Codex CLI' "ENV-SETUP 包含 Codex CLI 说明"
+require_contains "template-docs/env-setup.md" 'lemesh_ai_model' "ENV-SETUP 指向公司中转站手册"
+require_contains "template-docs/env-setup.md" '不应被理解为 `Claude CLI` 或 `Codex CLI` 本身的官方安装指南' "ENV-SETUP 区分中转站手册与 CLI 安装指南"
+require_contains "template-docs/ai-cli-setup.md" 'claude --version' "AI-CLI-SETUP 包含 Claude CLI 启动验证"
+require_contains "template-docs/ai-cli-setup.md" 'codex --version' "AI-CLI-SETUP 包含 Codex CLI 启动验证"
+require_contains "template-docs/ai-cli-setup.md" 'lemesh_ai_model' "AI-CLI-SETUP 指向公司中转站手册"
+require_contains "template-docs/smoke-test.md" 'scripts/check-prereqs\.ps1' "SMOKE-TEST 包含环境检查脚本"
+require_contains "template-docs/smoke-test.md" 'scripts/new-project\.sh smoke-demo --local --no-remote' "SMOKE-TEST 包含本地烟测项目创建"
+require_contains "template-docs/smoke-test.md" 'scripts/collect-env\.ps1' "SMOKE-TEST 包含环境采集"
+require_contains "template-docs/smoke-test.md" 'template-docs/smoke-test-report-template\.md' "SMOKE-TEST 指向烟测记录模板"
+require_contains "template-docs/smoke-test-report-template.md" '本轮烟测是否通过' "烟测记录模板包含最终结论"
 require_contains "CHANGELOG.md" 'docs/design/' "CHANGELOG 记录 docs/design 分区变更"
+require_contains "CHANGELOG.md" 'ENV-SETUP\.md' "CHANGELOG 记录环境准备入口"
+require_contains "CHANGELOG.md" 'SMOKE-TEST\.md' "CHANGELOG 记录新手烟测入口"
+require_contains "CHANGELOG.md" 'SMOKE-TEST-REPORT-TEMPLATE\.md' "CHANGELOG 记录烟测记录模板"
+require_contains "CHANGELOG.md" 'Claude CLI' "CHANGELOG 记录 AI CLI 工具说明"
+require_contains "CHANGELOG.md" '中转站说明边界' "CHANGELOG 记录中转站边界修正"
+require_contains "CHANGELOG.md" 'AI-CLI-SETUP\.md' "CHANGELOG 记录 AI CLI 独立文档"
 require_contains "ai/index.md" 'ai/document-lifecycle-rules\.md' "ai/index 读取文档生命周期规则"
 require_contains "ai/global-rules.md" 'docs/README\.md' "global-rules 引用 docs 分区规则"
 require_contains "ai/global-rules.md" 'ai/document-lifecycle-rules\.md' "global-rules 引用文档生命周期规则"
@@ -426,6 +574,11 @@ require_file "ai/prompts/maintainers/12-sync-template.md"
 require_file "ai/prompts/setup/13-collect-env.md"
 require_file "ai/prompts/setup/14-new-project.md"
 require_file "ai/prompts/maintainers/15-post-sync-cleanup.md"
+require_file "ai/prompts/review/16-docs-system-audit.md"
+require_contains "ai/prompts/review/16-docs-system-audit.md" '全链路' "16 系统审计提示词覆盖全链路回溯"
+require_contains "ai/prompts/review/16-docs-system-audit.md" 'ai/document-lifecycle-rules\.md' "16 系统审计提示词引用文档生命周期规则"
+require_contains "ai/prompts/review/16-docs-system-audit.md" 'docs/_scaffold' "16 系统审计提示词对照 _scaffold 规范基线"
+require_contains "ai/prompts/maintainers/15-post-sync-cleanup.md" '16-docs-system-audit\.md' "同步后整理 Prompt 指向 16 系统审计（_scaffold 闭环）"
 require_contains "INIT-PROMPT.md" 'Prompt Library' "INIT-PROMPT 是 Prompt Library 索引"
 require_contains "INIT-PROMPT.md" 'ai/prompts/docs/01-review-inputs\.md' "INIT-PROMPT 指向输入评审 Prompt"
 require_contains "INIT-PROMPT.md" 'ai/prompts/docs/00-generate-or-complete-docs\.md' "INIT-PROMPT 指向文档生成 Prompt"
@@ -467,7 +620,14 @@ require_contains "scripts/check-derived-sync.sh" '同步清单外变更' "check-
 require_contains "scripts/check-derived-sync.sh" 'README\.md\|ai/project-rules\.md\|docs/0\[0-9\]-\*' "check-derived-sync 保护项目专属文件"
 require_contains "scripts/check-derived-sync.sh" 'git show --name-only --stat' "check-derived-sync 输出最近同步提交文件"
 require_contains "scripts/check-derived-sync.sh" 'ai/prompts/maintainers/15-post-sync-cleanup\.md' "check-derived-sync 指向同步后整理 Prompt"
+require_contains "scripts/sync-template.sh" 'docs/_scaffold' "sync-template 含 _scaffold 规范镜像步骤"
+require_contains "scripts/check-derived-sync.sh" 'docs/_scaffold/\*' "check-derived-sync 放行 _scaffold 规范镜像"
+require_contains "docs/README.md" '_scaffold' "docs README 说明 _scaffold 规范镜像分区"
 require_contains "SOP.md" '新建派生项目' "SOP 索引包含新建派生项目场景"
+require_contains "SOP.md" '第一次准备开发环境' "SOP 索引包含环境准备场景"
+require_contains "SOP.md" '运行新手烟测' "SOP 索引包含新手烟测场景"
+require_contains "SOP.md" '记录新手烟测结果' "SOP 索引包含烟测记录场景"
+require_contains "SOP.md" '安装 AI CLI 工具' "SOP 索引包含 AI CLI 安装场景"
 require_contains "SOP.md" '根 `README\.md` 不参与下行同步' "SOP 说明 README 不同步"
 require_contains "SOP.md" '派生项目同步模板' "SOP 索引包含派生项目同步模板场景"
 require_contains "SOP.md" '不跑模板自检' "SOP 说明派生同步不跑模板自检"
@@ -506,7 +666,8 @@ require_contains "ai/prompts/maintainers/15-post-sync-cleanup.md" '部署 / 运�
 require_contains "ai/prompts/maintainers/15-post-sync-cleanup.md" '运行环境与资源评估' "同步后整理 Prompt 检查 05 资源评估"
 require_contains "ai/prompts/maintainers/15-post-sync-cleanup.md" '本机资源验证' "同步后整理 Prompt 检查 09 本机资源验证"
 require_contains "ai/prompts/setup/14-new-project.md" '不要先手工复制模板文件夹再运行 new-project\.sh' "新建项目 Prompt 禁止错误流程"
-require_contains "ai/prompts/setup/14-new-project.md" 'bash scripts/new-project\.sh <项目名>' "新建项目 Prompt 使用 new-project 脚本"
+require_contains "ai/prompts/setup/14-new-project.md" '默认远端：bash scripts/new-project\.sh <项目名>' "新建项目 Prompt 使用默认远端命令"
+require_contains "ai/prompts/setup/14-new-project.md" '--account <账号>' "新建项目 Prompt 支持显式指定账号"
 require_contains ".github/pull_request_template.md" '提案检查' "PR 模板包含提案检查"
 require_contains ".github/pull_request_template.md" 'VERSION' "PR 模板检查 VERSION"
 require_contains ".github/ISSUE_TEMPLATE/template-change.md" 'vMAJOR\.MINOR\.PATCH' "Issue 模板说明三段式版本"
@@ -514,7 +675,10 @@ require_contains "scripts/new-project.sh" 'rm -rf "\$TARGET/_proposals"' "new-pr
 require_contains "scripts/new-project.sh" 'mkdir -p "\$TARGET/_proposals"' "new-project 创建派生提案起草区"
 require_contains "scripts/new-project.sh" 'cat > "\$TARGET/README.md"' "new-project 项目化 README"
 require_contains "scripts/new-project.sh" '--no-remote' "new-project 支持本地-only 烟测"
+require_contains "scripts/new-project.sh" '未获取到 GitHub 账号' "new-project 在远端模式下缺少账号时给出明确提示"
 require_contains "scripts/new-project.sh" 'collect-env\.ps1' "new-project README 提醒采集本机环境"
+require_contains "scripts/new-project.sh" 'ENV-SETUP\.md' "new-project README 指向环境准备手册"
+require_contains "scripts/new-project.sh" 'check-prereqs\.ps1' "new-project README 指向前置检测脚本"
 require_contains "scripts/new-project.sh" 'docs/vision/product-vision\.md' "new-project README 从产品愿景起步"
 require_contains "scripts/new-project.sh" 'docs/inputs/' "new-project README 指向原始输入包目录"
 require_contains "scripts/new-project.sh" '多入口生成 / 补齐' "new-project README 使用多入口生成补齐 Prompt"
@@ -527,11 +691,19 @@ require_contains "scripts/new-project.sh" '## 当前阶段' "new-project README 
 require_contains "scripts/new-project.sh" '## 运行环境' "new-project README 包含运行环境版块"
 require_contains "scripts/new-project.sh" '## 开发计划' "new-project README 包含开发计划版块"
 require_contains "scripts/new-project.sh" '## 验证方式' "new-project README 包含验证方式版块"
+require_contains "scripts/new-project.sh" '本地-only，无需 GitHub 账号' "new-project 本地模式说明无需 GitHub 账号"
 require_contains "scripts/new-project.sh" '根 \\`README\.md\\` 是项目专属文档，不参与模板下行同步' "new-project README 说明根 README 不同步"
 require_contains "scripts/new-project.sh" 'template-sync\.json' "new-project README 说明模板同步清单"
 require_contains "scripts/collect-env.ps1" 'docs/env/local-env\.md' "collect-env 默认生成 local-env.md"
 require_contains "scripts/collect-env.ps1" '人工确认项' "collect-env 保留人工确认项"
 require_contains "scripts/collect-env.ps1" '服务器资源预案' "collect-env 保留服务器资源预案"
+require_contains "scripts/check-prereqs.ps1" 'Git Bash' "check-prereqs 检查 Git Bash"
+require_contains "scripts/check-prereqs.ps1" 'bootstrap-dev-env\.ps1' "check-prereqs 提示一键安装脚本"
+require_contains "scripts/bootstrap-dev-env.ps1" 'Git\.Git' "bootstrap 脚本安装 Git for Windows"
+require_contains "scripts/bootstrap-dev-env.ps1" 'GitHub\.cli' "bootstrap 脚本安装 GitHub CLI"
+require_contains "scripts/bootstrap-dev-env.ps1" 'OpenJS\.NodeJS\.LTS' "bootstrap 脚本安装 Node.js LTS"
+require_contains "scripts/bootstrap-dev-env.ps1" 'Python\.Python\.3\.11' "bootstrap 脚本安装 Python"
+require_contains "scripts/bootstrap-dev-env.ps1" 'Microsoft\.VisualStudioCode' "bootstrap 脚本安装 VS Code"
 require_contains "scripts/sync-template.sh" '"VERSION"' "sync-template 同步 VERSION"
 require_contains "scripts/sync-template.sh" 'REF:VERSION' "sync-template 从 VERSION 解析版本"
 require_contains "scripts/sync-template.sh" 'REMOTE_SCRIPT_HASH' "sync-template 检查远端脚本 hash"
@@ -542,6 +714,7 @@ require_contains "scripts/sync-template.sh" '本地当前文件 -> 模板' "sync
 require_sync_notice
 require_sync_dry_run_direction
 require_new_project_local_smoke
+require_scaffold_mirror
 
 echo
 echo "==> 检查同步清单一致性"
