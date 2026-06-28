@@ -25,6 +25,12 @@ DEFAULT_SYNC_FILES=(
   "VERSION"
   "CHANGELOG.md"
   "MAINTAINERS.md"
+  "template-docs/beginner-guide.md"
+  "template-docs/env-setup.md"
+  "template-docs/ai-cli-setup.md"
+  "template-docs/smoke-test.md"
+  "template-docs/smoke-test-report-template.md"
+  "template-docs/template-methodology.md"
   "template-sync.json"
   "ai/index.md"
   "ai/global-rules.md"
@@ -63,6 +69,24 @@ DEFAULT_SYNC_FILES=(
   "scripts/check-derived-sync.sh"
   "scripts/check-derived-sync.ps1"
   "scripts/collect-env.ps1"
+  "scripts/check-prereqs.ps1"
+  "scripts/bootstrap-dev-env.ps1"
+)
+
+# _scaffold 规范镜像：把模板 docs/00-09 撰写规范镜像到派生项目 docs/_scaffold/。
+# 与 SYNC_FILES 不同，这是 src(docs/0X) != dest(docs/_scaffold/0X) 的专用镜像步骤；
+# 产物是只读规范镜像，不是项目事实，绝不覆盖派生项目自己的 docs/0X。
+SCAFFOLD_DOCS=(
+  "docs/00-scenario.md"
+  "docs/01-user-requirements.md"
+  "docs/02-srs.md"
+  "docs/03-prd.md"
+  "docs/04-architecture.md"
+  "docs/05-tech-spec.md"
+  "docs/06-db-design.md"
+  "docs/07-api-spec.md"
+  "docs/08-dev-plan.md"
+  "docs/09-verification.md"
 )
 
 SYNC_FILES=()
@@ -183,6 +207,27 @@ if [[ "$MODE" == "--dry-run" ]]; then
       fi
     fi
   done
+
+  echo
+  echo "==> _scaffold 规范镜像（docs/00-09 → docs/_scaffold/，只读规范，不覆盖项目事实）:"
+  for src in "${SCAFFOLD_DOCS[@]}"; do
+    dest="docs/_scaffold/$(basename "$src")"
+    if git cat-file -e "$REF:$src" 2>/dev/null; then
+      if [[ -f "$dest" ]]; then
+        remote_hash="$(git rev-parse "$REF:$src")"
+        local_hash="$(git hash-object --path="$dest" "$dest" 2>/dev/null || true)"
+        if [[ -n "$local_hash" && "$remote_hash" == "$local_hash" ]]; then
+          echo "    = $dest（无差异）"
+        else
+          echo "    Δ $dest（规范镜像）"
+        fi
+      else
+        echo "    Δ $dest（新增规范镜像）"
+      fi
+    else
+      echo "    · $dest（模板无 $src，跳过）"
+    fi
+  done
   echo "   确认后执行: bash scripts/sync-template.sh --commit"
 else
   UPDATED_FILES=()
@@ -194,6 +239,20 @@ else
       echo "    ✓ $f"
     else
       echo "    · $f （模板无此文件，跳过）"
+    fi
+  done
+
+  echo "==> _scaffold 规范镜像（docs/00-09 → docs/_scaffold/，只读规范，不覆盖项目事实）:"
+  for src in "${SCAFFOLD_DOCS[@]}"; do
+    dest="docs/_scaffold/$(basename "$src")"
+    if git cat-file -e "$REF:$src" 2>/dev/null; then
+      mkdir -p docs/_scaffold
+      git show "$REF:$src" > "$dest"
+      git add "$dest"
+      UPDATED_FILES+=("$dest")
+      echo "    ✓ $dest（规范镜像）"
+    else
+      echo "    · $dest（模板无 $src，跳过）"
     fi
   done
 
