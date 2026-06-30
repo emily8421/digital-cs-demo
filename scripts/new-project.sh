@@ -114,6 +114,18 @@ cat > "$TARGET/README.md" <<EOF
 5. 复制 \`ai/prompts/docs/01-review-inputs.md\` 给 AI 评审输入材料；评审通过后复制 \`ai/prompts/docs/00-generate-or-complete-docs.md\` 多入口生成 / 补齐 \`docs/00-09\`、必要的 \`docs/design/\` 详细设计、项目 README 与 Sprint1。
 6. 人工确认 \`docs/03-prd.md\` §3 阶段路线图、交付物形态和 \`docs/05-tech-spec.md\` 的本机 Demo 可行性；确认后进入 Sprint 开发。
 
+### \`ai/project-rules.md\` 首次必填 checklist
+
+生成 \`docs/03-09\` 前，至少确认以下项目不再保留模板占位：
+
+- 项目名称与代号 / 缩写。
+- Phase1 允许事项、禁止事项与 Phase2 预告。
+- 已确定或待确认的前端 / 后端 / 数据库 / AI 模型等技术栈。
+- 本机 Demo 必须运行的部分、允许降级 / Mock 的部分、是否需要服务器。
+- 是否有持久化存储、是否有对外接口、演示形态。
+- \`docs/06-db-design.md\` 与 \`docs/07-api-spec.md\` 的保留 / 省略决策。
+- 需要保留的代码目录；不用的目录后续再删除，不要先删再补依据。
+
 ## 文档入口
 
 - \`docs/00-scenario.md\`：场景

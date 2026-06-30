@@ -1,6 +1,18 @@
 # 05 技术方案
 
+> **文档定位**：定义技术栈、版本、依赖、关键技术决策、运行资源和编码约定；不重复 04 的架构图，不写 DB/API 细节。
+> **上游输入**：`docs/04-architecture.md`、`docs/03-prd.md`、`docs/env/local-env.md`、`ai/project-rules.md`。
+> **下游输出**：约束 `docs/06-db-design.md`、`docs/07-api-spec.md`、`docs/08-dev-plan.md`、代码目录、依赖文件和验证方式。
 > AI 生成初稿，**人工确认**。技术栈 + 关键决策；版本「待确认」处为草稿，不杜撰精确版本号。按 global-rules §8 积累式演进。
+
+## 0. 文档元信息
+
+| 项 | 内容 |
+|---|---|
+| 输入来源 | `docs/04-architecture.md`；`docs/env/local-env.md`；`docs/env/context-and-constraints.md`；`ai/project-rules.md` |
+| 覆盖架构组件 | FastAPI 后端、PostgreSQL/pgvector、Docker TEI、模拟器通道、演示辅助 UI、外部 cron 调度 |
+| 当前状态 | 已确认（P1+P2 Demo 收官；愿景待技术验证） |
+| 最后更新 | 2026-06-29 |
 
 ## 1. 技术栈与版本
 

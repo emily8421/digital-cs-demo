@@ -1,9 +1,22 @@
 # 00 Scenario（项目背景与场景）
 
+> **文档定位**：描述项目为什么要做、服务谁、在什么场景下产生价值；不写系统功能清单、技术方案或 Phase 计划。
+> **上游输入**：`docs/vision/product-vision.md`、`docs/research/sprint-0-wework-findings.md`、`docs/decisions/open-decisions.md`。
+> **下游输出**：为 `docs/01-user-requirements.md` 提供用户、场景和问题锚点。
 > 需求层 · 跨阶段稳定。本文件只描述「为什么做、为谁做、什么场景」，不放功能表（进 01）、不放阶段表（进 03 §3）。
 > 叙事原文见 `docs/vision/product-vision.md`（产品愿景叙事·不直接驱动开发）；本文件是其工程化、去叙事化的摘要。
 >
 > **交付物定位**：最终交付物＝产品（完整，见 vision）；分阶段递进——Demo（演示核心价值）→ MVP（可上线）→ 产品（完整）。**当前＝Demo**（P1+P2 收官，可演示；非生产可用 MVP/产品）。
+
+## 0. 文档元信息
+
+| 项 | 内容 |
+|---|---|
+| 输入来源 | `docs/vision/product-vision.md`；`docs/research/sprint-0-wework-findings.md`；`docs/decisions/open-decisions.md` |
+| 入口模式 | Vision-first |
+| 文档剖面 | Standard |
+| 当前状态 | 已确认（P1+P2 Demo 收官；愿景待技术验证） |
+| 最后更新 | 2026-06-29 |
 
 ## 背景
 

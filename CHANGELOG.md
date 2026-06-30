@@ -6,6 +6,43 @@
 
 模板版本采用三段式 `vMAJOR.MINOR.PATCH`，以根目录 `VERSION` 为单一审计入口。任何会影响下游同步判断的模板合并都应递增版本；`ai/global-rules.md` 顶部仅记录全局规则自身版本。
 
+## v1.21.0（2026-06-29）
+
+- 新增 `template-docs/derived-sync-report-template.md`，用于派生项目真实同步模板方法论后记录同步前后版本、执行命令、边界检查结果、问题和可回流优化点。
+- `/run sync-methodology` 与 `ai/prompts/maintainers/12-sync-template.md` 在 `check-derived-sync` 后增加同步运行记录步骤，并提示将可通用问题转写为去项目化 `_proposals/TEMPLATE-UPGRADE-*.md`。
+- `/run post-sync-cleanup` 与 `ai/prompts/maintainers/15-post-sync-cleanup.md` 支持读取最近同步运行记录，提炼待确认项和模板优化回流建议。
+- `README.md`、`SOP.md`、`MAINTAINERS.md`、`CONTRIBUTING.md`、`template-sync.json`、`scripts/sync-template.sh` 与 `scripts/check-template.sh` 同步纳入运行记录模板和防入口滞后断言。
+- 归档已落地提案：`TEMPLATE-UPGRADE-derived-sync-observation.md`。
+
+## v1.20.0（2026-06-29）
+
+- 将模板 `docs/00-09` 撰写规范镜像主路径从 `docs/_scaffold/00-09` 迁移为 `ai/doc-standards/00-09`，明确其定位为 AI 文档标准 / 审计基线，而非项目事实或初始化脚手架。
+- `scripts/sync-template.sh` 下行同步改为生成 / 刷新 `ai/doc-standards/00-09`；`scripts/check-derived-sync.sh` 放行新路径，并迁移期兼容旧 `docs/_scaffold/*`。
+- 新增 `ai/doc-standards/README.md`，说明只读、非项目事实、由 `sync-template` 刷新、供 AI 审计 / 生成对照使用。
+- `16-docs-system-audit` 和 `docs-system-audit` 快捷命令优先读取 `ai/doc-standards/00-09`，旧项目 fallback 到 `docs/_scaffold/00-09`；`15-post-sync-cleanup` 同步说明更新为新路径。
+- `README.md`、`SOP.md`、`git-guide.md`、`MAINTAINERS.md`、`docs/README.md` 与 `scripts/check-template.sh` 同步更新路径说明、自检函数和防文档滞后断言。
+- 归档已落地提案：`TEMPLATE-UPGRADE-doc-standards-location.md`。
+
+## v1.19.0（2026-06-29）
+
+- 新增 AI CLI 快捷命令路由：`ai/commands/` 提供 `/run ...` 与自然语言意图到权威 Prompt / SOP / 脚本说明的映射，降低用户手工查找、复制、粘贴 prompt 的成本。
+- 新增会话续接与断点恢复规则：`ai/session-rules.md` 定义新窗口恢复流程、自动更新触发点和写入确认边界；默认本地续接文件为 `.ai/session-handoff.md`，兼容 `NEXT-STEPS.md`，并通过 `.gitignore` 排除。
+- 新增 `template-docs/session-handoff.example.md` 作为续接文件样例；`README.md`、`SOP.md`、`INIT-PROMPT.md`、`ai/prompts/README.md` 和常用 Prompt 改为命令路由优先、详细 Prompt 作为权威执行模板。
+- `template-sync.json`、`scripts/sync-template.sh` 兜底清单与 `scripts/check-template.sh` 纳入新规则 / 命令文件 / 样例文件，并增加防入口滞后断言。
+- 归档已落地提案：`TEMPLATE-UPGRADE-ai-command-router.md` 与 `TEMPLATE-UPGRADE-session-handoff.md`；`TEMPLATE-UPGRADE-doc-standards-location.md` 暂留 `_proposals/`，待后续阶段迁移 `docs/_scaffold` 路径。
+
+## v1.18.3（2026-06-28）
+
+- `scripts/check-template.sh` 将 CHANGELOG 当前版本检查改为动态读取根目录 `VERSION`，并增加三段式版本标题降序检查，避免版本记录硬编码或插入顺序漂移。
+- `git-guide.md` 账号体系去个人化：移除会随模板同步下发的具体维护者账号、个人邮箱与 Token 类型事实，保留通用多账号 / 提交身份 / scope 排查方法。
+- `README.md` 将常用命令拆为“派生项目使用者”和“模板维护者”，并补 Windows 脚本入口选择矩阵，明确哪些命令依赖 Git Bash。
+- `MAINTAINERS.md` 补充同步清单摘要边界、个人信息禁入同步文档、关键机制防文档滞后断言规则。
+- `scripts/new-project.sh` 生成的派生项目 README 增加 `ai/project-rules.md` 首次必填 checklist，降低占位未填就进入设计阶段的风险。
+
+## v1.18.2（2026-06-28）
+
+- `scripts/check-template.sh` 增加「防文档滞后」断言组：要求根目录人读操作文档（`git-guide §5` / `SOP` / `MAINTAINERS`）引用 `_scaffold` / 16 号审计闭环，避免「脚本层已自洽、人读文档滞后」再现（v1.17/v1.18 引入这些机制时 `git-guide §5` 曾漏更，PR #37 事后补齐，本版把防护固化为断言）。
+
 ## v1.18.1（2026-06-28）
 
 - 根目录操作文档追赶 v1.17.0 / v1.18.0 建立的 `_scaffold` / 16 号审计闭环（v1.18.0 落地时漏改了操作权威 `git-guide.md`，脚本层与提示词层已自洽、人读文档滞后）：
@@ -25,11 +62,6 @@
 - 新增 `ai/prompts/review/16-docs-system-audit.md`，用于项目成型后用 `ai/document-lifecycle-rules.md` 回溯审视整条 PLM 链路（追溯链 / 横切一致 / 变更传播 / 外部接入 / 生成矩阵 / 可行性 / 交付物形态），产出健康度报告与回梳计划，先出报告不改文件。
 - `INIT-PROMPT.md` 场景索引、`template-sync.json` 与 `scripts/check-template.sh` 纳入新提示词。
 
-## v1.16.0（2026-06-27）
-
-- 新增 `AI-CLI-SETUP.md`，把 `Claude CLI` / `Codex CLI` 的安装、验证、与公司中转站配置的衔接顺序独立成文档。
-- 更新 `ENV-SETUP.md`、`BEGINNER-GUIDE.md`、`README.md`、`SOP.md`、`MAINTAINERS.md`、`template-sync.json` 与 `scripts/sync-template.sh`，补充 AI CLI 独立入口。
-
 ## v1.16.2（2026-06-27）
 
 - `CONTRIBUTING.md`、`MAINTAINERS.md` 与 `_proposals/README.md` 补充模板维护纪律：无论是现有提案驱动，还是对话中主动提出的模板修改，都必须先切维护分支、同步维护提案记录、PR 合并后再归档。
@@ -40,6 +72,11 @@
 
 - 将模板元文档集中迁移到 `template-docs/`，避免根目录继续堆积 `BEGINNER-GUIDE`、`ENV-SETUP`、`AI-CLI-SETUP`、`SMOKE-TEST`、`SMOKE-TEST-REPORT-TEMPLATE`、`TEMPLATE-METHODOLOGY` 等说明文件。
 - 更新 `README.md`、`SOP.md`、`MAINTAINERS.md`、`template-sync.json` 与 `scripts/sync-template.sh` 的入口和同步路径。
+
+## v1.16.0（2026-06-27）
+
+- 新增 `AI-CLI-SETUP.md`，把 `Claude CLI` / `Codex CLI` 的安装、验证、与公司中转站配置的衔接顺序独立成文档。
+- 更新 `ENV-SETUP.md`、`BEGINNER-GUIDE.md`、`README.md`、`SOP.md`、`MAINTAINERS.md`、`template-sync.json` 与 `scripts/sync-template.sh`，补充 AI CLI 独立入口。
 
 ## v1.15.1（2026-06-27）
 

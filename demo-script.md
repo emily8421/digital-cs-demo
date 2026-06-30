@@ -155,6 +155,7 @@ H5 右上「▶ 演示」→ 自动跑：问答→缺口转人→留资→语音
 | 检索全 `hit:false` | TEI 没起 / 没 Ready | `docker logs dcs-embeddings` 看 Ready；`docker compose ... up -d embeddings` |
 | `uvicorn: command not found` | 没用 .venv | 用 `.venv/Scripts/python.exe -m uvicorn`（§2.2） |
 | PG 报列不存在（confirm/sla） | 旧库 schema 没更新 | ALTER 加列/约束（§1.2）；或 drop 库重建 |
+| SLA 没自动触发 | Demo 本机不内嵌定时器 | 手动点 `/ui` 的 SLA scan，或调用 `POST /api/v1/sla/scan`；生产由外部 cron/systemd/k8s 调用 |
 | 中文显示乱码 | Windows 控制台 GBK | 仅显示问题，存储 UTF-8 正确 |
 | 检索召回偏宽（误命中） | 阈值 0.5 margin 薄 | 已知限制（Sprint-4）；改进需 category 预筛，留优化 |
 
