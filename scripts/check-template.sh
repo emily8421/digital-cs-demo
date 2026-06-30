@@ -94,6 +94,42 @@ require_sync_notice() {
   require_contains ".cursor/rules/project-rules.mdc" 'Sync notice' "Cursor 规则包含入口同步说明"
 }
 
+require_changelog_current_version() {
+  local version
+  version="$(tr -d '\r\n[:space:]' < VERSION)"
+
+  require_contains "CHANGELOG.md" "^## ${version//./\\.}（" "CHANGELOG 包含当前 VERSION: $version"
+
+  local first_version
+  first_version="$(grep -E '^## v[0-9]+\.[0-9]+\.[0-9]+（' CHANGELOG.md | head -n 1 | sed -E 's/^## (v[0-9]+\.[0-9]+\.[0-9]+).*/\1/')"
+  if [[ "$first_version" == "$version" ]]; then
+    pass "CHANGELOG 最新三段式版本位于顶部: $version"
+  else
+    fail "CHANGELOG 最新三段式版本不在顶部（期望 $version，实际 ${first_version:-未找到}）"
+  fi
+}
+
+require_changelog_semver_desc() {
+  local previous_key=""
+  local version key major minor patch
+  local ok=1
+
+  while IFS= read -r version; do
+    IFS=. read -r major minor patch <<<"${version#v}"
+    key="$(printf '%06d%06d%06d' "$major" "$minor" "$patch")"
+    if [[ -n "$previous_key" && "$key" -gt "$previous_key" ]]; then
+      fail "CHANGELOG 三段式版本未按降序排列: $version"
+      ok=0
+      break
+    fi
+    previous_key="$key"
+  done < <(grep -E '^## v[0-9]+\.[0-9]+\.[0-9]+（' CHANGELOG.md | sed -E 's/^## (v[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+
+  if [[ "$ok" -eq 1 ]]; then
+    pass "CHANGELOG 三段式版本按降序排列"
+  fi
+}
+
 require_example_common() {
   local example_dir="$1"
   require_dir "$example_dir"
@@ -155,8 +191,9 @@ require_sync_dry_run_direction() {
     printf '# index\n' > ai/index.md
     printf '# global\n' > ai/global-rules.md
     printf '# lifecycle\n' > ai/document-lifecycle-rules.md
-    mkdir -p ai/prompts
+    mkdir -p ai/prompts ai/doc-standards
     cp -R "$ROOT/ai/prompts/." ai/prompts/
+    cp "$ROOT/ai/doc-standards/README.md" ai/doc-standards/README.md
     mkdir -p docs/inputs
     printf '# docs\n' > docs/README.md
     printf '# inputs\n' > docs/inputs/README.md
@@ -243,7 +280,7 @@ require_new_project_local_smoke() {
   rm -rf "$test_root"
 }
 
-require_scaffold_mirror() {
+require_doc_standards_mirror() {
   local test_root template_dir derived_dir
   test_root="$(mktemp -d)"
   template_dir="$test_root/template"
@@ -315,23 +352,23 @@ require_scaffold_mirror() {
       TEMPLATE_REMOTE="$template_dir" bash scripts/sync-template.sh --commit
   ) >"$test_root/sync.log" 2>&1; then
     cat "$test_root/sync.log" >&2
-    fail "_scaffold 同步执行失败"
+    fail "doc-standards 同步执行失败"
     rm -rf "$test_root"
     return
   fi
 
   local count
-  count="$(find "$derived_dir/docs/_scaffold" -type f 2>/dev/null | wc -l | tr -d ' ')"
+  count="$(find "$derived_dir/ai/doc-standards" -type f 2>/dev/null | wc -l | tr -d ' ')"
   if [[ "$count" -eq 10 ]]; then
-    pass "_scaffold 生成 10 个规范镜像"
+    pass "doc-standards 生成 10 个规范镜像"
   else
-    fail "_scaffold 应生成 10 个规范镜像，实际 $count"
+    fail "doc-standards 应生成 10 个规范镜像，实际 $count"
   fi
 
-  if grep -q '# template spec 00-scenario' "$derived_dir/docs/_scaffold/00-scenario.md" 2>/dev/null; then
-    pass "_scaffold 镜像内容来自模板规范"
+  if grep -q '# template spec 00-scenario' "$derived_dir/ai/doc-standards/00-scenario.md" 2>/dev/null; then
+    pass "doc-standards 镜像内容来自模板规范"
   else
-    fail "_scaffold 镜像内容不是模板规范"
+    fail "doc-standards 镜像内容不是模板规范"
   fi
 
   local drift=0
@@ -341,14 +378,14 @@ require_scaffold_mirror() {
   if [[ "$drift" -eq 0 ]]; then
     pass "派生 docs/00-09 项目事实未被覆盖"
   else
-    fail "派生 docs/00-09 项目事实被覆盖（违反 _scaffold 红线）"
+    fail "派生 docs/00-09 项目事实被覆盖（违反 doc-standards 红线）"
   fi
 
   if ( cd "$derived_dir" && bash scripts/check-derived-sync.sh ) >"$test_root/check.log" 2>&1; then
-    pass "check-derived-sync 接受 _scaffold 同步提交"
+    pass "check-derived-sync 接受 doc-standards 同步提交"
   else
     cat "$test_root/check.log" >&2
-    fail "check-derived-sync 误判 _scaffold 越界"
+    fail "check-derived-sync 误判 doc-standards 越界"
   fi
 
   rm -rf "$test_root"
@@ -453,7 +490,8 @@ require_file "CHANGELOG.md"
 require_file "MAINTAINERS.md"
 require_file "template-sync.json"
 require_contains "VERSION" '^v[0-9]+\.[0-9]+\.[0-9]+$' "VERSION 使用三段式模板版本号"
-require_contains "CHANGELOG.md" 'v1\.9\.0' "CHANGELOG 包含当前版本 v1.9.0"
+require_changelog_current_version
+require_changelog_semver_desc
 require_contains "MAINTAINERS.md" '发布 Checklist' "MAINTAINERS 包含发布 checklist"
 require_contains "MAINTAINERS.md" 'template-sync\.json' "MAINTAINERS 说明同步清单维护"
 require_contains "MAINTAINERS.md" 'README\.md.*轻量' "MAINTAINERS 约束 README 保持轻量"
@@ -463,7 +501,12 @@ require_contains "template-sync.json" '"files"' "template-sync.json 包含同步
 require_contains "template-sync.json" '"CHANGELOG\.md"' "template-sync 同步 CHANGELOG"
 require_contains "template-sync.json" '"MAINTAINERS\.md"' "template-sync 同步 MAINTAINERS"
 require_contains "template-sync.json" '"ai/document-lifecycle-rules\.md"' "template-sync 同步文档生命周期规则"
+require_contains "template-sync.json" '"ai/session-rules\.md"' "template-sync 同步会话续接规则"
+require_contains "template-sync.json" '"ai/doc-standards/README\.md"' "template-sync 同步 doc-standards README"
+require_contains "template-sync.json" '"ai/commands/README\.md"' "template-sync 同步 AI 快捷命令索引"
 require_contains "template-sync.json" '"ai/prompts/README\.md"' "template-sync 同步 Prompt Library README"
+require_contains "template-sync.json" '"template-docs/session-handoff\.example\.md"' "template-sync 同步会话续接样例"
+require_contains "template-sync.json" '"template-docs/derived-sync-report-template\.md"' "template-sync 同步派生同步运行记录模板"
 require_contains "template-sync.json" '"docs/README\.md"' "template-sync 同步 docs README"
 require_contains "template-sync.json" '"docs/inputs/README\.md"' "template-sync 同步 docs inputs README"
 require_contains "template-sync.json" '"scripts/check-derived-sync\.sh"' "template-sync 同步派生边界检查 Bash 入口"
@@ -475,7 +518,34 @@ require_file "template-docs/env-setup.md"
 require_file "template-docs/ai-cli-setup.md"
 require_file "template-docs/smoke-test.md"
 require_file "template-docs/smoke-test-report-template.md"
+require_file "template-docs/derived-sync-report-template.md"
 require_file "ai/document-lifecycle-rules.md"
+require_file "ai/session-rules.md"
+require_file "ai/doc-standards/README.md"
+require_file "ai/commands/README.md"
+for command_file in \
+  ai/commands/sync-methodology.md \
+  ai/commands/post-sync-cleanup.md \
+  ai/commands/docs-system-audit.md \
+  ai/commands/template-proposal-summary.md \
+  ai/commands/generate-docs.md \
+  ai/commands/review-inputs.md \
+  ai/commands/project-review.md \
+  ai/commands/edit-single-doc.md \
+  ai/commands/sync-docs-from-code.md \
+  ai/commands/phase-upgrade.md \
+  ai/commands/docs-checklist.md \
+  ai/commands/run-dev-task.md \
+  ai/commands/fix-bug.md \
+  ai/commands/sprint-summary.md \
+  ai/commands/collect-env.md \
+  ai/commands/new-project.md \
+  ai/commands/commit-message.md; do
+  require_file "$command_file"
+  require_contains "$command_file" '## 必读文件' "$command_file 含必读文件"
+  require_contains "$command_file" '## 写入风险' "$command_file 含写入风险"
+done
+require_file "template-docs/session-handoff.example.md"
 require_file "CONTRIBUTING.md"
 require_file "SOP.md"
 require_file "INIT-PROMPT.md"
@@ -502,6 +572,8 @@ require_contains "_archive/proposals/README.md" 'VERSION' "归档 README 以 VER
 require_contains "CONTRIBUTING.md" '提案 → 分支 → PR → 评审 → 合并 → 归档' "CONTRIBUTING 含提案先行流程"
 require_contains "CONTRIBUTING.md" 'vMAJOR\.MINOR\.PATCH' "CONTRIBUTING 含三段式版本规则"
 require_contains "README.md" 'SOP\.md' "README 包含 SOP 索引入口"
+require_contains "README.md" 'ai/commands/README\.md' "README 包含 AI 快捷命令入口"
+require_contains "README.md" 'ai/session-rules\.md' "README 包含会话续接规则入口"
 require_contains "README.md" 'ENV-SETUP\.md' "README 包含环境准备入口"
 require_contains "README.md" 'SMOKE-TEST\.md' "README 包含新手烟测入口"
 require_contains "README.md" 'SMOKE-TEST-REPORT-TEMPLATE\.md' "README 包含烟测记录模板入口"
@@ -577,8 +649,9 @@ require_file "ai/prompts/maintainers/15-post-sync-cleanup.md"
 require_file "ai/prompts/review/16-docs-system-audit.md"
 require_contains "ai/prompts/review/16-docs-system-audit.md" '全链路' "16 系统审计提示词覆盖全链路回溯"
 require_contains "ai/prompts/review/16-docs-system-audit.md" 'ai/document-lifecycle-rules\.md' "16 系统审计提示词引用文档生命周期规则"
-require_contains "ai/prompts/review/16-docs-system-audit.md" 'docs/_scaffold' "16 系统审计提示词对照 _scaffold 规范基线"
-require_contains "ai/prompts/maintainers/15-post-sync-cleanup.md" '16-docs-system-audit\.md' "同步后整理 Prompt 指向 16 系统审计（_scaffold 闭环）"
+require_contains "ai/prompts/review/16-docs-system-audit.md" 'ai/doc-standards' "16 系统审计提示词优先对照 doc-standards 规范基线"
+require_contains "ai/prompts/review/16-docs-system-audit.md" 'docs/_scaffold' "16 系统审计提示词兼容旧 _scaffold 规范基线"
+require_contains "ai/prompts/maintainers/15-post-sync-cleanup.md" '16-docs-system-audit\.md' "同步后整理 Prompt 指向 16 系统审计（doc-standards 闭环）"
 require_contains "INIT-PROMPT.md" 'Prompt Library' "INIT-PROMPT 是 Prompt Library 索引"
 require_contains "INIT-PROMPT.md" 'ai/prompts/docs/01-review-inputs\.md' "INIT-PROMPT 指向输入评审 Prompt"
 require_contains "INIT-PROMPT.md" 'ai/prompts/docs/00-generate-or-complete-docs\.md' "INIT-PROMPT 指向文档生成 Prompt"
@@ -610,7 +683,12 @@ require_contains ".github/workflows/template-check.yml" 'git diff --check' "GitH
 require_contains ".github/workflows/template-check.yml" 'git diff-tree --check' "GitHub Actions 处理新分支 push 空白检查"
 require_contains "scripts/sync-template.sh" 'template-sync\.json' "sync-template 从 template-sync.json 读取同步清单"
 require_contains "scripts/sync-template.sh" '"ai/document-lifecycle-rules\.md"' "sync-template 兜底清单含文档生命周期规则"
+require_contains "scripts/sync-template.sh" '"ai/session-rules\.md"' "sync-template 兜底清单含会话续接规则"
+require_contains "scripts/sync-template.sh" '"ai/doc-standards/README\.md"' "sync-template 兜底清单含 doc-standards README"
+require_contains "scripts/sync-template.sh" '"ai/commands/README\.md"' "sync-template 兜底清单含 AI 快捷命令索引"
+require_contains "scripts/sync-template.sh" '"template-docs/derived-sync-report-template\.md"' "sync-template 兜底清单含派生同步运行记录模板"
 require_contains "scripts/sync-template.sh" '"ai/prompts/README\.md"' "sync-template 兜底清单含 Prompt Library README"
+require_contains "scripts/sync-template.sh" '"ai/prompts/review/16-docs-system-audit\.md"' "sync-template 兜底清单含 16 系统审计 Prompt"
 require_contains "scripts/sync-template.sh" '"ai/prompts/docs/00-generate-or-complete-docs\.md"' "sync-template 兜底清单含文档生成 Prompt"
 require_contains "scripts/sync-template.sh" '"docs/inputs/README\.md"' "sync-template 兜底清单含 docs inputs README"
 require_contains "scripts/sync-template.ps1" 'sync-template\.sh' "sync-template PowerShell 入口调用 Bash 脚本"
@@ -620,9 +698,56 @@ require_contains "scripts/check-derived-sync.sh" '同步清单外变更' "check-
 require_contains "scripts/check-derived-sync.sh" 'README\.md\|ai/project-rules\.md\|docs/0\[0-9\]-\*' "check-derived-sync 保护项目专属文件"
 require_contains "scripts/check-derived-sync.sh" 'git show --name-only --stat' "check-derived-sync 输出最近同步提交文件"
 require_contains "scripts/check-derived-sync.sh" 'ai/prompts/maintainers/15-post-sync-cleanup\.md' "check-derived-sync 指向同步后整理 Prompt"
-require_contains "scripts/sync-template.sh" 'docs/_scaffold' "sync-template 含 _scaffold 规范镜像步骤"
-require_contains "scripts/check-derived-sync.sh" 'docs/_scaffold/\*' "check-derived-sync 放行 _scaffold 规范镜像"
-require_contains "docs/README.md" '_scaffold' "docs README 说明 _scaffold 规范镜像分区"
+require_contains "scripts/sync-template.sh" 'ai/doc-standards' "sync-template 含 doc-standards 规范镜像步骤"
+require_contains "scripts/check-derived-sync.sh" 'ai/doc-standards/\*' "check-derived-sync 放行 doc-standards 规范镜像"
+require_contains "scripts/check-derived-sync.sh" 'docs/_scaffold/\*' "check-derived-sync 迁移期兼容旧 _scaffold 规范镜像"
+require_contains "ai/doc-standards/README.md" 'Document Standards' "doc-standards README 说明规范镜像定位"
+
+# AI CLI 使用体验入口：快捷命令与会话续接必须贯穿规则、Prompt、同步清单和人读文档。
+require_contains "ai/index.md" 'ai/session-rules\.md' "ai/index 纳入会话续接规则"
+require_contains "ai/index.md" 'ai/commands/README\.md' "ai/index 纳入 AI 快捷命令索引"
+require_contains "ai/global-rules.md" 'ai/commands/README\.md' "global-rules 指向快捷命令路由"
+require_contains "ai/global-rules.md" 'ai/session-rules\.md' "global-rules 指向会话续接规则"
+require_contains "ai/session-rules.md" '\.ai/session-handoff\.md' "session-rules 定义新续接文件"
+require_contains "ai/session-rules.md" 'NEXT-STEPS\.md' "session-rules 兼容 NEXT-STEPS"
+require_contains ".gitignore" '\.ai/session-handoff\.md' ".gitignore 排除新续接文件"
+require_contains ".gitignore" 'NEXT-STEPS\.md' ".gitignore 排除旧续接文件"
+require_contains "ai/commands/README.md" '/run sync-methodology' "commands README 包含同步方法论命令"
+require_contains "ai/commands/README.md" '/run docs-system-audit' "commands README 包含文档体系审核命令"
+require_contains "ai/commands/sync-methodology.md" 'ai/prompts/maintainers/12-sync-template\.md' "sync-methodology 路由到同步 Prompt"
+require_contains "ai/commands/docs-system-audit.md" 'ai/prompts/review/16-docs-system-audit\.md' "docs-system-audit 路由到 16 审计 Prompt"
+require_contains "ai/commands/template-proposal-summary.md" 'ai/prompts/maintainers/11-template-proposal-summary\.md' "template-proposal-summary 路由到提案汇总 Prompt"
+require_contains "ai/prompts/dev/02-run-task.md" '/run run-dev-task' "run-task Prompt 标注快捷命令"
+require_contains "ai/prompts/maintainers/12-sync-template.md" '/run sync-methodology' "同步 Prompt 标注快捷命令"
+require_contains "SOP.md" '快捷命令' "SOP 场景索引包含快捷命令列"
+require_contains "SOP.md" '/run sync-methodology' "SOP 包含同步方法论快捷命令"
+require_contains "INIT-PROMPT.md" 'ai/commands/README\.md' "INIT-PROMPT 指向快捷命令索引"
+require_contains "MAINTAINERS.md" 'ai/commands/' "MAINTAINERS 要求维护快捷命令入口"
+require_contains "CONTRIBUTING.md" '\.ai/session-handoff\.md' "CONTRIBUTING 说明续接文件不提交"
+require_contains "template-docs/session-handoff.example.md" 'AI Session Handoff Example' "会话续接样例标题正确"
+require_contains "template-docs/derived-sync-report-template.md" '派生项目模板同步运行记录' "派生同步运行记录模板标题正确"
+require_contains "ai/commands/sync-methodology.md" 'derived-sync-report-template' "sync-methodology 命令指向同步运行记录模板"
+require_contains "ai/prompts/maintainers/12-sync-template.md" 'derived-sync-report-template' "同步 Prompt 指向同步运行记录模板"
+require_contains "ai/prompts/maintainers/12-sync-template.md" '同步运行记录' "同步 Prompt 要求生成同步运行记录"
+require_contains "ai/prompts/maintainers/15-post-sync-cleanup.md" '同步运行记录' "同步后整理 Prompt 读取同步运行记录"
+require_contains "SOP.md" '派生同步运行记录' "SOP 包含派生同步运行记录场景"
+require_contains "README.md" 'derived-sync-report-template' "README 提示派生同步运行记录模板"
+require_contains "MAINTAINERS.md" 'derived-sync-report-template' "MAINTAINERS 要求真实同步沉淀运行记录"
+require_contains "CONTRIBUTING.md" 'derived-sync-report-template' "CONTRIBUTING 说明同步运行记录与去项目化回流"
+
+# 防文档滞后：根目录人读操作文档必须引用 doc-standards / 16 号审计闭环。
+# 避免「脚本层（sync-template / check-template）已自洽、人读文档却滞后」再现
+# （v1.17/v1.18 引入 _scaffold/16 时 git-guide §5 漏更即此问题，PR #37 事后补齐；v1.20 起主路径为 ai/doc-standards）。
+require_contains "git-guide.md" 'ai/doc-standards' "git-guide §5 说明 doc-standards 规范镜像（防文档滞后）"
+require_contains "git-guide.md" '16-docs-system-audit' "git-guide §5 接 16 号审计闭环（防文档滞后）"
+require_contains "SOP.md" '16-docs-system-audit' "SOP 场景索引含 16 号审计（防文档滞后）"
+require_contains "MAINTAINERS.md" 'require_doc_standards_mirror' "MAINTAINERS 自检说明含 doc-standards 镜像自检（防文档滞后）"
+require_contains "MAINTAINERS.md" '防文档滞后断言' "MAINTAINERS 沉淀关键机制防滞后断言规则"
+require_contains "MAINTAINERS.md" '不放具体维护者账号' "MAINTAINERS 说明个人账号信息不进入同步文档"
+require_contains "README.md" '### 派生项目使用者' "README 常用命令区分派生项目使用者"
+require_contains "README.md" '### 模板维护者' "README 常用命令区分模板维护者"
+require_contains "README.md" 'Windows 脚本入口选择' "README 包含 Windows 脚本入口矩阵"
+require_contains "scripts/new-project.sh" 'ai/project-rules\.md.*首次必填 checklist' "new-project 生成 project-rules 首次必填 checklist"
 require_contains "SOP.md" '新建派生项目' "SOP 索引包含新建派生项目场景"
 require_contains "SOP.md" '第一次准备开发环境' "SOP 索引包含环境准备场景"
 require_contains "SOP.md" '运行新手烟测' "SOP 索引包含新手烟测场景"
@@ -714,7 +839,7 @@ require_contains "scripts/sync-template.sh" '本地当前文件 -> 模板' "sync
 require_sync_notice
 require_sync_dry_run_direction
 require_new_project_local_smoke
-require_scaffold_mirror
+require_doc_standards_mirror
 
 echo
 echo "==> 检查同步清单一致性"

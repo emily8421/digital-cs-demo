@@ -38,7 +38,8 @@ extract_sync_files() {
 is_sync_file() {
   local changed_file="$1"
   case "$changed_file" in
-    docs/_scaffold/*) return 0 ;;   # 模板 00-09 撰写规范镜像，由 sync-template 专用镜像步骤产生
+    ai/doc-standards/*) return 0 ;; # 模板 00-09 撰写规范镜像，由 sync-template 专用镜像步骤产生
+    docs/_scaffold/*) return 0 ;;   # v1.18.x 旧规范镜像路径，迁移期兼容
   esac
   local sync_file
   for sync_file in "${SYNC_FILES[@]}"; do

@@ -8,9 +8,11 @@
 
 ## 1. 账号体系
 
-- **主账号 `emily8421`**：模板仓库 `emily8421/ai-project-template` 与各派生项目（如 `emily8421/LUMEN-DEMO`）都在此账号下。日常推送用它。
-- **次账号 `emilymmhere`**：备用 / 历史账号。
-- 多账号切换用 gh：
+本模板只保留通用 GitHub / Git 身份操作，不记录具体维护者账号、邮箱或 Token 类型。若某个维护者需要保存本机账号备忘，请写入本地临时文件（如被 `.gitignore` 排除的 `NEXT-STEPS.md`），不要提交到模板同步文档。
+
+- **主账号**：拥有模板仓库与派生项目的日常推送权限。
+- **备用账号**：仅在组织权限、历史仓库或临时授权需要时切换使用。
+- 多账号切换用 `gh`：
 
   ```
   gh auth login             # 添加账号（网页或 token）
@@ -18,9 +20,9 @@
   gh auth switch -u <账号>  # 切换活跃账号
   ```
 
-- **提交身份**：commit 作者按 `git config user.name/user.email`（本项目为 `mmemily <maixh2012@gmail.com>`）。只要该邮箱在 GitHub 账号上验证过，提交会自动归属该账号——换账号不必改 git 身份。
+- **提交身份**：commit 作者按 `git config user.name/user.email`。只要该邮箱在目标 GitHub 账号上验证过，提交会自动归属该账号；切换 `gh` 活跃账号不一定需要改 git 提交身份。
 
-> ⚠️ `emilymmhere` 用的是 classic PAT（`ghp_`），权限在创建时固定，`gh auth refresh` 无法给它追加权限（如 `delete_repo`）。需要高危权限时用网页流程重登或新建带相应权限的 PAT。`emily8421` 是网页 OAuth 登录（`gho_`），可随时 refresh 追加 scope。
+> ⚠️ Token / OAuth 权限取决于登录方式与授权范围。若 `gh` 报 scope 不足，优先运行 `gh auth status` 确认活跃账号，再按 GitHub 官方流程刷新授权、重新登录或更换具备对应权限的账号。
 
 ## 2. 新建项目（模板 → 派生项目）
 
@@ -154,7 +156,7 @@ git branch -d <已合并分支名>
 ```powershell
 git status
 git switch -c chore/sync-template-vX.Y.Z
-git fetch --no-tags --depth=1 https://github.com/emily8421/ai-project-template.git main
+git fetch --no-tags --depth=1 <模板仓库远端URL> main
 git show FETCH_HEAD:VERSION
 git checkout FETCH_HEAD -- scripts/sync-template.sh
 git add scripts/sync-template.sh
@@ -171,7 +173,7 @@ git commit -m "chore: bootstrap latest sync script"
 - `docs/00-scenario.md` ~ `docs/09-verification.md`
 - `frontend/`、`backend/`、`tests/`、`docker/` 等业务代码或项目专属目录
 
-> 例外：`docs/_scaffold/00-09`（模板撰写规范镜像）会在本次同步中**新增**，属预期产物（见 §5.6），不等于、也不覆盖项目自己的 `docs/00-09` 项目事实。
+> 例外：`ai/doc-standards/00-09`（模板撰写规范镜像）会在本次同步中**新增 / 刷新**，属预期产物（见 §5.6），不等于、也不覆盖项目自己的 `docs/00-09` 项目事实。旧项目残留的 `docs/_scaffold/00-09` 仅作兼容参考。
 
 确认后执行：
 
@@ -234,16 +236,17 @@ powershell -ExecutionPolicy Bypass -File scripts/check-template.ps1       # 仅�
 - 同步文件清单以 `template-sync.json` 为准；`scripts/sync-template.sh` 会优先读取模板远端清单。
 - 同步后若 `check-derived-sync` 失败，先修复同步边界问题，再 push / PR。
 - 同步后整理项目内容时，另开分支执行 `ai/prompts/maintainers/15-post-sync-cleanup.md` 第一段，先只审计并输出迁移计划，不要混入同步提交。
-- 项目文档成型后，再用 `ai/prompts/review/16-docs-system-audit.md` 对照本次同步产出的 `docs/_scaffold` 规范基线，回溯审计整条 PLM 链路（先出报告不改文件）。完整闭环：`sync-template → 15-post-sync-cleanup → 16-docs-system-audit`。
+- 项目文档成型后，再用 `ai/prompts/review/16-docs-system-audit.md` 对照本次同步产出的 `ai/doc-standards` 规范基线，回溯审计整条 PLM 链路（先出报告不改文件；旧项目可 fallback 到 `docs/_scaffold`）。完整闭环：`sync-template → 15-post-sync-cleanup → 16-docs-system-audit`。
 - 老派生项目若执行 `--dry-run` 后出现 staged 改动，说明本地 `scripts/sync-template.sh` 过旧；先恢复工作区，手动用模板最新版覆盖该脚本，再重新执行 `--dry-run`。
 
-### 5.6 `_scaffold` 规范镜像（v1.18.0+）
+### 5.6 `doc-standards` 规范镜像（v1.20.0+）
 
-下行同步除覆盖 `template-sync.json` 方法论文件外，还会把模板 `docs/00-09` 的**撰写规范**镜像到派生项目 `docs/_scaffold/00-09`（下划线前缀＝模板规范镜像，**只读、非项目事实**，随模板版本刷新）。
+下行同步除覆盖 `template-sync.json` 方法论文件外，还会把模板 `docs/00-09` 的**撰写规范**镜像到派生项目 `ai/doc-standards/00-09`（AI 文档标准区，**只读、非项目事实**，随模板版本刷新）。
 
-- 派生项目自己的 `docs/00-09`（项目事实）**完全不动**；`docs/_scaffold/*` 与项目事实物理分离，不会互相覆盖。
-- 因此 `--dry-run` 中出现 `Δ docs/_scaffold/00-scenario.md（新增规范镜像）` 之类条目是**预期**的，`scripts/check-derived-sync.ps1` 也明确放行 `docs/_scaffold/*`；真正不能出现的是项目事实 `docs/00-09` 被改。
-- 用途：同步后用 `ai/prompts/review/16-docs-system-audit.md` 对照 `docs/_scaffold`（规范基线）回溯审计整条 PLM 链路（见 §5.5 末尾闭环）。
+- 派生项目自己的 `docs/00-09`（项目事实）**完全不动**；`ai/doc-standards/*` 与项目事实物理分离，不会互相覆盖。
+- 因此 `--dry-run` 中出现 `Δ ai/doc-standards/00-scenario.md（新增规范镜像）` 之类条目是**预期**的，`scripts/check-derived-sync.ps1` 也明确放行 `ai/doc-standards/*`；真正不能出现的是项目事实 `docs/00-09` 被改。
+- 用途：同步后用 `ai/prompts/review/16-docs-system-audit.md` 对照 `ai/doc-standards`（规范基线）回溯审计整条 PLM 链路（见 §5.5 末尾闭环）。
+- 兼容：v1.18.x 旧路径 `docs/_scaffold/00-09` 不再是主路径；迁移期审计提示词和边界检查会 fallback / 放行该旧路径，但 `sync-template` 不主动删除旧目录。
 
 ## 6. 常见踩坑
 

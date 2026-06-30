@@ -1,9 +1,11 @@
-﻿# 02 单任务执行 / 切换工具续接
+# 02 单任务执行 / 切换工具续接
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
 > Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
 
 **用途**：执行 `docs/08-dev-plan.md` 中的单个 Sprint，或在切换 AI 工具 / 新会话时续接当前任务。
+
+**快捷命令**：`/run run-dev-task`（自然语言：执行当前 Sprint / 执行任务 / 继续开发任务）。
 
 **目的**：让 AI 在明确输入、范围和验收标准内小步实现，避免一次性扩展整个系统。
 
@@ -12,6 +14,8 @@
 **不适用场景**：需求、架构或技术方案还未确认；这种情况先回到 `ai/prompts/docs/01-review-inputs.md` 或 `ai/prompts/review/10-docs-checklist.md`。
 
 **使用前准备**：确认当前 Sprint 的目标、输入文档、修改范围、验收标准和禁止事项已写在 `docs/08-dev-plan.md` 或 `tasks/` 中。
+
+**续接要求**：输出执行计划后，按 `ai/session-rules.md` 写入 / 更新 `.ai/session-handoff.md`（兼容 `NEXT-STEPS.md`）；每完成一个步骤、修改文件后或遇到阻塞时刷新当前进度与下一步。
 
 **预期产出**：实现方案、受影响文件清单、代码 / 文档改动、验证方式与执行结果。
 

@@ -1,9 +1,11 @@
-﻿# 11 模板优化汇总（供模板维护者）
+# 11 模板优化汇总（供模板维护者）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
 > Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
 
 **用途**：在 `ai-project-template` 模板仓库内，处理 `_proposals/` 收件箱中的派生项目模板优化提案。
+
+**快捷命令**：`/run template-proposal-summary`（自然语言：汇总模板优化提案 / 处理 proposals）。
 
 **目的**：把多个派生项目的提案统一去重、识别冲突、分析依赖，并形成可评审的模板优化计划。
 
@@ -12,6 +14,8 @@
 **不适用场景**：普通派生项目日常开发；派生项目只负责起草提案，不使用本节直接改模板。若模板仓库内需要直接修改模板但尚无提案，也应先新增 `TEMPLATE-UPGRADE-*.md`。
 
 **使用前准备**：确认当前在模板仓库，已阅读 `ai/index.md`、`CONTRIBUTING.md`、`MAINTAINERS.md`、`CHANGELOG.md` 与 `_proposals/README.md`。
+
+**续接要求**：输出优化计划后，将分阶段计划、拟修改文件、版本影响、验证方式和归档计划写入 / 更新续接文件，避免长任务中断后丢失路线。
 
 **预期产出**：提案清单、去重 / 冲突 / 依赖分析、合并或分阶段计划、拟修改文件清单、版本影响、验证方式和已处理提案归档计划。
 

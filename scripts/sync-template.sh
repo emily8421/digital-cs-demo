@@ -31,10 +31,32 @@ DEFAULT_SYNC_FILES=(
   "template-docs/smoke-test.md"
   "template-docs/smoke-test-report-template.md"
   "template-docs/template-methodology.md"
+  "template-docs/session-handoff.example.md"
+  "template-docs/derived-sync-report-template.md"
   "template-sync.json"
   "ai/index.md"
   "ai/global-rules.md"
   "ai/document-lifecycle-rules.md"
+  "ai/session-rules.md"
+  "ai/doc-standards/README.md"
+  "ai/commands/README.md"
+  "ai/commands/sync-methodology.md"
+  "ai/commands/post-sync-cleanup.md"
+  "ai/commands/docs-system-audit.md"
+  "ai/commands/template-proposal-summary.md"
+  "ai/commands/generate-docs.md"
+  "ai/commands/review-inputs.md"
+  "ai/commands/project-review.md"
+  "ai/commands/edit-single-doc.md"
+  "ai/commands/sync-docs-from-code.md"
+  "ai/commands/phase-upgrade.md"
+  "ai/commands/docs-checklist.md"
+  "ai/commands/run-dev-task.md"
+  "ai/commands/fix-bug.md"
+  "ai/commands/sprint-summary.md"
+  "ai/commands/collect-env.md"
+  "ai/commands/new-project.md"
+  "ai/commands/commit-message.md"
   "AGENTS.md"
   "CLAUDE.md"
   ".cursor/rules/project-rules.mdc"
@@ -55,6 +77,7 @@ DEFAULT_SYNC_FILES=(
   "ai/prompts/README.md"
   "ai/prompts/review/03-project-review.md"
   "ai/prompts/review/10-docs-checklist.md"
+  "ai/prompts/review/16-docs-system-audit.md"
   "ai/prompts/setup/13-collect-env.md"
   "ai/prompts/setup/14-new-project.md"
   "CONTRIBUTING.md"
@@ -73,10 +96,10 @@ DEFAULT_SYNC_FILES=(
   "scripts/bootstrap-dev-env.ps1"
 )
 
-# _scaffold 规范镜像：把模板 docs/00-09 撰写规范镜像到派生项目 docs/_scaffold/。
-# 与 SYNC_FILES 不同，这是 src(docs/0X) != dest(docs/_scaffold/0X) 的专用镜像步骤；
-# 产物是只读规范镜像，不是项目事实，绝不覆盖派生项目自己的 docs/0X。
-SCAFFOLD_DOCS=(
+# doc-standards 规范镜像：把模板 docs/00-09 撰写规范镜像到派生项目 ai/doc-standards/。
+# 与 SYNC_FILES 不同，这是 src(docs/0X) != dest(ai/doc-standards/0X) 的专用镜像步骤；
+# 产物是只读 AI 文档标准，不是项目事实，绝不覆盖派生项目自己的 docs/0X。
+DOC_STANDARD_DOCS=(
   "docs/00-scenario.md"
   "docs/01-user-requirements.md"
   "docs/02-srs.md"
@@ -118,7 +141,8 @@ git rev-parse --is-inside-work-tree >/dev/null
 echo "==> 抓取模板: $TEMPLATE_REMOTE (main)"
 if ! git fetch --no-tags --depth=1 "$TEMPLATE_REMOTE" main; then
   echo "✗ 抓取失败。模板仓库是私有的——确保活跃 gh 账号有访问权限：" >&2
-  echo "    gh auth switch -u emily8421" >&2
+  echo "    gh auth status" >&2
+  echo "    gh auth switch -u <有模板仓库访问权限的账号>" >&2
   exit 1
 fi
 REF="FETCH_HEAD"
@@ -209,9 +233,9 @@ if [[ "$MODE" == "--dry-run" ]]; then
   done
 
   echo
-  echo "==> _scaffold 规范镜像（docs/00-09 → docs/_scaffold/，只读规范，不覆盖项目事实）:"
-  for src in "${SCAFFOLD_DOCS[@]}"; do
-    dest="docs/_scaffold/$(basename "$src")"
+  echo "==> doc-standards 规范镜像（docs/00-09 → ai/doc-standards/，只读规范，不覆盖项目事实）:"
+  for src in "${DOC_STANDARD_DOCS[@]}"; do
+    dest="ai/doc-standards/$(basename "$src")"
     if git cat-file -e "$REF:$src" 2>/dev/null; then
       if [[ -f "$dest" ]]; then
         remote_hash="$(git rev-parse "$REF:$src")"
@@ -242,11 +266,11 @@ else
     fi
   done
 
-  echo "==> _scaffold 规范镜像（docs/00-09 → docs/_scaffold/，只读规范，不覆盖项目事实）:"
-  for src in "${SCAFFOLD_DOCS[@]}"; do
-    dest="docs/_scaffold/$(basename "$src")"
+  echo "==> doc-standards 规范镜像（docs/00-09 → ai/doc-standards/，只读规范，不覆盖项目事实）:"
+  for src in "${DOC_STANDARD_DOCS[@]}"; do
+    dest="ai/doc-standards/$(basename "$src")"
     if git cat-file -e "$REF:$src" 2>/dev/null; then
-      mkdir -p docs/_scaffold
+      mkdir -p ai/doc-standards
       git show "$REF:$src" > "$dest"
       git add "$dest"
       UPDATED_FILES+=("$dest")

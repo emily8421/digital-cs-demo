@@ -7,6 +7,8 @@
 
 - ai/global-rules.md
 - ai/document-lifecycle-rules.md
+- ai/session-rules.md
+- ai/commands/README.md
 - ai/project-rules.md
 
 > 规则增多需要拆分时，仅在本文件中增加列表项即可，

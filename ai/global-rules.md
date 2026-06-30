@@ -119,14 +119,20 @@ Scenario → 用户需求 → SRS → PRD → 架构设计 → 技术方案 → 
 
 避免：`想法 → AI → 代码`。
 
-## 7. 多AI工具协作
+## 7. 多AI工具协作与快捷入口
 
 不同AI编程工具（Cursor / Claude Code / Codex 等）的入口文件
 （`.cursor/rules/project-rules.mdc` / `CLAUDE.md` / `AGENTS.md`）均只指向本目录的
 `index.md`；其中 `.cursor/rules/project-rules.mdc` 额外带 frontmatter（`alwaysApply: true`）
 以便 Cursor 自动加载，其余入口由工具原生自动读取。切换工具会丢失"对话历史"，但不会丢失"项目规则"。
-切换时：先在 `docs/08-dev-plan.md` 当前Sprint条目下记录进度，新工具开新会话后先
-执行 `ai/prompts/dev/02-run-task.md` 的续接 Prompt，再说明当前进度，继续开发。
+
+会话中断、切换工具或开启新 CLI 窗口时，按 `ai/session-rules.md` 读取 / 更新本地续接文件
+（优先 `.ai/session-handoff.md`，兼容 `NEXT-STEPS.md`），并结合 `git status --short --branch`
+恢复上下文。任何多步骤任务、执行计划、文件修改或阻塞项，都应及时写入续接文件，避免计划只留在聊天上下文。
+
+当用户提出“更新方法论”“文档体系审核”“同步后整理项目”“执行 Sprint”等常见操作意图时，
+AI 应优先查 `ai/commands/README.md` 与对应 `ai/commands/*.md`，再读取命令路由指向的权威
+Prompt / SOP / 脚本说明执行；不要要求用户手工打开 prompt 文件、复制再粘贴。
 
 ## 8. 文档演进规则（积累式）
 
