@@ -1,7 +1,19 @@
 # 04 系统架构
 
+> **文档定位**：定义系统边界、架构视图、模块职责、关键流程和部署拓扑；不写具体依赖版本、表字段或接口细节。
+> **上游输入**：`docs/03-prd.md` §3、`docs/02-srs.md`、`docs/env/local-env.md`、`ai/project-rules.md`。
+> **下游输出**：约束 `docs/05-tech-spec.md`、`docs/06-db-design.md`、`docs/07-api-spec.md`、`docs/design/*`、`docs/08-dev-plan.md`。
 > AI 生成初稿，**人工确认**。完整框架——架构图 + 子系统表（每行带 阶段/状态/指向 design-*）。
 > 按 global-rules §8 积累式演进：框架一次铺满（含 P2/愿景骨架），细节随阶段在原位完善。
+
+## 0. 文档元信息
+
+| 项 | 内容 |
+|---|---|
+| 输入来源 | `docs/03-prd.md` §3；`docs/05-tech-spec.md`；`ai/project-rules.md` |
+| 覆盖功能 / REQ | REQ-1~REQ-14；REQ-15/16/17 保留愿景约束 |
+| 当前状态 | 已确认（P1+P2 Demo 收官；愿景待技术验证） |
+| 最后更新 | 2026-06-29 |
 
 ## 1. 整体架构图
 

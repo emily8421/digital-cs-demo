@@ -1,14 +1,27 @@
 # 08 开发计划
 
+> **文档定位**：把已批准范围拆成可执行 Sprint / Task，明确目标、输入、修改范围、验收标准和禁止事项。
+> **上游输入**：`docs/02-srs.md`、`docs/03-prd.md`、`docs/04-architecture.md`、`docs/05-tech-spec.md`、`docs/09-verification.md`。
+> **下游输出**：指导任务单、代码实现、验证执行和 Sprint 总结。
 > AI 生成初稿，**人工确认**。按 Sprint 拆分，每个 Sprint 用 global-rules §3 格式（目标/输入文档/修改范围/验收标准/禁止事项）。
 > 单 Sprint 限 1~3 文件/模块。按 global-rules §8 积累式演进：升阶段在对应 Phase 分组**原位追加**，**不删旧 Sprint**。
 > **阶段归属**取自 `docs/03-prd.md` §3（唯一来源）与 `ai/project-rules.md` §1（当前阶段指针）。
 > **P1（2026-06-21）+ P2（2026-06-23）均已收官；当前＝愿景待技术验证（未启动）。**
-> **交付物形态**（v1.7.0 §8.1）：Phase1 / Phase2 均为 **Demo**（模拟器通道 + 无 LLM + 本机 Docker）；MVP 需真实通道 + 生产要素，留愿景。
+> **交付物形态**（global-rules §8.1）：Phase1 / Phase2 均为 **Demo**（模拟器通道 + 无 LLM + 本机 Docker）；MVP 需真实通道 + 生产要素，留愿景。
 
 > ⚠️ Sprint-0 是全局前提（企业微信外部群能力验证），先行；未通过则 Demo 以模拟器通道推进，不阻塞核心价值（见 03 §3）。
 
 ---
+
+## 0. 文档元信息
+
+| 项 | 内容 |
+|---|---|
+| 当前 Phase | Phase1 + Phase2 已收官；当前＝愿景待技术验证（未启动） |
+| 交付物形态 | Demo |
+| 输入基线 | 00-09 文档体系；`docs/03-prd.md` §3；`ai/project-rules.md` §1 |
+| 当前状态 | 已确认（P1+P2 Demo 收官；愿景待技术验证） |
+| 最后更新 | 2026-06-29 |
 
 ## Phase1（Demo）—— ✅ 已收官（2026-06-21）
 
@@ -337,6 +350,7 @@
 #### 验收记录（2026-06-23）
 - 已实现：`service/sla/scanner.py`（`scan_sla` 扫超时未答 + 生成口语化提示 + 写 Notification kind=sla）、`api/sla.py`（POST /sla/scan 手动触发/外部 cron）、`config.sla_threshold_minutes`（默认 30）、models Notification CHECK 加 sla。
 - 设计决策：计时口径＝每会话最后 inbound，同会话无更晚 outbound + 距今 > 阈值 → 超时未答；提示发经营者（owner，复用 summary）；调度＝外部 cron（复用 summary 模式，不内嵌）；SQLite naive datetime 兼容（received_at aware 化）。
+- 部署口径：Demo 本机通过 `/ui` 或 `POST /api/v1/sla/scan` 手动触发；若进入持续运行/生产部署，由部署层 cron/systemd/k8s 定时调用该接口，应用内不内嵌调度器。
 - 自动化测试：`pytest -q` → **47 passed**（+ `test_sla` 4：超时未答→overdue、已答→不计、阈值内→不计、提示+Notification 落库；SQLite）。
 - 真实端到端（uvicorn + docker PG）：插超时未答消息（demo_sla_overdue，60 分钟前 inbound 无 outbound）→ POST /sla/scan(threshold 30) → 命中 3 条超时（含 demo_sla_overdue 62 分钟）+ Notification #50(kind=sla) + 口语化提示。
 - **PG 迁移备注**：notifications 表 CHECK 需含 sla；models 已改（新部署 create_all 自动），**已有 PG 库需手动 ALTER**（演示前已执行：DROP/ADD CONSTRAINT 含 sla）。
@@ -399,6 +413,15 @@ P1 会话级暂停 → 话题（thread）级精化：会话内某话题 handed_o
 
 > REQ-15（企业微信外部群接入，Sprint-0 已核实群内路径不成立，待替代通道如微信客服）、REQ-16（订单进度转人工）、REQ-17（售后规则智能引导）。
 > 对应 Sprint 待 Phase2 收官、升阶段后在本文**原位追加**到此分组下。
+
+### Sprint → REQ → 验收核对（2026-06-29）
+
+| Sprint | 对应 REQ | 验收状态 |
+|---|---|---|
+| Sprint-0 | REQ-15 技术验证项 | ✅ 已验证客户群群内路径不成立，Demo 改走模拟器 |
+| Sprint-1~7 | REQ-1/2/3/4/5/6/7/8/10/12 | ✅ Phase1 Demo 已收官，见各 Sprint 验收记录与 `docs/09-verification.md` §2 |
+| Sprint-8~13 | REQ-9/11/13/14 + REQ-10 话题级 | ✅ Phase2 优化扩展已收官，见 Sprint-8~13 验收记录与 `docs/09-verification.md` §2 |
+| 远期愿景 | REQ-15/16/17 | ⏸️ 未启动；待技术验证通过后在本分组原位追加 Sprint 与验收记录 |
 
 ### 通道验证路线（非功能 · 对比研究）
 

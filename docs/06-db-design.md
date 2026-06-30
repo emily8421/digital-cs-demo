@@ -1,7 +1,20 @@
 # 06 数据库设计
 
+> **文档定位**：定义数据需求、表结构、索引、约束和迁移边界；不写 API 请求响应或业务流程长文。
+> **上游输入**：`docs/02-srs.md`、`docs/04-architecture.md`、`docs/05-tech-spec.md`、`ai/project-rules.md` §3。
+> **下游输出**：约束模型层、迁移脚本、种子数据、测试夹具和 `docs/09-verification.md` 数据验证。
 > AI 生成初稿，**人工确认**。完整表清单 + 阶段标签/状态；**P1 表写全字段/索引，P2/愿景表留骨架**。按 global-rules §8 积累式演进（只增不删、原位细化）。
 > 引擎：PostgreSQL（版本待确认，见 05）。表前缀 `dcs_`。
+
+## 0. 文档元信息
+
+| 项 | 内容 |
+|---|---|
+| 保留 / 省略决策 | 保留 |
+| 决策来源 | `ai/project-rules.md` §3（项目有持久化存储） |
+| 覆盖 REQ / 模块 | REQ-1~REQ-14 的 Demo 数据模型；REQ-16 订单表愿景占位 |
+| 当前状态 | 已确认（P1+P2 Demo 收官；愿景待技术验证） |
+| 最后更新 | 2026-06-29 |
 
 ## 1. 表清单
 
@@ -167,6 +180,28 @@
 - `staff 1—N notifications`、`staff 1—N knowledge_items`(来源确认人)。
 - `orders`(愿景) 经订单号与 `handoffs.context_ref` 弱关联，不强制外键（外部系统）。
 
+## 5. REQ → 表追溯矩阵
+
+| REQ | 数据表 / 持久化对象 | 阶段 | 说明 |
+|---|---|---|---|
+| REQ-1 | `dcs_messages`、`dcs_conversations` | P1 | 记录入站/出站消息与会话状态 |
+| REQ-2 | `dcs_knowledge_items`、`dcs_messages` | P1 | 检索知识条目并保留消息记录 |
+| REQ-3 | `dcs_knowledge_items`、`dcs_messages` | P1 | 标准 FAQ 属知识条目 |
+| REQ-4 | `dcs_leads`、`dcs_conversations`、`dcs_messages` | P1 | 留资结构化并关联会话 |
+| REQ-5 | `dcs_handoffs`、`dcs_notifications`、`dcs_staff` | P1 | 转交事项、通知与接收角色 |
+| REQ-6 | `dcs_knowledge_gaps`、`dcs_leads`、`dcs_handoffs`、`dcs_notifications` | P1 | 缺口、留资与转交闭环 |
+| REQ-7 | `dcs_messages`、`dcs_handoffs`、`dcs_notifications`、`dcs_staff` | P1 | 小结基于消息/转交并记录通知 |
+| REQ-8 | `dcs_routing_rules`、`dcs_staff`、`dcs_handoffs` | P1 | 场景到角色/人员的路由 |
+| REQ-9 | `dcs_inquiries`、`dcs_handoffs` | P2 | 多轮询盘收集与摘要转交 |
+| REQ-10 | `dcs_conversations`、`dcs_topic_handoffs` | P1 + P2 | 会话级暂停与话题级暂停 |
+| REQ-11 | `dcs_messages` | P2 | 身份披露作为消息交互记录 |
+| REQ-12 | `dcs_messages`、`dcs_notifications` | P1 | 非文字消息记录与人工提醒 |
+| REQ-13 | `dcs_knowledge_gaps`、`dcs_knowledge_items` | P2 | 缺口确认后回写知识库 |
+| REQ-14 | `dcs_messages`、`dcs_notifications` | P2 | SLA 扫描基于消息时序，结果写通知 |
+| REQ-15 | — | 愿景·待技术验证 | 原企业微信客户群路径已证伪；替代通道待选定后补数据设计 |
+| REQ-16 | `dcs_orders` | 愿景·待技术验证 | 订单/进度表仅占位，不实现、不建表 |
+| REQ-17 | `dcs_handoffs`（可能扩展） | 愿景·待技术验证 | 售后规则推理未启动；待验证后补正式表设计 |
+
 ---
 
-**追溯**：每张表对应 REQ 见 §1；接口读写见 `docs/07-api-spec.md`；子系统逻辑见各 `design-*.md`。
+**追溯**：每张表对应 REQ 见 §1 / §5；接口读写见 `docs/07-api-spec.md`；子系统逻辑见各 `design-*.md`。

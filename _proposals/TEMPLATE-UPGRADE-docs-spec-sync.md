@@ -2,6 +2,7 @@
 
 > 类型：派生项目起草的模板优化提案（去项目化）。
 > 状态：待回流 `ai-project-template`（按 `CONTRIBUTING.md` §4 上行流程）。
+> 最新状态：v1.20.0+ 已将规范镜像主路径迁移为 `ai/doc-standards/00-09`；本文的 `docs/_scaffold` 方案可视为已被后续模板演进吸收并替代，待确认后归档。
 > 关联：补 sync-template 的规范同步缺口；与 `document-lifecycle-rules.md` §5（生成矩阵）、review 类提示词、`TEMPLATE-UPGRADE-docs-system-audit-prompt.md` 互补。
 
 ## 1. 现状与问题（已 fetch 模板核对）

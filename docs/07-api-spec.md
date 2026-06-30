@@ -1,7 +1,20 @@
 # 07 API设计
 
+> **文档定位**：定义 REST / Webhook / 内部通道契约的统一约定、接口清单、请求响应、错误码和权限边界。
+> **上游输入**：`docs/02-srs.md`、`docs/03-prd.md`、`docs/04-architecture.md`、`docs/05-tech-spec.md`。
+> **下游输出**：约束 API 层、演示 UI、集成测试和验收用例。
 > AI 生成初稿，**人工确认**。完整接口清单 + 阶段标签/状态；**P1 接口写请求/响应示例，P2/愿景接口留骨架**。按 global-rules §8 积累式演进。
 > 风格：REST + Webhook 回调；统一响应格式。版本前缀 `/api/v1`（Webhook 回调路径例外）。
+
+## 0. 文档元信息
+
+| 项 | 内容 |
+|---|---|
+| 保留 / 省略决策 | 保留 |
+| 接口形态 | REST + 内部通道适配契约 |
+| 覆盖 REQ / 模块 | REQ-1~REQ-14；REQ-15/16/17 仅保留愿景骨架 |
+| 当前状态 | 已确认（P1+P2 Demo 收官；愿景待技术验证） |
+| 最后更新 | 2026-06-29 |
 
 ## 1. 统一约定
 
@@ -121,3 +134,18 @@
 ---
 
 **追溯**：接口对应 REQ 见 §2；读写的数据表见 `docs/06-db-design.md`；编排逻辑见 `docs/design/conversation-engine.md`。
+
+## 4. REQ → 接口追溯矩阵
+
+| REQ | 接口 / 契约 | 阶段 | 状态 | 备注 |
+|---|---|---|---|---|
+| REQ-1 | `POST /api/v1/messages/simulate`、`GET /api/v1/conversations`、`GET /api/v1/conversations/{id}`、通道适配契约 | P1 | 已实现 | 模拟器通道验证归一化消息管线 |
+| REQ-2/3 | `GET /api/v1/knowledge/search?q=` | P1 | 已实现 | 知识命中直回；未命中供编排进入 REQ-6 |
+| REQ-5/8 | `POST /api/v1/handoffs` | P1 | 已实现 | 建转交记录、按角色路由并生成通知 |
+| REQ-7 | `POST /api/v1/summaries/daily` | P1 | 已实现 | Demo 手动触发；生产形态由外部 cron 调用 |
+| REQ-10 | `POST /api/v1/conversations/{id}/handoff-state`、`POST /api/v1/conversations/{id}/topic-handoff` | P1/P2 | 已实现 | 会话级 + 话题级暂停 |
+| REQ-13 | `GET /api/v1/knowledge/gaps`、`POST /api/v1/knowledge/gaps/{id}/answer`、`GET /api/v1/knowledge/pending`、`POST /api/v1/knowledge/{id}/confirm` | P2 | 已实现 | 拍板人补答、确认后回写知识库 |
+| REQ-14 | `POST /api/v1/sla/scan` | P2 | 已实现 | Demo 手动触发；生产形态由外部 cron 调用 |
+| REQ-15 | `/webhooks/wework/message` / 真实客户入口契约 | 愿景·待技术验证 | 骨架 | 企业微信客户群路径已证伪；替代通道待 Spike |
+| REQ-16 | `GET /api/v1/orders/{id}/progress` | 愿景·待技术验证 | 骨架 | 依赖外部订单 / 生产系统 |
+| REQ-17 | 售后规则接口 / 知识边界契约 | 愿景·待技术验证 | 未定义 | 待售后规则和高风险 AI 边界确认 |
