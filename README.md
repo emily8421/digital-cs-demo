@@ -1,6 +1,6 @@
 # DigitalCustomerService_Demo（数字客服 · 演示）
 
-> 派生自 [ai-project-template](https://github.com/emily8421/ai-project-template)；方法论已 sync 至 **v1.18.1**。
+> 派生自 [ai-project-template](https://github.com/emily8421/ai-project-template)；方法论已 sync 至 **v1.21.0**。
 
 数字客服 Demo——**群里消息有人接、该跟的已分给该跟的人、经营者收到「今天关注什么」的小结**。
 后端编排闭环 + 演示 UI，本机原型（真实通道企业微信 Sprint-0 已核实不成立，待替代方案）。
@@ -59,11 +59,12 @@ docker compose -f docker/docker-compose.yml up -d   # pgvector + TEI
 - `docs/vision/product-vision.md`：产品愿景叙事（工程文档输入）
 - `docs/env/context-and-constraints.md`：背景与选型依据
 - `ai/`：AI 行为规范（`global-rules.md` 通用 + `project-rules.md` 项目专属，入口 `ai/index.md`）
+- `ai/doc-standards/00-09`：模板 00-09 撰写规范镜像（只读审计基线，不是项目事实）。
 - AI 工具入口：`CLAUDE.md` / `AGENTS.md` / `.cursor/`
 
 ## 模板关系
 
-派生自 [ai-project-template](https://github.com/emily8421/ai-project-template) v1.18.1：
+派生自 [ai-project-template](https://github.com/emily8421/ai-project-template) v1.21.0：
 - 方法论同步（模板 ⇄ 项目）：见 `CONTRIBUTING.md`、`git-guide.md`、`scripts/sync-template.sh`
 - 模板优化提案：v1.5 / v1.6 / sync-dryrun(v1.6.3) / phasing(v1.7.0) / cross-cutting-consistency(v1.8.0) 均已回流模板并归档至 `_archive/proposals/`；`_proposals/` 现仅留收件箱说明
 

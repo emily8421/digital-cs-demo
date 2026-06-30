@@ -3,7 +3,7 @@
 > 项目当前状态 + 下一步方向。**新对话打开本文件即可了解「做到哪了 / 下一步做什么」**。
 > 项目专属（不参与模板下行同步）；更新时机：每完成一个阶段/里程碑后。
 
-## 当前状态（2026-06-28）
+## 当前状态（2026-06-30）
 
 - ✅ **P1（Demo）收官**（2026-06-21）：REQ-1~8/10/12
 - ✅ **P2（优化扩展）收官**（2026-06-23）：REQ-9/11/13/14 + 话题级 REQ-10；55 tests passed
@@ -17,6 +17,7 @@
 - ✅ **文档体系诊断 + 横切一致性提案**（2026-06-26）：诊断 sprint-0 回写遗漏 / wxautox4 定性二分裂 / STR-01 孤岛三症状（根因＝缺「横切约束变更回梳」环节）；起草 `_proposals/TEMPLATE-UPGRADE-cross-cutting-consistency.md` 补充提案（PR#20）；STR-01 保命入库（PR#21）
 - ✅ **模板同步 v1.9.0**（#24，2026-06-27）：v1.7.0→v1.9.0；新增 `ai/document-lifecycle-rules.md`（v1.8.0 横切一致性/变更传播/外部文档接入）+ Prompt Library 拆分（v1.9.0，INIT-PROMPT 改索引）；cross-cutting-consistency 提案已被 v1.8.0 采纳并归档至 `_archive/proposals/`
 - ✅ **模板同步 v1.18.1**（#29，2026-06-28）：v1.9.0→v1.18.1；新增 `docs/_scaffold/` 规范镜像 + `template-docs/` 新手文档 + `16-docs-system-audit` 提示词 + `check-prereqs`/`bootstrap-dev-env` 脚本；15-cleanup 审计确认 docs 结构 / env / project-rules 全合规，仅刷新版本号
+- ✅ **模板同步 v1.21.0**（2026-06-30）：v1.18.1→v1.21.0；新增 `ai/session-rules.md`、`ai/commands/` 快捷命令、`ai/doc-standards/00-09` 规范基线与同步运行记录模板；`docs/_scaffold/` 进入旧路径兼容期。
 - ✅ **同步后整理**（#25，2026-06-27）：`demo-script.md` 移出 docs/ 根 + 5 处链接更新 + README 版本号/版块校准 + 05 §4 编号修复 + project-rules 引用更新；业务代码零改动
 - **当前交付物＝Demo**（可演示核心价值；非生产 MVP/产品，见 `docs/00-scenario.md` 交付物定位）
 - ⏸️ 远期愿景（REQ-15 企微替代通道 / REQ-16 订单 / REQ-17 售后）待技术验证，未启动
@@ -73,13 +74,14 @@
 
 ## 文档体系审计（16-audit · 2026-06-28）
 
-对照 v1.18.1 `docs/_scaffold` 全链路回溯审计（追溯链 / 横切一致性 / 变更传播 / 外部接入 / 生成矩阵 / 可行性 / 交付物形态 / 规范基线）。**结论：PLM 主干健康**（追溯闭合无悬空、横切权威源清晰、可行性有降级、交付物形态无误称）。
+对照 v1.21.0 `ai/doc-standards`（旧 `docs/_scaffold` 仅作 fallback）全链路回溯审计（追溯链 / 横切一致性 / 变更传播 / 外部接入 / 生成矩阵 / 可行性 / 交付物形态 / 规范基线）。**结论：PLM 主干健康**（追溯闭合无悬空、横切权威源清晰、可行性有降级、交付物形态无误称）。
 
 回梳待办（均不改业务代码/事实，走 `ai/prompts/docs/04-edit-single-doc.md` 最小变更）：
 
-- 🟡 **组B（可排期）**：00-09 全缺 §0 文档元信息表 + 01/02/03/06 缺矩阵化追溯表（v1.18.1 新基线首次对照暴露的结构缺口）；`01` 用 `F-*` 充当用户需求编号，基线要求 `U-ID`（F-ID 属 PRD）。
-- 🟡 **组C（低成本·立即可做）**：docs 版本号引用漂移——`08:7`/`09:6` 等写「v1.7.0 §8.1」，应去版本号改「global-rules §8.1」。
-- 🟢 **组D（小）**：STR-01 正文「DEC-7」加「(外部·知衍)」前缀；`09` 矩阵补 REQ-15/16/17 占位行（愿景·待技术验证）。
+- ✅ **组B（已完成，2026-06-29）**：00-09 已补 §0 文档元信息表；`01/02/03/06` 已补矩阵化追溯表。`01` 保留历史 `F-*`，新增 `U-ID` 兼容映射，避免大范围重命名扰动。
+- ✅ **组C（低成本·已完成，2026-06-29）**：docs 版本号引用漂移已修复——`08:7`/`09:6` 已去版本号，改为「global-rules §8.1」。
+- ✅ **组D（小·已完成，2026-06-29）**：STR-01 正文「DEC-7」已加「(外部·知衍)」前缀；`09` 矩阵已补 REQ-15/16/17 占位行（愿景·待技术验证）。
+- ✅ **审计小缺口（已完成，2026-06-29）**：`08` 已补 Sprint→REQ→验收核对表；SLA scan 已补 Demo 手动触发 / 生产外部 cron 口径（`08` + `demo-script`）。`16-docs-system-audit` 二次实证已补入 `_proposals/TEMPLATE-UPGRADE-docs-system-audit-prompt.md`。
 
 > STR-01（外部·知衍·古晶光电）§8 锚定完整、已声明不驱动开发，非断点；可选在 `docs/inputs/` 补「STR-01→docs 影响映射」更清晰。
 
@@ -92,15 +94,51 @@
 
 ## 推荐路径
 
-**B、A、模板同步 v1.9.0→v1.18.1、同步后整理、C 文档体系一致性修复均已完成（2026-06-28）**，短期「彻底干净」。下一步两条线：① 处理审计小缺口（检索阈值/SLA cron/08 核对）+ 沉淀审计提示词提案；② 定方向：产品化（D，需外部条件）还是继续打磨（E/G）。
+### 待办：模板方法论更新（2026-06-29）
+
+> 状态：**待明确 / 未落地**。当前仓库是派生项目，模板方法论同步文件不在本项目内直接改；应先把可通用改进沉淀为 `_proposals/TEMPLATE-UPGRADE-*.md`，再回流 `ai-project-template`。
+
+**处理原则**：
+- 若目标是“改模板方法论”：先起草去项目化提案，说明动机 / 拟改文件 / 版本影响 / 影响面 / 验证方式；成熟后回流模板仓库走 PR。
+- 若目标是“同步模板最新版”：先保护当前未提交改动，再执行 `scripts/sync-template.ps1 --dry-run` 预览覆盖范围，确认后再 `--commit`。
+- 若目标是“本项目专属规则”：只改 `ai/project-rules.md` 或项目文档，不写入 `ai/global-rules.md`、`ai/document-lifecycle-rules.md`、`template-docs/template-methodology.md` 等同步文件。
+
+**下一步最小动作**：明确本轮要更新的方法论点（1~3 条），然后新增或补充 `_proposals/TEMPLATE-UPGRADE-template-methodology-*.md`；如只是下行同步，则先做 dry-run 并记录会被覆盖的文件清单。
+
+**新增输入（2026-06-29）**：已新增 `docs/inputs/agent-delivery-modes.md`，沉淀 6 种智能体交付形态（H5、公众号、企业微信/工作群机器人、桌面端、API 嵌入、小程序）。下一步应先用 `ai/prompts/docs/01-review-inputs.md` 评审该输入，再决定是否回写 vision/00-03 和后续设计。
+
+
+### 待讨论：智能体交付形态输入评审（2026-06-29）
+
+> 状态：**待讨论 / 未批准需求**。来源：`docs/inputs/agent-delivery-modes.md` + 本轮按 `ai/prompts/docs/01-review-inputs.md` 的入口判定。当前仅作为产品化 D 的输入评审结论，不直接修改 `vision/00-09`，不直接新增 REQ，不直接要求实现。
+
+**入口判定**：主入口类型＝`External-input`，辅助属性＝`PRD-first`。它是“交付形态 / 交互入口”横切输入，涉及愿景、场景、需求、架构、API、前端、部署和验收，不能直接塞进单一文档。
+
+**生成准备度**：`Conditionally Ready`。材料足够做影响评审和候选路线图草案，但不能直接生成/修改完整需求链；必须先人工确认入口优先级。
+
+**待讨论的最小决策问题**：
+1. 产品化 D 的第一客户入口选哪个：公众号 / 微信客服 / 小程序 / H5？
+2. 员工侧通知入口选哪个：飞书 / 企业微信内部群 / Web 控制台？
+3. 桌面端和 API 嵌入：保留为远期，还是明确排除出数字客服主线？
+
+**初步回写建议（待确认后执行）**：
+- `docs/vision/product-vision.md`：补“智能体交付形态不是单一聊天框，而是多入口交付”的愿景段。
+- `docs/00-scenario.md`：补“客户入口 / 员工入口 / 管理入口”三类场景。
+- `docs/01-user-requirements.md`：补用户对交付入口的需求，如客户希望从熟悉入口使用、员工希望在工作消息通道接收提醒。
+- `docs/02-srs.md`：把 REQ-15 从“企业微信外部群接入”改造为更中性的“真实客户入口接入”，下挂公众号 / 微信客服 / 小程序等候选。
+- `docs/03-prd.md`：将 DM-1~DM-6 分配到 Demo / MVP / 产品 / 暂不做；确认后再扩展 `04-09` 与 `docs/design/*`。
+
+**当前建议倾向（未批准）**：主客户入口优先讨论“微信公众号 vs 微信客服 1:1”；员工侧入口优先讨论“飞书/企业微信内部群通知”；H5 保留为试用/演示/员工辅助入口；小程序作为产品化候选；桌面端与 API 嵌入先放远期或另线。
+
+**B、A、模板同步 v1.9.0→v1.21.0、同步后整理、C 文档体系一致性修复、审计小缺口（SLA cron/08 核对/组B/组C/组D）和审计提示词提案沉淀均已完成（2026-06-30）**。短期文档审计修复已按 `ai/doc-standards` 新基线更新；下一步只剩方向决策：产品化（D，需外部条件）或继续打磨（E/G，检索质量/代码留优化）。
 
 ## 新对话恢复指引
 
-- **分支**：`main`（与 `origin/main` 同步）
+- **分支**：`docs/16-audit-backlog`（当前工作分支；模板同步与文档审计回梳待拆提交）
 - **运行**：后端**可能仍在后台运行**（uvicorn :8000）；先 `curl localhost:8000/health` 验证——未跑则按 `demo-script.md` §2 起（docker + uvicorn）。
 - **扫码**：`http://<本机IP>:8000/ui/h5.html`（IP 用 `ipconfig` 查，忽略 `172.28` 虚拟网卡；防火墙放行 8000）
 - **环境确认**：`docs/env/local-env.md` 9 项已确认（2026-06-26）；剩 04/05/09 环境章节零散「待确认」项（属中期整理，非阻塞）
-- **提案**：phasing/sync-dryrun/cross-cutting-consistency 均已回流模板并归档至 `_archive/proposals/`（cross-cutting-consistency 被模板 v1.8.0 采纳，落地于 `ai/document-lifecycle-rules.md`）；`_proposals/` 现仅留收件箱说明
+- **提案**：phasing/sync-dryrun/cross-cutting-consistency 均已回流模板并归档至 `_archive/proposals/`（cross-cutting-consistency 被模板 v1.8.0 采纳，落地于 `ai/document-lifecycle-rules.md`）；`_proposals/` 现有待回流提案包括 `TEMPLATE-UPGRADE-docs-system-audit-prompt.md`（已补二次实证）和 `TEMPLATE-UPGRADE-docs-spec-sync.md`
 - **STR-01**：外部策略文档已锚定（§8 锚定 + 命名冲突澄清）并迁移至 `docs/decisions/`（按 §8.4 策略决策类）；PR#21 入库，C 回梳补锚定/分区
 - **清理**：旧分支 `chore/sync-template-v1.6.8`、`demo_verify*.txt` 已清（2026-06-26）
 - **新对话第一步**：先读 `ai/index.md` 列出的规则（`global-rules.md` + `project-rules.md`），再看本文件
