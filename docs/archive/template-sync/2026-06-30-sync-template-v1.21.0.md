@@ -23,7 +23,7 @@
 - 新增 / 修改的方法论文件：`VERSION`、`CHANGELOG.md`、`ai/session-rules.md`、`ai/commands/*`、`ai/doc-standards/*`、`template-docs/derived-sync-report-template.md` 等 v1.21.0 同步清单文件。
 - 项目专属文件是否被误改：未发现模板同步误覆盖 `docs/00-09`；项目文档改动属于后续审计回梳。
 - 是否新增 / 刷新 `ai/doc-standards/00-09`：是。
-- 是否残留旧 `docs/_scaffold/`：是，旧 v1.18.x 路径仍在仓库中，按 v1.21.0 说明仅作为 fallback；后续可人工确认是否清理。
+- 是否残留旧 `docs/_scaffold/`：已于同步后整理阶段清理；旧路径仅作为模板文档中的兼容说明保留。
 
 ## 遇到的问题
 
@@ -38,7 +38,7 @@
 | 问题 | 是否项目专属 | 是否建议回流模板 | 建议提案 |
 |---|---|---|---|
 | PowerShell 入口在 Git Bash/MSYS Win32 error 5 时只能失败，缺少原生 PowerShell fallback | 否 | 是 | 可起草 `TEMPLATE-UPGRADE-sync-powershell-fallback.md` |
-| `docs/_scaffold` 旧路径在派生项目中仍被跟踪，v1.20+ 未给出派生清理策略 | 否 | 可评估 | 可补 post-sync-cleanup 提醒“旧路径是否删除需人工确认” |
+| `docs/_scaffold` 旧路径在派生项目中曾被跟踪，v1.20+ 未给出派生清理策略 | 否 | 可评估 | 可补 post-sync-cleanup 提醒“旧路径是否删除需人工确认” |
 
 ## 已生成的回流提案
 
@@ -48,5 +48,6 @@
 
 - 是否需要 `/run post-sync-cleanup`：已执行最小整理。
 - 是否需要 `/run docs-system-audit`：已执行并回梳结构缺口。
-- 是否需要人工清理旧目录：需要确认是否删除 `docs/_scaffold/`。
+- 是否需要人工清理旧目录：已确认并删除 `docs/_scaffold/`。
 - 是否需要同步回模板仓库：如要解决 Git Bash fallback 或旧路径清理策略，可另起去项目化提案。
+
