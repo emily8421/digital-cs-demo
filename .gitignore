@@ -47,3 +47,6 @@ node_modules/
 
 # 演示二维码产物（scripts/gen_demo_qrcodes.py 生成，本地演示用，不入库）
 demo-*-qrcode.png
+
+# 本地 AI 会话/临时工作区（session-handoff、迁移前临时材料，不入库，见 ai/session-rules.md）
+.ai/
