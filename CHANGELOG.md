@@ -6,6 +6,13 @@
 
 模板版本采用三段式 `vMAJOR.MINOR.PATCH`，以根目录 `VERSION` 为单一审计入口。任何会影响下游同步判断的模板合并都应递增版本；`ai/global-rules.md` 顶部仅记录全局规则自身版本。
 
+## v1.30.3（2026-07-05）
+
+PowerShell 派生边界检查 fallback 空 stderr 热修：修复 `check-derived-sync.ps1` 在 Git Bash 探测阶段 stderr 文件为空时，Windows PowerShell 5.1 对 `$null.Trim()` 报错导致边界检查无法进入 fallback 的问题。
+
+- **脚本修复**：`scripts/check-derived-sync.ps1` 在读取 Bash probe stderr 时显式处理空文件 / `$null`，与 `sync-template.ps1` 的 v1.30.2 热修保持一致。
+- **发布目的**：确保旧派生项目同步到新版脚本后，可在 Git Bash / MSYS 启动失败的 Windows 环境继续运行派生同步边界检查。
+
 ## v1.30.2（2026-07-05）
 
 PowerShell 同步 fallback 空 stderr 热修：修复 Git Bash 探测阶段 stderr 文件为空时，Windows PowerShell 5.1 对 `$null.Trim()` 报错导致 fallback 尚未进入就中断的问题。
