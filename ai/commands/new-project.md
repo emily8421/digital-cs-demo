@@ -17,7 +17,7 @@
 ## 必读文件
 
 - `ai/index.md`
-- `git-guide.md` §2
+- `git-guide.md` §6（场景 D：新建派生项目）
 - `ai/prompts/setup/14-new-project.md`
 - `scripts/new-project.sh`
 - `template-docs/beginner-guide.md`
@@ -27,7 +27,7 @@
 1. 明确项目名、远端 / 本地模式、GitHub 可见性和账号需求。
 2. 说明不推荐手工复制模板文件夹。
 3. 用户确认后运行 `scripts/new-project.sh`。
-4. 引导采集环境、填写愿景和初始化 `ai/project-rules.md`。
+4. 引导采集环境、把原始输入放入 `docs/inputs/`、评审 Product Vision 就绪度并初始化 `ai/project-rules.md`。
 
 ## 写入风险
 

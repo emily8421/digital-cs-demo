@@ -6,10 +6,10 @@
 本模板用于派生项目完成 `ai-project-template` 方法论同步后，记录真实同步过程、问题与可回流优化点。建议保存到派生项目：
 
 ```text
-docs/archive/template-sync/YYYY-MM-DD-sync-template-vX.Y.Z.md
+sync-records/template-sync/YYYY-MM-DD-sync-template-vX.Y.Z.md
 ```
 
-如只是临时续接，可先写入 `.ai/session-handoff.md`；如发现可通用模板优化，再转写为去项目化 `_proposals/TEMPLATE-UPGRADE-*.md`。
+> 长期记录路径为 `sync-records/template-sync/`，与项目开发文档（`docs/`）分离，便于团队审计和回流提案扫描。若用户暂不想提交长期记录，可先写入 `.ai/session-handoff.md` 作为临时续接文件。
 
 ## 基本信息
 
@@ -26,7 +26,10 @@ docs/archive/template-sync/YYYY-MM-DD-sync-template-vX.Y.Z.md
 - dry-run：
 - commit：
 - check-derived-sync：
+- 是否触发 PowerShell fallback（sync / check）：
 - post-sync-cleanup：
+- docs-system-audit（同步后审计）：
+- 项目验证建议 / 已执行验证：
 
 ## 同步结果
 
@@ -36,9 +39,32 @@ docs/archive/template-sync/YYYY-MM-DD-sync-template-vX.Y.Z.md
 - 是否新增 / 刷新 `ai/doc-standards/00-09`：
 - 是否残留旧 `docs/_scaffold/`：
 
+## 同步后整理摘要
+
+- 是否执行 `/run post-sync-cleanup`：
+- README / `ai/project-rules.md` / docs 分区是否需整理：
+- 已处理项：
+- 待确认项：
+- 建议回写 / 后续迁移任务：
+
+## 文档体系审计摘要
+
+- 是否执行 `/run docs-system-audit` 同步后审计模式：
+- 规范基线缺口：
+- 可接受兼容差异：
+- 项目事实风险：
+- 回梳计划摘要：
+
+## 项目验证建议
+
+- 建议运行的测试 / lint / 文档检查 / 人工验收：
+- 已执行验证与结果：
+- 未验证项与原因：
+
 ## 遇到的问题
 
-- Git / gh / Git Bash / PowerShell / 网络问题：
+- Git / gh / Git Bash / PowerShell / 网络问题（如触发 fallback，请记录脚本输出的 fallback 标识与结果）：
+- `gh issue create` / `submit-proposal` 问题（认证、重复 issue、`--body-file`、标签缺失、来源标签降级）：
 - 同步脚本问题：
 - Prompt / 快捷命令理解问题：
 - 文档说明不清：
@@ -54,9 +80,19 @@ docs/archive/template-sync/YYYY-MM-DD-sync-template-vX.Y.Z.md
 
 - `_proposals/TEMPLATE-UPGRADE-xxx.md`
 
+## 提案回流收口
+
+- 扫描范围：`_proposals/` / `.ai/session-handoff.md` / `sync-records/template-sync/` / 模板仓 issue 链接
+- 已确认被模板采纳或已有决议的提案：
+- 已归档到 `_archive/proposals/` 的本地提案：
+- 仍需保留在 `_proposals/` 的提案：
+- 无法判断是否已处理的 issue / 提案与待确认项：
+
 ## 后续动作
 
 - 是否需要 `/run post-sync-cleanup`：
 - 是否需要 `/run docs-system-audit`：
+- 是否需要按审计结果回梳 `docs/00-09` / `docs/design` / `docs/env`：
+- 是否需要补项目验证入口：
 - 是否需要人工清理旧目录：
 - 是否需要同步回模板仓库：
