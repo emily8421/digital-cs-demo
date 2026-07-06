@@ -6,6 +6,15 @@
 
 模板版本采用三段式 `vMAJOR.MINOR.PATCH`，以根目录 `VERSION` 为单一审计入口。任何会影响下游同步判断的模板合并都应递增版本；`ai/global-rules.md` 顶部仅记录全局规则自身版本。
 
+## v1.30.4（2026-07-06）
+
+会话续接运行时元数据边界加固：明确 `读取续接点` 必须按项目 Session Handoff 机制恢复，禁止把 CLI 私有 session、memory、subagent 或 cache 等运行时元数据直接作为项目续接事实。
+
+- **恢复依据**：`ai/session-rules.md` 明确恢复结论只能来自 Git 客观事实、项目续接文件、项目正式文档和当前用户输入。
+- **运行时边界**：Claude / Codex / Cursor 等 CLI 自身产生的 sessions、projects、memory、subagents、cache、trace、history、conversation dump、agent meta 文件仅可作为调试信息或用户明确要求时的辅助参考。
+- **交叉验证**：未经 Git、handoff 或项目文档验证，不得据此推断当前任务、阶段、待办事项、Agent / SubAgent 运行状态或项目事实；无法验证时必须标记为“推测信息”。
+- 回流自 `_proposals/TEMPLATE-UPGRADE-session-resume-runtime-metadata-boundary.md`。
+
 ## v1.30.3（2026-07-05）
 
 PowerShell 派生边界检查 fallback 空 stderr 热修：修复 `check-derived-sync.ps1` 在 Git Bash 探测阶段 stderr 文件为空时，Windows PowerShell 5.1 对 `$null.Trim()` 报错导致边界检查无法进入 fallback 的问题。
