@@ -15,6 +15,7 @@
    `Scenario → 用户需求 → SRS → PRD → 架构 → 技术方案 → 数据库设计 → API设计 → 开发计划 → 代码`。
    其中"数据库设计 / API设计"仅当本项目涉及持久化 / 对外接口时才经此环节；无则按 `ai/project-rules.md` §3 跳过 `docs/06`、`docs/07`。
    文档生成、追溯链、变更传播和多入口裁剪细则见 `ai/document-lifecycle-rules.md`。
+   阶段规划、Sprint / Task 拆分、编码执行、分层验证和验收留痕细则见 `ai/implementation-lifecycle-rules.md`。
    禁止直接从想法生成代码。
 2. **小步快跑**：一个功能 = 一个任务 = 一次提交。禁止一次实现整个系统。
 3. **先设计后实现**：任何模块开发前必须先有设计说明，再允许生成代码。
@@ -98,26 +99,29 @@ ProjectName/
 额外项目文档必须按 `docs/README.md` 放入 `vision/`、`inputs/`、`design/`、`decisions/`、`research/`、`env/`、`meetings/`、`archive/` 等子目录，
 不占用、不挪动 `00-09` 编号，禁止把新增文档直接堆到 `docs/` 根目录。
 
-`frontend/` 是否启用取决于 `ai/project-rules.md` §3 的「演示形态」决策：消息通道内交互、CLI 或不需演示通常不启用；独立 Web 页面或移动端通常启用，并在 `docs/04-architecture.md`、`docs/05-tech-spec.md` 体现前端设计。根 `README.md` 是项目件，用于说明具体项目，不纳入下行同步清单，各项目自行维护。
+`frontend/` 是否启用取决于 `ai/project-rules.md` §3 的「演示形态」决策：消息通道内交互、CLI 或不需演示通常不启用；独立 Web 页面、移动端、小程序、桌面端等可点击 UI 通常启用，并在 `docs/04-architecture.md`、`docs/05-tech-spec.md` 体现前端设计。若项目存在多页面、多角色、复杂表单、状态流、验收依赖点击路径，或 Sprint 修改范围包含页面 / 组件 / 搜索问答 UI / 管理页 / 桌面端集成，开发前应补充 `docs/design/frontend-interaction.md` 或按入口拆分的 `docs/design/*interaction*.md`；若不补，须在 `ai/project-rules.md` §3 或 `docs/05-tech-spec.md` 写明豁免理由。根 `README.md` 是项目件，用于说明具体项目，不纳入下行同步清单，各项目自行维护。
 
 两类常见的语义命名约定：
+- **原始输入包**：用户提供的愿景草稿、brief、客户 PRD/SRS、访谈、现有系统说明和外部接入材料，默认先放
+  `docs/inputs/`。AI 必须先用 `ai/prompts/docs/01-review-inputs.md` 做输入材料评审、愿景就绪评估和缺口补齐建议，
+  不得把未经评审的原始材料直接写入 00-09 或当作已确认需求。
 - **产品愿景/叙事类源文档**：放 `docs/vision/product-vision.md`，头部带“产品愿景叙事·不直接驱动
-  开发”定位声明；它是工程文档的**输入**，与 00-09 物理分离。生成或补齐文档体系时先用
-  `ai/prompts/docs/01-review-inputs.md` 评审输入，再用 `ai/prompts/docs/00-generate-or-complete-docs.md`，
-  并按 `ai/document-lifecycle-rules.md` 判断入口模式与文档剖面。
+  开发”定位声明；它通常由 AI 或团队从 `docs/inputs/` 评审、补齐、确认后提炼，是工程文档的**上游愿景锚点**，
+  与 00-09 物理分离。生成或补齐文档体系时先用 `ai/prompts/docs/01-review-inputs.md` 评审输入，
+  确认足以生成 / 更新 product-vision 后，再用 `ai/prompts/docs/00-generate-or-complete-docs.md`，并按
+  `ai/document-lifecycle-rules.md` 判断入口模式与文档剖面。
 - **子系统详细设计**：非平凡子系统用 `docs/design/<子系统>.md`，一个子系统一份，不编号；
   与 04（总体）/ 06-07（数据·接口）互补，承载子系统内部逻辑。
+- **前端交互详细设计**：UI 型项目用 `docs/design/frontend-interaction.md`，或按入口拆成
+  `docs/design/customer-app-interaction.md`、`docs/design/admin-console-interaction.md` 等；它只细化既有需求的页面流、状态、文案、接口依赖和验收路径，不新增需求、接口或验收目标。
 
 AI 判断需要新增项目文档时，必须先阅读 `docs/README.md` 的分区规则；若无法判断放入哪个子目录，先提出建议路径并等待人工确认，不得自行创建到 `docs/` 根目录。
 
+待人工确认项必须体现“AI 辅助分析，但不替人决策”：AI 应给出推荐口径、建议依据、备选方案、取舍影响和阻塞关系，帮助用户判断；但字段必须明确标为“AI 建议 / 待人工确认”，不得把建议写成已确认事实。用户确认后，AI 才能把该项回填到 PRD、技术方案、开发计划、任务单或续接文件，并将原待确认项标为已确认或移出待确认区。
+
 ## 6. 最佳实践流程总览
 
-```text
-Scenario → 用户需求 → SRS → PRD → 架构设计 → 技术方案 → 数据库设计
-→ API设计 → 开发计划 → 任务单/Sprint → AI编码 → 人工审查 → Git提交
-```
-
-避免：`想法 → AI → 代码`。
+开发顺序与最佳实践流程见 §1.1（文档驱动开发）。核心要避免：`想法 → AI → 代码`——先有输入与设计文档，再生成代码。
 
 ## 7. 多AI工具协作与快捷入口
 
@@ -151,7 +155,9 @@ Prompt / SOP / 脚本说明执行；不要要求用户手工打开 prompt 文件
 - **MVP**：可真实上线，包含真实通道、关键生产要素和已启用的必要能力。
 - **产品**：全功能生产化，覆盖愿景完整图景与运营级要求。
 
-`docs/vision/product-vision.md` 描述最终完整图景时，默认最终交付物为“产品”；`docs/03-prd.md` §3 的每个 Phase 必须写明“功能范围 + 交付物形态 + 进入 / 退出标准”。
+`docs/vision/product-vision.md` 描述最终完整图景时，默认最终交付物为“产品”；若愿景由 `docs/inputs/` 提炼而来，必须保留输入评审结论或来源锚点。`docs/03-prd.md` §3 的每个 Phase 必须写明“功能范围 + 交付物形态 + 进入 / 退出标准”。
+
+**推荐：双维度总览表**。功能范围 `[P1]/[P2]/[愿景]` 是「要素级」标签（遍布 `04-09`、`docs/design/*`，可达上百次），而交付物形态 `Demo/MVP/产品` 是「阶段级」属性（仅在 `03 §3` 等少数点声明），后者易被前者淹没、读者难一眼把握演进线。建议 `docs/03-prd.md` §3 路线图**顶部**用一张总览表集中呈现双维度，列至少含：阶段 / 功能范围 / 交付物形态 / 状态 / 进入标准 / 退出标准；表下方保留各阶段 `###` 子节展开详情。这样 `Demo→MVP→产品` 演进一目了然，与全文要素级标签形成「全景 ↔ 要素」对照。Lean 剖面项目可裁剪列集；此为撰写推荐（非强制）。
 
 ### 8.2 演进方式
 1. **初次生成**：按完整愿景铺出全部要素并打标签；只把 `[P1]` 及其交付物形态写细，其余留 `骨架·待细化`
@@ -173,3 +179,5 @@ Prompt / SOP / 脚本说明执行；不要要求用户手工打开 prompt 文件
 每次任务收尾时，AI 应顺带审视本次工作是否暴露出可通用于多个项目的模板优化点（如规则不清、决策前置不足、文档骨架缺口、脚本流程别扭）。任何需要修改项目模板的工作，都必须先形成 `TEMPLATE-UPGRADE-*.md` 提案（去项目化：动机 / 拟改 / 版本 / 影响），可附 `TEMPLATE-UPGRADE-*-patch.md` 记录具体 old→new 修改建议；成熟后回流到模板仓库 `_proposals/` 收件箱，由模板仓库 PR 落地。模板改动合并并下行同步后，已处理提案必须移动到 `_archive/proposals/` 归档或在派生项目历史中留痕。
 
 在模板仓库内，模板维护者 AI 处理 `_proposals/` 时必须先读取全部 `TEMPLATE-UPGRADE-*.md` 与可选 `*-patch.md`，输出去重 / 冲突 / 依赖分析和合并或分阶段优化计划，再辅助修改 `ai/global-rules.md`、`INIT-PROMPT.md`、`ai/prompts/`、脚本和治理文档；所有实际改动仍需人工审查并通过 PR 合并。
+
+**回流来源标识**：派生项目回流到模板仓库的提案 / 反馈（`TEMPLATE-UPGRADE-*.md`、issue、PR），必须在头部标明来源派生：`> 来源：<派生项目名>（<owner>/<repo>）派生项目回流`。来源是「出处元数据」（公开仓库引用），不属于去项目化禁止的客户 / 账号 / 路径 / 业务细节。模板自产提案标「模板维护者」。这让维护者处理 `_proposals/` / issue 时一眼知出处，不与「别的会话 / 模板自产」混淆。派生项目提交提案 / 反馈的流程见 `ai/commands/submit-proposal.md`、`ai/commands/submit-feedback.md`（跨仓库开 issue，免 fork）。

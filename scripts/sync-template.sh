@@ -37,6 +37,7 @@ DEFAULT_SYNC_FILES=(
   "ai/index.md"
   "ai/global-rules.md"
   "ai/document-lifecycle-rules.md"
+  "ai/implementation-lifecycle-rules.md"
   "ai/session-rules.md"
   "ai/doc-standards/README.md"
   "ai/commands/README.md"
@@ -74,6 +75,7 @@ DEFAULT_SYNC_FILES=(
   "ai/prompts/maintainers/12-sync-template.md"
   "ai/prompts/maintainers/15-post-sync-cleanup.md"
   "ai/prompts/planning/08-phase-upgrade.md"
+  "ai/prompts/planning/19-plan-phases-and-sprints.md"
   "ai/prompts/README.md"
   "ai/prompts/review/03-project-review.md"
   "ai/prompts/review/10-docs-checklist.md"
@@ -91,9 +93,18 @@ DEFAULT_SYNC_FILES=(
   "scripts/check-template.ps1"
   "scripts/check-derived-sync.sh"
   "scripts/check-derived-sync.ps1"
+  "scripts/check-github-context.ps1"
   "scripts/collect-env.ps1"
   "scripts/check-prereqs.ps1"
   "scripts/bootstrap-dev-env.ps1"
+  "scripts/sync-all-derived.sh"
+  "scripts/e2e-sync-check.sh"
+  "template-docs/e2e-regression-checklist.md"
+  "template-docs/e2e-report-template.md"
+  "ai/commands/submit-proposal.md"
+  "ai/commands/submit-feedback.md"
+  "ai/prompts/maintainers/17-submit-proposal.md"
+  "ai/prompts/maintainers/18-submit-feedback.md"
 )
 
 # doc-standards 规范镜像：把模板 docs/00-09 撰写规范镜像到派生项目 ai/doc-standards/。
@@ -111,6 +122,15 @@ DOC_STANDARD_DOCS=(
   "docs/08-dev-plan.md"
   "docs/09-verification.md"
 )
+
+warn_derived_workflow_migration() {
+  if [[ -f ".github/workflows/template-check.yml" ]]; then
+    echo "⚠️  检测到 .github/workflows/template-check.yml。"
+    echo "   该 workflow 通常属于模板仓自检入口；派生项目普通 PR 不应运行 scripts/check-template.sh。"
+    echo "   建议迁移为派生项目版 .github/workflows/project-check.yml：普通 PR 仅跑 git diff --check，模板同步提交再跑 scripts/check-derived-sync.sh HEAD。"
+    echo
+  fi
+}
 
 SYNC_FILES=()
 
@@ -173,6 +193,7 @@ fi
 [[ -n "$VERSION" ]] || VERSION="unknown"
 
 echo "==> 模板版本: $VERSION"
+warn_derived_workflow_migration
 echo "==> 同步文件:"
 
 remote_file_matches_local() {
@@ -289,4 +310,12 @@ else
   git commit -q -m "sync template $VERSION from ai-project-template" -- "${UPDATED_FILES[@]}"
   echo "✅ 已提交：sync template $VERSION"
   echo "   推送: git push"
+  echo
+  echo "下一步（不要停在同步提交）："
+  echo "  1. 运行派生边界检查: powershell -ExecutionPolicy Bypass -File scripts/check-derived-sync.ps1"
+  echo "  2. 在 AI 中执行: /run post-sync-cleanup"
+  echo "  3. 在 AI 中执行: /run docs-system-audit（同步后审计模式）"
+  echo "  4. 按项目技术栈运行测试 / lint / build；无法运行的记录为未验证项"
+  echo "  5. 生成或更新同步运行记录: sync-records/template-sync/YYYY-MM-DD-sync-template-$VERSION.md"
+  echo "     可参考: template-docs/derived-sync-report-template.md"
 fi
