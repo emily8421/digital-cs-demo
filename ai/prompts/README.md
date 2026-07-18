@@ -1,4 +1,4 @@
-﻿# Prompt Library
+# Prompt Library
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
 > Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
@@ -17,7 +17,7 @@
 
 | 目录 | 用途 |
 |---|---|
-| `docs/` | 文档体系生成、输入评审、单文档修订、文档反向同步 |
+| `docs/` | 文档体系生成、输入评审、需求探索原型、单文档修订、文档反向同步 |
 | `dev/` | 单任务开发、Bug 修复、Sprint 验收 |
 | `review/` | 项目审查与 docs checklist |
 | `planning/` | Phase / Sprint 规划与 Phase 升级评估 |

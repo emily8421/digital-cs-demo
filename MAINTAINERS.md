@@ -36,19 +36,22 @@
 
 ## 3. 发布 Checklist
 
-> **MINOR / MAJOR 发布前额外跑 L3 端到端回归**：`bash scripts/e2e-sync-check.sh` + 按 `template-docs/e2e-regression-checklist.md` 跑人工项（R4–R6）+ 用 `template-docs/e2e-report-template.md` 出报告确认。PATCH（仅文档 / 小修）可豁免。
+> **MINOR / MAJOR 发布前额外跑 L3 端到端回归**：`bash scripts/e2e-sync-check.sh` + 按 `template-docs/e2e-regression-checklist.md` 跑人工项（R4–R6）+ 用 `template-docs/e2e-report-template.md` 出报告确认。PATCH（含兼容性脚本参数 / 默认关闭能力 / 文档与治理小修）可豁免。
 
 每次发版前逐条过：
 
 1. 先确认当前不在 `main` 直接改动；改动发生在维护分支上。
-2. 创建或更新 `TEMPLATE-UPGRADE-*.md` 提案，完成后归档到 `_archive/proposals/`。
-3. 判断版本影响，更新根目录 `VERSION`。
-4. 更新 `CHANGELOG.md`，确保包含当前 `VERSION`。
-5. 若新增 / 删除下行同步方法论文件，更新 `template-sync.json`；若改动 `docs/00-09` 撰写规范，确认 `check-template.sh` 的 doc-standards 镜像自检（`require_doc_standards_mirror`）通过。
-6. 若改变用户入口，保持 `README.md` 的「快速开始」三入口可读，不塞入维护者细节。
-7. 运行：`git diff --check`。
-8. 运行：`bash scripts/check-template.sh`（或 `powershell -ExecutionPolicy Bypass -File scripts/check-template.ps1`）。
-9. push 分支并创建 PR，等待 GitHub Actions `Template Check` 通过后再合并。
+2. 创建或更新 `TEMPLATE-UPGRADE-*.md` 提案，并记录 `Release impact` 与 `Release strategy`；完成后归档到 `_archive/proposals/`。
+3. 判断版本影响：提案收件箱增长不触发版本递增；只有合并到同步范围内、会改变模板行为或下游同步判断的 PR，才判断 `PATCH / MINOR / MAJOR`。兼容、可选、默认行为不变的增强默认从 `patch` 判断；只有新增能力层级 / 下游采用面 / 同步结构 / 推荐流程变化时才升为 `minor`。
+4. 判断发布策略：阻塞同步、安全 / 数据 / 权限 / 同步脚本风险、CI 或模板不可用问题走即时发布；同主题文档模板、README 导航、自检断言、术语表、示例增强可聚合为一个发布边界。
+5. 若 `Release impact` 不是 `none`，更新根目录 `VERSION`。
+6. 若递增版本，更新 `CHANGELOG.md`，确保包含当前 `VERSION`；同主题多 Batch 用短摘要 + 子弹列表，不把候选池写入已发布成果。
+7. 若新增 / 删除下行同步方法论文件，更新 `template-sync.json`；若改动 `docs/00-09` 撰写规范，确认 `check-template.sh` 的 doc-standards 镜像自检（`require_doc_standards_mirror`）通过。
+8. 若改变用户入口，保持 `README.md` 的「快速开始」三入口可读，不塞入维护者细节。
+9. 运行：`git diff --check`。
+10. 若新增 / 修改 `_proposals/`、`ai-records/` 等 Markdown 记录，运行：`powershell -ExecutionPolicy Bypass -File scripts/check-markdown-clean.ps1 _proposals ai-records`，避免行尾空格、BOM 或 EOF 多空行到 CI 后才失败。
+11. 运行：`bash scripts/check-template.sh`（或 `powershell -ExecutionPolicy Bypass -File scripts/check-template.ps1`）。
+12. push 分支并创建 PR，等待 GitHub Actions `Template Check` 通过后再合并。
 
 ## 4. 下行同步清单
 
