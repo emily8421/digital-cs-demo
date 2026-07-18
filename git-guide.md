@@ -42,14 +42,24 @@ powershell -ExecutionPolicy Bypass -File scripts/check-github-context.ps1 -Expec
 
 > 该预检不能替代 GitHub 授权：`gh auth login`、OAuth scope、SSO 授权、Git Credential Manager 和仓库权限仍需在本机按 GitHub 官方流程处理；模板只提供操作前门禁，避免多仓 / 多会话误操作。
 
+### 1.2 远端 / CI / sandbox 防卡死策略
+
+涉及 `git push`、`gh pr create`、`gh pr merge`、`gh issue close`、删除远端分支、查询 GitHub Actions / CI 或其他远端状态时，默认使用 Checkpoint Mode（见 `ai/session-rules.md` §3.3）：
+
+- **远端状态变更单步确认**：push、创建 / 合并 PR、关闭 issue、删除分支、发 release 或打 tag 前，先说明目标仓库、分支、命令、风险和回滚方式，等待用户确认。
+- **CI 短轮询**：只查询一次或短轮询；若 checks / Actions 仍为 pending，汇报 pending 和复查命令，不长时间挂起等待。
+- **失败日志最小化**：CI failed 只摘失败 job / step、关键错误和链接；不要把完整长日志刷入上下文。
+- **sandbox / network / auth 错误即停**：遇到权限不足、network restricted、DNS / registry 失败、`gh auth` / askpass / credential 错误或命令超时，先停止并说明错误类别；不得连续重试或改用绕过权限边界的方式继续。
+- **不扩大修复范围**：CI 失败或远端报错若无法确认与本次改动相关，先标记不确定并请用户确认，不得直接进入大范围修复。
+
 ## 2. 场景速查（你要做哪件事？）
 
-| 你想做 | 你是 | 去哪节 |
-|---|---|---|
-| 在派生项目里日常提交代码 | 使用者 | §3 场景 A |
-| 维护模板仓库（改方法论 / 脚本 / 治理） | 维护者 | §4 场景 B |
-| 把模板更新同步到派生项目 | 使用者 | §5 场景 C |
-| 从模板新建一个派生项目 | 使用者 / 维护者 | §6 场景 D |
+| 你想做 | 你是 | 去哪节 | 对应 scenario 码 |
+|---|---|---|---|
+| 在派生项目里日常提交代码 | 使用者 | §3 场景 A | A10 |
+| 维护模板仓库（改方法论 / 脚本 / 治理） | 维护者 | §4 场景 B | C4/C7 |
+| 把模板更新同步到派生项目 | 使用者 | §5 场景 C | A13 |
+| 从模板新建一个派生项目 | 使用者 / 维护者 | §6 场景 D | A2 |
 
 找不到场景 → 看 §7 踩坑 / §8 命令速查。
 
@@ -57,9 +67,9 @@ powershell -ExecutionPolicy Bypass -File scripts/check-github-context.ps1 -Expec
 
 你在派生项目里写代码、提交、提 PR。
 
-- **一功能 = 一任务 = 一提交**（见 `ai/global-rules.md` §1.2），禁止一次提交整个系统。
+- **一功能 = 一任务 = 一提交**（见 `ai/global-rules.md` §1 第 2 条），禁止一次提交整个系统。
 - Commit message 用「完成 XX」式，避免「修改 / update / test」等模糊词；跨模块改动拆成多条（见 `ai/prompts/git/06-commit-message.md`）。
-- 任何模块开发前先有设计说明再写代码（`global-rules.md` §1.3）。
+- 任何模块开发前先有设计说明再写代码（`global-rules.md` §1 第 3 条）。
 
 ### 3.1 代码修改完成后的标准流程
 
@@ -68,12 +78,14 @@ powershell -ExecutionPolicy Bypass -File scripts/check-github-context.ps1 -Expec
 ```powershell
 git status
 git diff
+git diff --check
+powershell -ExecutionPolicy Bypass -File scripts/check-markdown-clean.ps1 _proposals ai-records  # 模板仓 Markdown 提案 / 记录预检
 # 运行项目对应验证命令，例如：bash scripts/check-template.sh / npm test / pytest
 powershell -ExecutionPolicy Bypass -File scripts/check-github-context.ps1  # push / PR 前只读预检
 git add <文件路径>
 git commit -m "类型: 简短说明"
 git push -u origin <当前分支名>   # 首次推送该分支
-gh pr create --fill              # 模板仓库必须走 PR
+gh pr create --fill              # 如项目要求走 PR；模板仓强制
 ```
 
 后续同一分支已有 upstream 时，推送可简化为：
@@ -122,7 +134,7 @@ cd ../ai-tpl-wt2          # B 在这里改 / 提交 / 推送，完全不碰 A �
 cd /path/ai-project-template && git worktree remove ../ai-tpl-wt2
 ```
 
-> 详见 `ai/session-rules.md` §7（AI 行为约定）。
+> 详见 `ai/session-rules.md` §8（多会话并发操作）。
 
 ## 5. 场景 C：派生项目同步模板（使用者）
 
@@ -243,12 +255,12 @@ powershell -ExecutionPolicy Bypass -File scripts/check-template.ps1       # 仅�
 - 同步前先 bootstrap 模板远端最新版 `scripts/sync-template.sh`；不要无条件信任派生项目本地旧脚本。
 - 新版 `sync-template.sh` 会在 fetch 后对比远端自身版本；若本地脚本不是最新版，会停止并提示先更新脚本。
 - `--dry-run` 只预览差异，不修改工作区、不 stage。
-- `--commit` 会覆盖同步清单中的文件并自动提交；提交信息通常由脚本生成。
+- `--commit` 会覆盖同步清单中的文件并自动提交；普通派生项目建议追加 `--preserve-project-version`，保留项目自身 `VERSION` / `CHANGELOG.md`，并用 `TEMPLATE-BASE.md` 记录继承模板版本；领域模板（如 `agent-system-template`）改用 `--domain-template`（与 `--preserve-project-version` 互斥），保留领域模板自身 `VERSION` / `CHANGELOG.md`，并用领域版 `TEMPLATE-BASE.md` 记录继承母模板版本；若仓库已存在对应角色的 `TEMPLATE-BASE.md`，新版脚本会自动启用相应模式；提交信息仍由脚本生成。
 - 根 `README.md` 是项目件，`ai/project-rules.md` 是项目专属规则，均不在 `template-sync.json` 中，不参与模板下行同步。
 - 被 `template-sync.json` 列入的 Markdown 方法论文档会在同步时被覆盖；派生项目不要直接修改这些文件，如需改进请在 `_proposals/` 起草提案并回流模板。
 - 同步文件清单以 `template-sync.json` 为准；`scripts/sync-template.sh` 会优先读取模板远端清单。
 - 同步后若 `check-derived-sync` 失败，先修复同步边界问题，再 push / PR。
-- 若已经完成同步提交但不确定后续是否执行，使用 `/run sync-methodology` 的“同步后续接模式”：不要重新 dry-run / commit，先核对 `git log --oneline -8`、`VERSION`、最近同步记录和工作区，再从 `check-derived-sync` 开始补完后续闭环。
+- 若已经完成同步提交但不确定后续是否执行，使用 `/run sync-methodology` 的“同步后续接模式”：不要重新 dry-run / commit，先核对 `git log --oneline -8`、`VERSION`、`TEMPLATE-BASE.md`（若存在）、最近同步记录和工作区，再从 `check-derived-sync` 开始补完后续闭环。
 - 同步后进入标准闭环：`check-derived-sync` 边界验证 → `post-sync-cleanup` 整理计划 → `docs-system-audit` 同步后审计 → 项目验证建议 → 同步报告留痕。
 - 同步后整理项目内容时，另开分支执行 `ai/prompts/maintainers/15-post-sync-cleanup.md` 第一段，先只审计并输出迁移计划，不要混入同步提交；整理摘要应回写同步报告。
 - 项目文档成型后，再用 `ai/prompts/review/16-docs-system-audit.md` 对照本次同步产出的 `ai/doc-standards` 规范基线，回溯审计整条 PLM 链路（先出报告不改文件；旧项目可 fallback 到 `docs/_scaffold`）。同步后审计模式应区分规范基线缺口、兼容差异和项目事实问题。
@@ -263,6 +275,23 @@ powershell -ExecutionPolicy Bypass -File scripts/check-template.ps1       # 仅�
 - 因此 `--dry-run` 中出现 `Δ ai/doc-standards/00-scenario.md（新增规范镜像）` 之类条目是**预期**的，`scripts/check-derived-sync.ps1` 也明确放行 `ai/doc-standards/*`；真正不能出现的是项目事实 `docs/00-09` 被改。
 - 用途：同步后用 `ai/prompts/review/16-docs-system-audit.md` 对照 `ai/doc-standards`（规范基线）回溯审计整条 PLM 链路（见 §5.5 末尾闭环）。
 - 兼容：v1.18.x 旧路径 `docs/_scaffold/00-09` 不再是主路径；迁移期审计提示词和边界检查会 fallback / 放行该旧路径，但 `sync-template` 不主动删除旧目录。
+
+### 5.7 网络与代理配置（受限网络环境）
+
+受限网络（如国内直连 GitHub）下，`git fetch` / `git push` 直连常被重置（症状：HTTPS `curl 16 framing` / `curl 52 empty reply`、连接 reset），`sync-template` 的 `git fetch` 会失败。此时需要走代理，且 `git` 与 `gh` 的代理配置**不共用**：
+
+- **git（fetch/push）**：对仓库设 local 代理，或临时带 `-c`：
+  ```bash
+  git config --local http.proxy http://127.0.0.1:<代理端口>
+  git config --local https.proxy http://127.0.0.1:<代理端口>
+  # 或临时：git -c http.proxy=http://127.0.0.1:<代理端口> fetch ...
+  ```
+- **gh（不读 `git http.proxy`）**：命令必须单独带环境变量：
+  ```bash
+  HTTPS_PROXY=http://127.0.0.1:<代理端口> HTTP_PROXY=http://127.0.0.1:<代理端口> gh pr create ...
+  ```
+
+`<代理端口>` 以本机代理工具（如 clash mixed-port）实际端口为准。`sync-template` fetch 失败时会打印上述配置提示；后续 `gh pr create` / `gh pr merge` / `gh pr checks` 等命令都要带 `HTTPS_PROXY` / `HTTP_PROXY`。
 
 ## 6. 场景 D：新建派生项目（使用者 / 维护者）
 

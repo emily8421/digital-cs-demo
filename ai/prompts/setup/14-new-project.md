@@ -1,4 +1,4 @@
-﻿# 14 从模板新建派生项目
+# 14 从模板新建派生项目
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
 > Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
@@ -13,7 +13,7 @@
 
 **使用前准备**：确认当前在 `ai-project-template` 模板仓库，或能访问模板仓库中的 `scripts/new-project.sh`；确认新项目名称；若要创建远端仓库，再确认 GitHub 账号和仓库可见性。
 
-**预期产出**：新项目目录、新项目 Git 首提交、可选 GitHub 远端仓库、环境采集文档入口和后续初始化待办。
+**预期产出**：新项目目录、新项目 Git 首提交、项目自有版本起点 `v0.1.0`、可选 GitHub 远端仓库、环境采集文档入口和后续初始化待办。
 
 **使用后下一步**：进入新项目，若机器尚未准备好基础开发环境，先看 `template-docs/env-setup.md` 并运行 `scripts/check-prereqs.ps1`；然后把原始上游输入统一放入 `docs/inputs/`，补 `docs/env/local-env.md` 人工确认项，再用 `ai/prompts/docs/01-review-inputs.md` 评审输入材料和 Product Vision 就绪度，复评通过后用 `ai/prompts/docs/00-generate-or-complete-docs.md` 生成 / 更新 product-vision 并补齐 docs 文档体系。
 
@@ -41,7 +41,7 @@ GitHub 账号：<如需远端仓库再填写；也可让脚本读取当前 gh �
 8. 检查 docs/env/local-env.md 是否生成，并提醒人工补齐确认项。
 9. 输出下一步待办：
    - 准备 `docs/inputs/` 原始上游输入材料；已有成熟 `docs/vision/product-vision.md` 时也要复评来源和缺口
-   - 填写 ai/project-rules.md 的 Phase 边界、技术栈、运行环境与资源约束、项目形态裁剪
+   - 填写 ai/project-rules.md 的 Phase 边界、技术栈、运行环境与资源约束、项目版本管理、项目形态裁剪
    - 先用 `ai/prompts/docs/01-review-inputs.md` 评审输入材料和 Product Vision 就绪度，不足时按 `docs/inputs/input-review-report.md` 和最小补充清单补齐后复评
    - 复评通过后用 `ai/prompts/docs/00-generate-or-complete-docs.md` 生成 / 更新 `docs/vision/product-vision.md` 并补齐 docs 文档体系
    - 人工审核 03-09 后再进入 Sprint1
@@ -50,6 +50,7 @@ GitHub 账号：<如需远端仓库再填写；也可让脚本读取当前 gh �
 - 不要先手工复制模板文件夹再运行 new-project.sh。
 - 不要直接 clone 模板仓库后手动改名当作新项目。
 - 不要在模板仓库工作区有未提交改动时创建正式项目；如确需使用本地改动，只能明确作为 --local 烟测。
+- 不要把 `VERSION` 改回模板版本号；新建普通派生项目的 `VERSION` 记录项目自有版本，模板继承版本在 `TEMPLATE-BASE.md`。
 
 遇到以下情况必须停止并说明原因：
 - 项目名为空或目标目录已存在。

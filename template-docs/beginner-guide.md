@@ -69,6 +69,7 @@ AI 会先评审 `docs/inputs/` 是否足以生成 `docs/vision/product-vision.md
 
 - 完整场景目录（使用者 / 维护者 / 元场景，从零起步到 Phase 升级）：`template-docs/scenario-guides.md`。
 - 知道要做什么、想找具体命令：`SOP.md` 场景索引 / `ai/commands/README.md` 命令表。
+- 已有可运行交付物、想看演示效果：`/run show-demo`（路由到项目演示 SOP `docs/env/local-demo-runbook.md`）。
 
 ## 4. 输入材料 → 文档体系 → 实现代码（核心心智）
 
@@ -105,7 +106,7 @@ docs/inputs/ 原始输入  ──→  docs/vision/product-vision.md  ──→  
 
 | 层 | 放什么 | 关键内容 |
 |---|---|---|
-| 模板方法层 | 模板自身 + AI 行为规范 + 手册脚本（派生项目里是下行同步的只读件，除根 README） | `README.md`、`SOP.md`、`git-guide.md`、`ai/`、`template-docs/`、`scripts/`、`VERSION` |
+| 模板方法层 | 模板自身 + AI 行为规范 + 手册脚本（派生项目里是下行同步的只读件，除根 README；普通派生项目用 `TEMPLATE-BASE.md` 记录继承模板版本） | `README.md`、`SOP.md`、`git-guide.md`、`ai/`、`template-docs/`、`scripts/`、`VERSION`、`TEMPLATE-BASE.md` |
 | 文档事实层 | 你这个项目的需求 / 设计 / 计划 / 验证（AI 输出，见 §4） | `docs/00-09`、`docs/vision/`、`docs/inputs/`、`docs/design/`、`docs/decisions/` 等 |
 | 代码骨架层 | 实现代码（按项目形态裁剪） | `frontend/`、`backend/`、`tests/`、`scripts/`、`docker/` |
 
@@ -124,7 +125,7 @@ docs/inputs/ 原始输入  ──→  docs/vision/product-vision.md  ──→  
 | `docs/08-dev-plan.md` | Sprint / task 拆分 + 验收 |
 | `docs/09-verification.md` | 验证矩阵 + 验收 |
 
-> 派生项目里：模板方法层是下行同步的只读件（改通用规则要回模板走 PR）；文档事实层和代码骨架层是你自己的。分区规则、裁剪、撰写规范见 `docs/README.md`。
+> 三个容易混淆的路径：`docs/inputs/*` / `docs/vision/*` / `docs/00-09` / `docs/design/*` / `docs/decisions/*` / `docs/research/*` 是你的项目事实；`template-docs/docs-scaffold/` 下的 `inputs/`、`vision/`、`00-09`、`design/`、`decisions/`、`research/` 是长期结构模板副本；`ai/doc-standards/` 是 AI 规则 / 审计基线。派生项目里：模板方法层是下行同步的只读件（改通用规则要回模板走 PR）；文档事实层和代码骨架层是你自己的。分区规则、裁剪、撰写规范见 `docs/README.md`。
 
 ## 6. 常见错误与常见问题
 
@@ -153,7 +154,11 @@ docs/inputs/ 原始输入  ──→  docs/vision/product-vision.md  ──→  
 | 第一次整体上手 | 本手册 + `README.md` |
 | 装工具 / 装环境 | `template-docs/env-setup.md` |
 | 装 AI CLI | `template-docs/ai-cli-setup.md` |
-| 具体场景怎么操作 | `template-docs/scenario-guides.md`（23 场景） |
+| 具体场景怎么操作 | `template-docs/scenario-guides.md`（A0–A27 / C1–C8 / 元场景） |
 | 找命令速查 | `SOP.md`、`ai/commands/README.md` |
 | 理解模板为什么这么设计 | `template-docs/template-methodology.md` |
+| 查术语是什么意思 | `template-docs/glossary.md` |
+| 查看领域模板（可选中间层） | `template-docs/domain-templates.md` |
+| 演示 SOP 怎么写 | `template-docs/demo-runbook-template.md`、`ai/commands/show-demo.md` |
 | docs/ 文档怎么放 / 怎么裁剪 | `docs/README.md` |
+| 查看 `docs/inputs/*` / `docs/vision/*` / `docs/00-09` / `docs/design/*` / `docs/decisions/*` / `docs/research/*` 原始结构模板 | `template-docs/docs-scaffold/` |

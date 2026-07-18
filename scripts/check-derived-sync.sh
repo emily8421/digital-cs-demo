@@ -38,6 +38,7 @@ extract_sync_files() {
 is_sync_file() {
   local changed_file="$1"
   case "$changed_file" in
+    TEMPLATE-BASE.md) return 0 ;;   # 普通派生项目路线 A：继承模板版本记录，由 sync-template --preserve-project-version 维护
     ai/doc-standards/*) return 0 ;; # 模板 00-09 撰写规范镜像，由 sync-template 专用镜像步骤产生
     docs/_scaffold/*) return 0 ;;   # v1.18.x 旧规范镜像路径，迁移期兼容
   esac
@@ -93,7 +94,7 @@ else
 fi
 
 echo
-echo "==> 最近同步提交"
+echo "==> 正在验证的同步提交"
 git show --name-only --stat --oneline --no-renames "$COMMIT"
 echo
 
@@ -101,6 +102,12 @@ mapfile -t CHANGED_FILES < <(git diff-tree --no-commit-id --name-only -r "$COMMI
 
 if [[ "${#CHANGED_FILES[@]}" -eq 0 ]]; then
   fail "提交 $COMMIT 未包含文件变更"
+fi
+
+parent_count="$(git rev-list --parents -n 1 "$COMMIT" 2>/dev/null | awk '{ print NF - 1 }')"
+if [[ "$COMMIT" == "HEAD" && "${parent_count:-0}" -gt 1 ]]; then
+  echo "ℹ️  HEAD 是 merge commit。若这是模板同步 PR 合并后的提交，请显式传入实际同步提交："
+  echo "    bash scripts/check-derived-sync.sh <sync-commit>"
 fi
 
 subject="$(git log -1 --format=%s "$COMMIT" 2>/dev/null || true)"
@@ -124,7 +131,35 @@ done
 
 echo
 echo "==> 根 README 模板版本号一致性（非阻断）"
-if [[ -f "VERSION" && -f "README.md" ]]; then
+if [[ -f "TEMPLATE-BASE.md" ]]; then
+  LINEAGE_ROLE=""
+  lineage_val="$(grep -E '^\- Lineage type:' TEMPLATE-BASE.md | head -1 | sed -E 's/^\- Lineage type:[[:space:]]*//' | sed -E 's/[[:space:]]*$//' || true)"
+  case "$lineage_val" in
+    "ordinary derived project") LINEAGE_ROLE="ordinary" ;;
+    "domain template") LINEAGE_ROLE="domain" ;;
+    "")
+      if grep -qi 'ordinary derived project' TEMPLATE-BASE.md; then LINEAGE_ROLE="ordinary"
+      elif grep -qi 'domain template' TEMPLATE-BASE.md; then LINEAGE_ROLE="domain"; fi
+      ;;
+  esac
+  if [[ "$LINEAGE_ROLE" == "domain" ]]; then
+    echo "ℹ️  检测到领域版 TEMPLATE-BASE.md（Lineage type: domain template）：VERSION / CHANGELOG 属于领域模板自身；继承母模板版本以 TEMPLATE-BASE.md 为准，跳过 README ↔ VERSION 模板版本一致性检查。"
+  else
+    echo "ℹ️  检测到 TEMPLATE-BASE.md：按普通派生项目双版本模式，VERSION 属于项目自身版本；继承模板版本以 TEMPLATE-BASE.md 为准，跳过 README ↔ VERSION 模板版本一致性检查。"
+  fi
+  if grep -qE '^\- Current synced template version:[[:space:]]*v[0-9]+\.[0-9]+\.[0-9]+' TEMPLATE-BASE.md; then
+    pass "TEMPLATE-BASE.md 记录当前同步模板版本"
+  else
+    fail "TEMPLATE-BASE.md 缺少 Current synced template version"
+  fi
+  if [[ "$LINEAGE_ROLE" == "domain" ]]; then
+    if grep -qE '^\- Domain standards scope:' TEMPLATE-BASE.md; then
+      pass "TEMPLATE-BASE.md 记录领域标准件范围（领域版）"
+    else
+      fail "领域版 TEMPLATE-BASE.md 缺少 Domain standards scope"
+    fi
+  fi
+elif [[ -f "VERSION" && -f "README.md" ]]; then
   cur_ver="$(tr -d '[:space:]' < VERSION)"
   readme_ver="$(grep -E '当前|已同步' README.md | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | tail -1 || true)"
   if [[ -z "$readme_ver" ]]; then
@@ -139,11 +174,38 @@ else
 fi
 
 echo
+echo "==> 派生项目版本机制启用状态（非阻断）"
+# 复用前段 LINEAGE_ROLE 判定；前段无 TEMPLATE-BASE.md 时该变量未定义，兜底为空按普通派生项目处理。
+LINEAGE_ROLE="${LINEAGE_ROLE:-}"
+if [[ "$LINEAGE_ROLE" == "domain" ]]; then
+  echo "ℹ️  领域模板（domain lineage）：VERSION / CHANGELOG 由领域模板自身治理，跳过版本机制启用状态检测。"
+else
+  main_signal_ok=false
+  aux_signal_ok=false
+  if [[ -f ".github/workflows/project-check.yml" ]] && grep -q "Check project version consistency" ".github/workflows/project-check.yml"; then
+    main_signal_ok=true
+  fi
+  if [[ -f "ai/project-rules.md" ]] && grep -q "项目版本管理" "ai/project-rules.md"; then
+    aux_signal_ok=true
+  fi
+  if $main_signal_ok && $aux_signal_ok; then
+    pass "派生项目版本机制已启用（project-check.yml 含版本一致性校验 + ai/project-rules.md 含「项目版本管理」规则）"
+  elif $main_signal_ok; then
+    echo "⚠️  版本机制主信号在（project-check.yml 校验 VERSION↔CHANGELOG）但辅信号缺：ai/project-rules.md 未含「项目版本管理」规则。建议补 §2.8 明确 PATCH/MINOR/MAJOR 语义（非阻断，不计入失败）。"
+  elif $aux_signal_ok; then
+    echo "⚠️  版本机制辅信号在（ai/project-rules.md 含「项目版本管理」）但主信号缺：.github/workflows/project-check.yml 未含「Check project version consistency」校验。建议补 CI 校验防 VERSION/CHANGELOG 漂移（非阻断，不计入失败）。"
+  else
+    echo "⚠️  派生项目版本机制未启用：project-check.yml 缺「Check project version consistency」且 ai/project-rules.md 缺「项目版本管理」。建议按 ai/prompts/maintainers/15-post-sync-cleanup.md 审计版本机制启用状态（非阻断，不计入失败）。"
+  fi
+fi
+
+echo
 if [[ "$FAILURES" -eq 0 ]]; then
   echo "✅ 派生项目同步边界检查通过。"
   echo "   下一步：若需要整理项目内容，另开分支执行 ai/prompts/maintainers/15-post-sync-cleanup.md，先审计并输出迁移计划。"
 else
   echo "❌ 派生项目同步边界检查失败：$FAILURES 项。" >&2
   echo "   见上方 ✗ 标注的失败项；另：派生同步验收用 check-derived-sync，不要用 check-template（模板自检）。" >&2
+  echo "   若 HEAD 是 PR merge commit，请改传实际同步提交：scripts/check-derived-sync.sh <sync-commit>。" >&2
   exit 1
 fi
