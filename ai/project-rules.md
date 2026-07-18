@@ -76,6 +76,40 @@
 - 是否允许安装依赖：**允许（已装齐）**（Docker Desktop + `.venv` 就绪；新增依赖须先确认，见 §5.2）
 - 是否允许公司服务器 / 资源申请口径：**Demo 不需要**（本机原型先行；公司 Linux 服务器属 MVP / 部署，见 05 §1）
 
+## 2.8 项目版本管理
+
+> 模板仓的版本规则（「影响下游同步判断就 bump VERSION」，见同步来的 `MAINTAINERS.md` / `CONTRIBUTING.md`）面向模板维护者，对本项目不适用——本项目没有下游派生。本节定义 digital-cs-demo 自有的版本语义与递增规则。
+> 版本入口：`VERSION`（项目自有版本）+ `CHANGELOG.md` 顶部「项目版本」段；模板继承版本独立记录在 `TEMPLATE-BASE.md`，不与项目版本混淆。
+
+### 2.8.1 版本语义（三段式 vMAJOR.MINOR.PATCH）
+
+- **PATCH**（v0.1.0 → v0.1.1）：bug 修复、文档修正、Demo 数据 / 配置调整、重构，不新增可演示能力、不改对外 API 契约。
+- **MINOR**（v0.1.0 → v0.2.0）：Sprint 验收 / 里程碑交付、新增可演示能力、新增 API endpoint、Phase 内功能增强（如多轮状态机精化、知识确认回写）。默认向后兼容。
+- **MAJOR**（v0.x → v1.0）：Phase 跨越（如 Demo → MVP，接入真实通道 / 生产要素）、破坏性对外契约变更、首个真实场景 / 试点上线。
+
+### 2.8.2 何时 bump
+
+- 完成一个 Sprint 验收 / 里程碑 → 至少 **MINOR**。
+- 合并了用户 / 试点可感知的能力变化 → **MINOR**。
+- 纯修复 / 文档 / 配置 / 重构 → **PATCH**。
+- Phase 跨越、破坏性变更、首上线 → **MAJOR**。
+- 不强制每个 commit bump；同一里程碑内的多个改动聚合为一个版本发布。
+- 纯探索原型、研究记录、未确认提案不触发版本递增。
+
+### 2.8.3 发布动作
+
+1. 更新根目录 `VERSION` 为新版本号（三段式 `vX.Y.Z`）。
+2. 在 `CHANGELOG.md` 顶部「项目版本」段（即 `## 历史模板同步记录（保留）` 之上）新增 `## vX.Y.Z（YYYY-MM-DD）` 条目，概述本版交付并附 REQ / Sprint / TC 追溯。
+3. 版本递增属于状态变更，按 `ai/global-rules.md` / `ai/rules-core.md` 的写入确认规则先说明范围、风险与验证，AI 给建议、用户确认后再执行。
+4. （可选）打 git tag `vX.Y.Z`；当前阶段不强制，不引入独立 release workflow。
+
+### 2.8.4 CI 校验
+
+`.github/workflows/project-check.yml` 在每次 PR / push 到 main 时校验：
+- `VERSION` 符合三段式 `^v[0-9]+\.[0-9]+\.[0-9]+$`；
+- `CHANGELOG.md` 顶部第一个 `## vX.Y.Z（` 标题等于 `VERSION`（确保项目版本在顶部且与 VERSION 一致）。
+- 不做全文档降序检查——派生 CHANGELOG 顶部为项目版本（如 `v0.1.0`），下方接模板历史版本（`v1.30.4` 等，数值更大），降序不适用。
+
 ## 3. 项目形态与文档裁剪
 
 - 是否有持久化存储：**有**（关系型数据库 PostgreSQL）

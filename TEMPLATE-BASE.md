@@ -8,7 +8,7 @@
 - Current synced template version: v1.54.2
 - Synced at: 2026-07-18
 - Project version file: VERSION
-- Project version at sync time: v1.30.4
+- Project version at sync time: v0.1.0
 
 ## Version Semantics
 
