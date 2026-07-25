@@ -92,6 +92,14 @@ CI：`.github/workflows/template-check.yml` 在 PR 和 `main` push 上运行空�
 
 Windows 下若 PowerShell 无法拉起 Git Bash，`check-template.ps1`、`sync-template.ps1`、`check-derived-sync.ps1` 都会明确标注 PowerShell fallback；fallback 也失败时，优先修本机 Git for Windows / MSYS 环境，不要把系统问题误判为模板同步缺口。
 
+**Windows fallback 最短判断链**：
+
+1. 模板仓本地先跑 `powershell -ExecutionPolicy Bypass -File scripts/check-template.ps1`。
+2. 若进入 fallback，先看 Bash 启动错误与 fallback 结果；fallback 通过只代表结构检查通过，不代表完整自检通过。
+3. 发布前仍以 `bash scripts/check-template.sh` 或 CI 为准；本地快速自检可用 `bash scripts/check-template.sh --summary`（只输出计数与失败项，避免回灌完整成功日志）；必要时用 Git Bash 全路径重跑。
+4. 成功路径只记命令、退出码 / check 结论和通过摘要，不回灌完整成功日志。
+5. 失败路径只保留失败断言块、文件、expected pattern、复现命令和必要的 Bash / fallback 错误。
+
 ## 6. README 边界与派生 README 规范
 
 ### 模板仓库 README（根 `README.md`）
@@ -134,3 +142,4 @@ Windows 下若 PowerShell 无法拉起 Git Bash，`check-template.ps1`、`sync-t
 - 历史归档放 `docs/archive/`。
 - `ai/doc-standards/`（v1.20.0+）是模板 `00-09` 撰写规范的只读镜像，随模板同步刷新，不作为项目事实、不直接驱动开发；旧项目可能残留 `docs/_scaffold/`。
 - AI 需要新增文档时，必须先判断文档类型；不确定则先提议路径并等待人工确认。
+- 研发过程各类数据（决策 / 调研 / 会议 / 验证 / 版本 / AI 成本 / 续接）如何沉淀、流转和回写，见 `template-docs/rd-data-chain.md`（索引 / 分类，不替代 00-09）。
