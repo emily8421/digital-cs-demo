@@ -12,18 +12,97 @@
 #   3. 主流程：按入口、文档、治理、脚本、同步清单、样例分组调度。
 set -euo pipefail
 
+# 参数（opt-in）：--summary / --quiet 只输出分区计数、总数与失败项，不逐条打印 ✓；默认仍全量，CI 不受影响。
+# 退出码约定：0 通过 / 1 内容失败 / 2 环境守卫触发（CI 仍把任何非零当失败）。
+SUMMARY=0
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --summary|--quiet) SUMMARY=1; shift ;;
+    -h|--help) echo "用法: bash scripts/check-template.sh [--summary|--quiet]"; exit 0 ;;
+    *) echo "未知参数: $1（可用: --summary / --quiet）" >&2; exit 2 ;;
+  esac
+done
+
+# 静默集成断言（sync dry-run / new-project smoke）在 Windows 下经 git 子进程吐的 CRLF 警告：
+# 这些断言在一次性临时项目里跑 git；禁用 autocrlf 不影响任何断言结果（查结构 / 方向，不查换行）。
+# Linux CI 上 autocrlf 本就为 false，此处为 no-op。
+export GIT_CONFIG_COUNT=2
+export GIT_CONFIG_KEY_0=core.autocrlf
+export GIT_CONFIG_VALUE_0=false
+export GIT_CONFIG_KEY_1=core.safecrlf
+export GIT_CONFIG_VALUE_1=false
+
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+# early-exit 守卫：ROOT 不像模板根 或 核心前置文件缺失时早退，避免一次环境 / 入口故障引爆上千条假 ✗（token 炸弹）。
+if [[ ! -d "$ROOT/.git" || ! -f "$ROOT/VERSION" ]]; then
+  echo "✗ 环境守卫: ROOT($ROOT) 不像模板仓库根目录（缺 .git 或 VERSION），多为 bash 入口 / PATH 环境问题，非模板内容失败。" >&2
+  echo "  复现诊断: bash --version; command -v dirname grep sed; echo ROOT=$ROOT" >&2
+  exit 2
+fi
+for _prereq in README.md VERSION template-sync.json ai/index.md; do
+  if [[ ! -e "$ROOT/$_prereq" ]]; then
+    echo "✗ 环境守卫: 核心前置文件缺失 $ROOT/$_prereq；若非有意删除，多为 ROOT / 入口环境问题。不再继续断言以免批量误报。" >&2
+    exit 2
+  fi
+done
+
 FAILURES=0
+PASSES=0
+SECTION_NAME=""
+SECTION_START_PASSES=0
+SECTION_START_FAILURES=0
 
 pass() {
-  echo "✓ $1"
+  PASSES=$((PASSES + 1))
+  if [[ $SUMMARY -eq 0 ]]; then
+    echo "✓ $1"
+  fi
 }
 
 fail() {
   echo "✗ $1" >&2
   FAILURES=$((FAILURES + 1))
+}
+
+finish_current_section() {
+  local section_passes
+  local section_failures
+  section_passes=$((PASSES - SECTION_START_PASSES))
+  section_failures=$((FAILURES - SECTION_START_FAILURES))
+  if [[ $SUMMARY -eq 1 ]]; then
+    echo "  分区小计：$SECTION_NAME — $section_passes 项 / $section_failures 失败"
+  fi
+}
+
+begin_section() {
+  local name="$1"
+  if [[ -n "$SECTION_NAME" ]]; then
+    finish_current_section
+    echo
+  fi
+  SECTION_NAME="$name"
+  SECTION_START_PASSES="$PASSES"
+  SECTION_START_FAILURES="$FAILURES"
+  echo "==> $SECTION_NAME"
+}
+
+finish_sections() {
+  if [[ -n "$SECTION_NAME" ]]; then
+    finish_current_section
+    SECTION_NAME=""
+  fi
+}
+
+print_pattern_hint() {
+  local file="$1"
+  local pattern="$2"
+  echo "  file: $file" >&2
+  echo "  expected ERE pattern: $pattern" >&2
+  echo "  reproduce: grep -En -- <pattern> \"$file\"" >&2
+  echo "  file head:" >&2
+  sed -n '1,5p' "$file" | sed 's/^/    /' >&2
 }
 
 require_file() {
@@ -44,7 +123,10 @@ require_contains() {
   elif grep -Eq -- "$pattern" "$file"; then
     pass "$message"
   else
-    fail "$message"
+    fail "$message（文件: $file；pattern: $pattern）"
+    # grep -Eq uses Extended Regular Expressions (ERE): use `|` for OR;
+    # escape regex metacharacters only when matching them literally.
+    print_pattern_hint "$file" "$pattern"
   fi
 }
 
@@ -459,6 +541,13 @@ require_doc_standards_mirror() {
 }
 
 check_script_entrypoints() {
+  require_contains "scripts/check-template.sh" 'begin_section "检查 AI 入口文件"' "check-template Bash 主流程使用分区入口"
+  require_contains "scripts/check-template.sh" '分区小计' "check-template Bash summary 输出分区小计"
+  require_contains "scripts/check-template.sh" 'expected ERE pattern' "check-template Bash 失败输出包含 ERE pattern"
+  require_contains "scripts/check-template.sh" 'reproduce: grep -En' "check-template Bash 失败输出包含复现命令"
+  require_contains "scripts/check-template.sh" 'Extended Regular Expressions' "check-template Bash helper 注明 grep -Eq 使用 ERE"
+  require_contains "scripts/check-template.ps1" 'Select-String uses \.NET regular expressions' "check-template PowerShell helper 注明 regex 风格"
+  require_contains "scripts/check-template.ps1" 'expected .NET regex pattern' "check-template PowerShell fallback 失败输出包含 pattern"
   require_contains "scripts/sync-template.ps1" 'sync-template\.sh' "sync-template PowerShell 入口调用 Bash 脚本"
   require_contains "scripts/sync-template.ps1" 'Invoke-NativeTemplateSync' "sync-template PowerShell 入口含原生 fallback"
   require_contains "scripts/sync-template.ps1" 'param\(\[string\[\]\]\$NativeSyncArgs\)' "sync-template fallback 不使用易混淆 Args 参数名"
@@ -474,7 +563,16 @@ check_script_entrypoints() {
   require_contains "scripts/check-derived-sync.sh" '<sync-commit>' "check-derived-sync Bash 入口提示显式同步提交"
   require_contains "scripts/check-derived-sync.sh" 'merge commit' "check-derived-sync Bash 入口提示 merge commit 场景"
   require_contains "SOP.md" 'PowerShell fallback' "SOP 常用命令说明 PowerShell fallback"
+  require_contains "SOP.md" 'Windows fallback 最短判断链' "SOP 包含 Windows fallback 最短判断链"
+  require_contains "SOP.md" '成功路径只记命令、退出码' "SOP 说明 check-template 成功路径摘要"
+  require_contains "SOP.md" '失败路径只保留失败断言块' "SOP 说明 check-template 失败路径最小证据"
   require_contains "git-guide.md" 'PowerShell fallback' "git-guide 说明同步 fallback"
+  require_contains "MAINTAINERS.md" 'Windows fallback 最短判断链' "MAINTAINERS 包含 Windows fallback 最短判断链"
+  require_contains "MAINTAINERS.md" 'fallback 通过只代表结构检查通过' "MAINTAINERS 说明 fallback 不等于完整自检"
+  require_contains "MAINTAINERS.md" '成功路径只记命令、退出码' "MAINTAINERS 说明 check-template 成功路径摘要"
+  require_contains "MAINTAINERS.md" '失败路径只保留失败断言块' "MAINTAINERS 说明 check-template 失败路径最小证据"
+  require_contains "SOP.md" 'check-template.sh --summary' "SOP 说明本地快速自检可用 --summary"
+  require_contains "MAINTAINERS.md" 'check-template.sh --summary' "MAINTAINERS 说明本地快速自检可用 --summary"
   require_contains "template-docs/env-setup.md" 'PowerShell fallback' "环境准备文档说明 fallback 边界"
   require_contains "template-docs/derived-sync-report-template.md" 'PowerShell fallback' "同步运行记录模板记录 fallback"
 }
@@ -511,6 +609,16 @@ check_project_bootstrap_scripts() {
   require_contains "scripts/collect-env.ps1" '服务器资源预案' "collect-env 保留服务器资源预案"
   require_contains "scripts/check-prereqs.ps1" 'Git Bash' "check-prereqs 检查 Git Bash"
   require_contains "scripts/check-prereqs.ps1" 'bootstrap-dev-env\.ps1' "check-prereqs 提示一键安装脚本"
+  require_contains "scripts/check-prereqs.ps1" 'Get-DeclaredNodeVersion' "check-prereqs 含运行时声明版本读取（阶段 1 声明 vs 实际对比）"
+  require_contains "scripts/check-prereqs.ps1" 'major version drift' "check-prereqs 含 Node 主版本漂移告警"
+  require_contains "scripts/check-prereqs.ps1" 'Get-NodeResolutionHint' "check-prereqs 含阶段 2 node 解析路径健康提示"
+  require_contains "scripts/check-prereqs.ps1" 'bypassing shim' "check-prereqs 阶段 2 告警提示 Volta image 绕过 shim"
+  require_contains "scripts/check-runtime.ps1" 'Resolve-NodeSource' "check-runtime 含 node 解析来源判定"
+  require_contains "scripts/check-runtime.ps1" 'major drift' "check-runtime 含声明 vs 实际主版本漂移判定"
+  require_contains "scripts/check-runtime.ps1" 'persistent' "check-runtime 区分会话注入 vs 持久 PATH 污染"
+  require_contains "scripts/check-runtime.ps1" 'declaration consistency' "check-runtime 含混合 manager 双声明文件一致性诊断"
+  require_contains "template-docs/env-setup.md" '混合 manager 团队' "env-setup §6 含混合 manager 团队声明口径"
+  require_contains "template-docs/env-setup.md" '运行时健康检测' "env-setup §6 含运行时健康检测小节"
   require_contains "scripts/bootstrap-dev-env.ps1" 'Git\.Git' "bootstrap 脚本安装 Git for Windows"
   require_contains "scripts/bootstrap-dev-env.ps1" 'GitHub\.cli' "bootstrap 脚本安装 GitHub CLI"
   require_contains "scripts/bootstrap-dev-env.ps1" 'OpenJS\.NodeJS\.LTS' "bootstrap 脚本安装 Node.js LTS"
@@ -518,7 +626,7 @@ check_project_bootstrap_scripts() {
   require_contains "scripts/bootstrap-dev-env.ps1" 'Microsoft\.VisualStudioCode' "bootstrap 脚本安装 VS Code"
 }
 
-echo "==> 检查 AI 入口文件"
+begin_section "检查 AI 入口文件"
 require_file "AGENTS.md"
 require_file "CLAUDE.md"
 require_file ".cursor/rules/project-rules.mdc"
@@ -527,16 +635,14 @@ require_contains "CLAUDE.md" 'ai/index\.md' "CLAUDE.md 指向 ai/index.md"
 require_contains ".cursor/rules/project-rules.mdc" 'ai/index\.md' "Cursor 规则指向 ai/index.md"
 require_contains ".cursor/rules/project-rules.mdc" '^alwaysApply: true$' "Cursor 规则启用 alwaysApply"
 
-echo
-echo "==> 检查 AI 规则索引"
+begin_section "检查 AI 规则索引"
 require_file "ai/index.md"
 while IFS= read -r rule_file; do
   [[ -n "$rule_file" ]] || continue
   require_file "$rule_file"
 done < <(extract_index_rules)
 
-echo
-echo "==> 检查核心文档骨架"
+begin_section "检查核心文档骨架"
 for doc in \
   docs/00-scenario.md \
   docs/01-user-requirements.md \
@@ -626,16 +732,18 @@ for optional_doc in docs/06-db-design.md docs/07-api-spec.md; do
   fi
 done
 
-echo
-echo "==> 检查版本号与治理文件"
+begin_section "检查版本号与治理文件"
 require_file "VERSION"
 require_file "CHANGELOG.md"
+require_file "CHANGELOG-PLAIN.md"
 require_file "MAINTAINERS.md"
 require_file "template-sync.json"
 require_contains "VERSION" '^v[0-9]+\.[0-9]+\.[0-9]+$' "VERSION 使用三段式模板版本号"
 require_changelog_current_version
 require_changelog_semver_desc
 require_contains "CHANGELOG.md" '版本是发布边界，不是提案数量边界' "CHANGELOG 说明版本是发布边界"
+require_contains "CHANGELOG-PLAIN.md" 'Sync notice' "CHANGELOG-PLAIN 包含同步覆盖说明"
+require_contains "CHANGELOG-PLAIN.md" '权威版本事实仍以 `VERSION`、`CHANGELOG.md` 和 Git 历史为准' "CHANGELOG-PLAIN 说明不替代权威 changelog"
 require_contains "CONTRIBUTING.md" '提案收件箱增长不触发版本递增' "CONTRIBUTING 区分提案收件箱与版本递增"
 require_contains "CONTRIBUTING.md" 'Release impact' "CONTRIBUTING 包含 release impact 决策"
 require_contains "CONTRIBUTING.md" '同主题小改可聚合为同一个版本发布' "CONTRIBUTING 说明同主题聚合发布"
@@ -648,12 +756,14 @@ require_contains "MAINTAINERS.md" 'Sync notice' "MAINTAINERS 说明同步文档�
 require_contains "MAINTAINERS.md" '根 `README\.md` 是项目专属文档' "MAINTAINERS 说明派生 README 不同步"
 require_contains "template-sync.json" '"files"' "template-sync.json 包含同步文件清单"
 require_contains "template-sync.json" '"CHANGELOG\.md"' "template-sync 同步 CHANGELOG"
+require_contains "template-sync.json" '"CHANGELOG-PLAIN\.md"' "template-sync 同步大白话 CHANGELOG"
 require_contains "template-sync.json" '"MAINTAINERS\.md"' "template-sync 同步 MAINTAINERS"
 require_contains "template-sync.json" '"ai/document-lifecycle-rules\.md"' "template-sync 同步文档生命周期规则"
 require_contains "template-sync.json" '"ai/implementation-lifecycle-rules\.md"' "template-sync 同步实现生命周期规则"
 require_contains "template-sync.json" '"ai/session-rules\.md"' "template-sync 同步会话续接规则"
 require_contains "template-sync.json" '"ai/rules-core\.md"' "template-sync 同步核心规则入口"
 require_contains "scripts/sync-template.sh" '"ai/rules-core\.md"' "sync-template fallback 同步核心规则入口"
+require_contains "scripts/sync-template.sh" '"CHANGELOG-PLAIN\.md"' "sync-template fallback 同步大白话 CHANGELOG"
 require_contains "template-sync.json" '"ai/doc-standards/README\.md"' "template-sync 同步 doc-standards README"
 require_contains "template-sync.json" '"ai/doc-standards/00-scenario\.md"' "template-sync 同步 00 场景标准"
 require_contains "template-sync.json" '"ai/doc-standards/01-user-requirements\.md"' "template-sync 同步 01 用户需求标准"
@@ -737,6 +847,7 @@ require_files \
   "scripts/check-derived-sync.ps1" \
   "scripts/collect-env.ps1" \
   "scripts/check-prereqs.ps1" \
+  "scripts/check-runtime.ps1" \
   "scripts/bootstrap-dev-env.ps1"
 require_file "template-docs/e2e-regression-checklist.md"
 require_file "template-docs/e2e-report-template.md"
@@ -924,6 +1035,7 @@ require_contains "scripts/sync-template.sh" '"ai/prompts/docs/00-generate-or-com
 require_contains "scripts/sync-template.sh" '"ai/prompts/planning/19-plan-phases-and-sprints\.md"' "sync-template 兜底清单含 A9 阶段 Sprint 规划 Prompt"
 require_contains "scripts/sync-template.sh" '"docs/inputs/README\.md"' "sync-template 兜底清单含 docs inputs README"
 require_contains "template-sync.json" 'scripts/check-markdown-clean\.ps1' "template-sync 纳入 Markdown 清洁预检脚本"
+require_contains "template-sync.json" 'scripts/check-runtime\.ps1' "template-sync 纳入运行时健康诊断脚本"
 require_contains "scripts/sync-template.sh" 'scripts/check-markdown-clean\.ps1' "sync-template 兜底清单含 Markdown 清洁预检脚本"
 require_contains ".github/workflows/template-check.yml" 'check-markdown-clean\.ps1' "template-check CI 运行 Markdown 清洁预检"
 require_contains "MAINTAINERS.md" 'check-markdown-clean\.ps1' "MAINTAINERS 提醒 PR 前运行 Markdown 清洁预检"
@@ -936,11 +1048,13 @@ require_contains "scripts/check-derived-sync.ps1" 'TEMPLATE-BASE\.md' "check-der
 require_contains "scripts/check-derived-sync.sh" 'Domain standards scope' "check-derived-sync 校验领域版 TEMPLATE-BASE.md 领域标准件字段"
 require_contains "scripts/check-derived-sync.ps1" 'Domain standards scope' "check-derived-sync PowerShell fallback 校验领域版 TEMPLATE-BASE.md"
 require_contains "scripts/check-derived-sync.sh" 'README\.md\|ai/project-rules\.md\|docs/0\[0-9\]-\*' "check-derived-sync 保护项目专属文件"
-require_contains "scripts/check-derived-sync.sh" 'git show --name-only --stat' "check-derived-sync 输出最近同步提交文件"
+require_contains "scripts/check-derived-sync.sh" 'git show --name-only' "check-derived-sync 输出最近同步提交文件名（--name-only；v1.56.11 去 --stat 减噪）"
 require_contains "scripts/check-derived-sync.sh" 'git rev-list --parents -n 1' "check-derived-sync 识别 HEAD merge commit 并提示传入实际同步提交"
 require_contains "scripts/check-derived-sync.sh" 'ai/prompts/maintainers/15-post-sync-cleanup\.md' "check-derived-sync 指向同步后整理 Prompt"
 require_contains "scripts/sync-template.sh" 'ai/doc-standards' "sync-template 含 doc-standards 规范镜像步骤"
 require_contains "scripts/sync-template.sh" '--preserve-project-version' "sync-template 支持普通派生项目保留自身 VERSION"
+require_contains "scripts/sync-template.sh" 'core.autocrlf=false' "sync-template dry-run diff 局部关 autocrlf 消 Windows CRLF 噪音（不影响 commit）"
+require_contains "scripts/sync-template.ps1" 'core.autocrlf=false' "sync-template PowerShell fallback dry-run diff 局部关 autocrlf"
 require_contains "scripts/sync-template.sh" 'detect_lineage_role' "sync-template 自动判定 TEMPLATE-BASE 普通版/领域版角色"
 require_contains "scripts/sync-template.sh" 'TEMPLATE-BASE\.md' "sync-template 维护普通派生项目继承版本记录"
 require_contains "scripts/sync-template.sh" '--domain-template' "sync-template 支持领域模板角色保留自身 VERSION/CHANGELOG"
@@ -962,7 +1076,10 @@ require_contains "scripts/check-derived-sync.sh" '版本机制启用状态' "che
 require_contains "scripts/check-derived-sync.ps1" 'version mechanism enablement' "check-derived-sync PowerShell fallback 含版本机制启用状态检测（非阻断）"
 require_contains "scripts/check-derived-sync.sh" 'Check project version consistency' "check-derived-sync 主信号检测派生 workflow 版本校验"
 require_contains "scripts/check-derived-sync.ps1" 'Check project version consistency' "check-derived-sync PowerShell fallback 主信号检测派生 workflow 版本校验"
+require_contains "scripts/check-derived-sync.sh" '全部合规' "check-derived-sync Bash 成功路径摘要化（合规计数，不逐文件列）"
+require_contains "scripts/check-derived-sync.ps1" 'all in sync' "check-derived-sync PowerShell fallback 成功路径摘要化（合规计数）"
 require_contains "ai/prompts/maintainers/15-post-sync-cleanup.md" '版本机制启用状态' "同步后整理 Prompt 引导审计版本机制启用状态"
+require_contains "ai/prompts/maintainers/15-post-sync-cleanup.md" '启用项目自有版本机制 checklist' "同步后整理 Prompt 含启用项目自有版本机制操作 checklist（审计→启用步骤）"
 require_contains "ai/doc-standards/README.md" 'Document Standards' "doc-standards README 说明规范镜像定位"
 
 # AI CLI 使用体验入口：快捷命令与会话续接必须贯穿规则、Prompt、同步清单和人读文档。
@@ -991,6 +1108,28 @@ require_contains "ai/prompts/setup/13-collect-env.md" '不替代技术路线' "c
 require_contains "docs/05-tech-spec.md" '技术环境评估结论' "05 技术方案包含技术环境评估结论"
 require_contains "docs/09-verification.md" '技术环境评估验证' "09 验证计划包含技术环境评估验证"
 require_contains "template-docs/scenario-guides.md" 'A24 技术路线与环境支撑评估' "scenario-guides 路由技术环境评估"
+
+# 运行时版本锁定机制（v1.55.0）：规则层 project-rules §2.9、声明层 05-tech-spec 标准 + scaffold §1.1、
+# 文档层 env-setup「运行时版本管理」、评估层 20-tech-env-evaluation、路由层 global-rules §5。
+# PS1 fallback 显式收窄、不镜像内容断言（见 check-template.ps1 顶部注释），故断言只在此维护。
+require_contains "ai/project-rules.md" '^## 2\.9 运行时版本锁定' "project-rules 含运行时版本锁定小节"
+require_contains "ai/project-rules.md" '§2\.5.*运行环境与资源约束' "project-rules §2.9 与 §2.5 运行环境与资源约束区分"
+require_contains "ai/project-rules.md" '版本声明文件' "project-rules §2.9 标明版本声明文件字段"
+require_contains "ai/project-rules.md" '切换工具' "project-rules §2.9 标明切换工具字段"
+require_contains "ai/project-rules.md" '豁免理由' "project-rules §2.9 含豁免理由字段"
+require_contains "ai/project-rules.md" 'docs/05-tech-spec\.md' "project-rules §2.9 指向 05-tech-spec 声明落点"
+require_contains "ai/doc-standards/05-tech-spec.md" '运行时版本锁定' "05 技术方案标准纳入运行时版本锁定维度"
+require_contains "template-docs/docs-scaffold/05-tech-spec.md" '运行时版本锁定' "05 scaffold 提示运行时版本锁定"
+require_contains "template-docs/docs-scaffold/05-tech-spec.md" '版本声明文件' "05 scaffold 含版本声明文件字段"
+require_contains "template-docs/docs-scaffold/05-tech-spec.md" '切换工具' "05 scaffold 含切换工具字段"
+require_contains "template-docs/env-setup.md" '运行时版本管理' "env-setup 含运行时版本管理小节"
+require_contains "template-docs/env-setup.md" 'Volta' "env-setup 推荐 Windows 友好 Node 版本管理器"
+require_contains "template-docs/env-setup.md" '"volta"' "env-setup 说明 Volta 的 package.json volta 字段 pin 机制"
+require_contains "template-docs/env-setup.md" 'pyenv-win' "env-setup 推荐 Windows 友好 Python 版本管理器"
+require_contains "template-docs/env-setup.md" '\.node-version|\.python-version|\.tool-versions' "env-setup 列举标准声明文件"
+require_contains "template-docs/env-setup.md" 'asdf.*WSL|WSL.*asdf' "env-setup 注明 asdf Windows 需 WSL"
+require_contains "ai/prompts/review/20-tech-env-evaluation.md" '声明锁定版本|声明运行时版本锁定' "tech-env-evaluation 比对项目声明锁定版本"
+require_contains "ai/global-rules.md" '§2\.9' "global-rules 路由到 project-rules §2.9"
 require_contains "ai/global-rules.md" 'ai/commands/README\.md' "global-rules 指向快捷命令路由"
 require_contains "ai/global-rules.md" 'ai/session-rules\.md' "global-rules 指向会话续接规则"
 require_contains "ai/global-rules.md" 'ai/implementation-lifecycle-rules\.md' "global-rules 指向实现生命周期规则"
@@ -1015,6 +1154,8 @@ require_contains "ai/session-rules.md" '\.ai/session-handoff\.md' "session-rules
 require_contains "ai/session-rules.md" 'NEXT-STEPS\.md' "session-rules 兼容 NEXT-STEPS"
 require_contains "ai/session-rules.md" 'Token 热点观察触发' "session-rules 定义 token hotspot 主动提醒"
 require_contains "ai/session-rules.md" 'ai-records/token-hotspots/' "session-rules 定义 token hotspot 记录目录"
+require_contains "ai/session-rules.md" '累计 summary 触发' "session-rules 定义 token hotspot 累计 summary 触发"
+require_contains "ai/session-rules.md" 'ai-records/token-hotspots/SUMMARY.md' "session-rules 定义 token hotspot summary 文件"
 require_contains "ai/session-rules.md" '同会话规则复用边界' "session-rules 定义同会话规则复用边界"
 require_contains "ai/session-rules.md" '后续顺序治理步骤可复用已加载规则' "session-rules 限定同会话复用规则"
 require_contains "ai/session-rules.md" '验证证据摘要约定' "session-rules 定义成功验证摘要约定"
@@ -1057,6 +1198,8 @@ require_contains "SOP.md" '派生同步运行记录' "SOP 包含派生同步运�
 require_contains "SOP.md" 'derived-sync-report-template' "SOP 常用命令提示派生同步运行记录模板"
 require_contains "MAINTAINERS.md" 'derived-sync-report-template' "MAINTAINERS 要求真实同步沉淀运行记录"
 require_contains "CONTRIBUTING.md" 'derived-sync-report-template' "CONTRIBUTING 说明同步运行记录与去项目化回流"
+
+begin_section "检查场景引导、同步治理与 Prompt 路由"
 
 # 场景引导编排层（scenario-guides）：让「说一个场景 → 给引导计划」成为标准交互。
 require_file "template-docs/scenario-guides.md"
@@ -1268,6 +1411,9 @@ require_contains "template-docs/glossary.md" '状态词典' "术语表包含状�
 require_contains "template-docs/glossary.md" '原型 / 前端交互' "术语表包含原型与前端交互分类"
 require_contains "template-docs/glossary.md" '会话续接' "术语表包含会话续接分类"
 require_contains "template-docs/glossary.md" '模板治理 / 同步' "术语表包含模板治理分类"
+
+begin_section "检查 docs scaffold 与 Profile"
+
 require_contains "template-docs/docs-scaffold/README.md" 'docs/00-09.*项目事实' "docs scaffold README 区分项目事实文档"
 require_contains "template-docs/docs-scaffold/README.md" 'template-docs/docs-scaffold/00-09.*结构模板' "docs scaffold README 区分结构模板"
 require_contains "template-docs/docs-scaffold/README.md" 'ai/doc-standards/00-09.*审计基线' "docs scaffold README 区分规范标准"
@@ -1361,6 +1507,12 @@ require_file "template-docs/web-app-scaffold-experiment.md"
 require_contains "template-docs/web-app-scaffold-experiment.md" 'Promotion decision matrix' "Web app scaffold 实验协议定义推广决策矩阵"
 require_contains "template-docs/web-app-scaffold-experiment.md" '不在母模板内直接生成' "Web app scaffold 实验协议禁止母模板直接内置 scaffold"
 require_contains "template-docs/web-fullstack-profile.md" 'web-app-scaffold-experiment\.md' "Web fullstack profile 链接 scaffold 实验协议"
+require_contains "ai/implementation-lifecycle-rules.md" 'System Skeleton' "实现生命周期定义通用 System Skeleton Gate"
+require_contains "ai/global-rules.md" 'System Skeleton' "全局规则含设计骨架 vs System Skeleton 消歧"
+require_contains "ai/project-rules.md" 'System Skeleton Gate' "项目规则含 System Skeleton Gate 三态写法"
+require_contains "ai/doc-standards/08-dev-plan.md" 'System Skeleton' "08 规范含 Sprint 0 / System Skeleton"
+require_contains "ai/doc-standards/09-verification.md" '验收大纲层次' "09 规范含验收大纲层次维度"
+require_contains "template-docs/web-fullstack-profile.md" 'System Skeleton' "Web fullstack profile 定位为 System Skeleton 的 Web 特化"
 require_contains "template-docs/domain-templates.md" 'web-app-scaffold-experiment\.md' "领域模板说明引用 Web app scaffold 实验"
 require_file "template-docs/capability-packages.md"
 require_contains "template-docs/capability-packages.md" 'Remote / CI SOP Profile' "能力包索引包含 Remote / CI SOP Profile"
@@ -1368,12 +1520,21 @@ require_contains "template-docs/capability-packages.md" '不是 AI 每次任务�
 require_contains "template-docs/capability-packages.md" '风险分级确认' "能力包索引引用风险分级确认"
 require_contains "template-sync.json" 'template-docs/capability-packages\.md' "同步清单包含能力包索引"
 require_contains "scripts/sync-template.sh" 'template-docs/capability-packages\.md' "sync-template fallback 包含能力包索引"
+require_file "template-docs/remote-ci-sop-profile.md"
+require_contains "template-docs/remote-ci-sop-profile.md" 'PR / CI 闭环 Checklist' "Remote / CI profile 包含 PR/CI 闭环 checklist"
+require_contains "template-docs/remote-ci-sop-profile.md" 'CI pending 即汇报 pending' "Remote / CI profile 约束 CI pending 不长等"
+require_contains "template-docs/remote-ci-sop-profile.md" '未确认不做 push / merge / close / delete / release' "Remote / CI profile 保留高风险确认边界"
+require_contains "ai/index.md" 'template-docs/remote-ci-sop-profile\.md' "任务路由包含 Remote / CI profile"
+require_contains "ai/commands/README.md" 'template-docs/remote-ci-sop-profile\.md' "命令索引包含 Remote / CI profile"
+require_contains "template-sync.json" 'template-docs/remote-ci-sop-profile\.md' "同步清单包含 Remote / CI profile"
+require_contains "scripts/sync-template.sh" 'template-docs/remote-ci-sop-profile\.md' "sync-template fallback 包含 Remote / CI profile"
 require_contains "template-docs/scenario-guides.md" '场景编号规则' "场景引导定义编号规则"
 require_contains "template-docs/scenario-guides.md" 'A22 需求探索原型' "场景引导包含 A22 需求探索原型"
 require_contains "template-docs/scenario-guides.md" 'A23 UI 原型策略 / 实现前原型' "场景引导包含 A23 UI 原型策略"
 require_contains "template-docs/scenario-guides.md" 'A25 UI Brief Intake' "场景引导包含 A25 UI Brief Intake"
 require_contains "template-docs/scenario-guides.md" 'A26 UI Interaction Discovery' "场景引导包含 A26 UI Interaction Discovery"
 require_contains "template-docs/scenario-guides.md" 'A27 Web App Structure Profile' "场景引导包含 A27 Web App Structure Profile"
+require_contains "template-docs/scenario-guides.md" 'A28 System Skeleton Gate' "场景引导包含 A28 通用 System Skeleton Gate"
 require_contains "template-docs/scenario-guides.md" 'A7-REQ' "场景引导使用 A7 语义化子流程"
 require_contains "docs/README.md" 'YYYY-MM-DD-ui-prototype-exploration\.md' "docs README 记录需求探索原型路径"
 require_contains "docs/README.md" 'YYYY-MM-DD-ui-brief-intake\.md' "docs README 记录 UI brief intake 路径"
@@ -1419,6 +1580,20 @@ require_contains "template-docs/beginner-guide.md" 'demo-runbook-template' "新�
 require_contains "template-docs/template-methodology.md" 'implementation-lifecycle-rules' "方法论权威源表含实现生命周期规则（防漂移）"
 require_contains "template-docs/template-methodology.md" 'session-rules' "方法论权威源表含会话续接规则（防漂移）"
 require_contains "template-docs/glossary.md" '演示 SOP' "术语表含演示 SOP 条目（防漂移）"
+require_contains "template-docs/demo-runbook-template.md" '回滚与清理' "demo runbook 含回滚清理章节（DM-1）"
+require_file "template-docs/user-guide-template.md"
+require_contains "template-docs/user-guide-template.md" '任务 → 权威入口' "user-guide 模板含任务导航表（DM-1）"
+require_contains "template-sync.json" 'template-docs/user-guide-template\.md' "同步清单含 user-guide 模板"
+require_contains "template-docs/beginner-guide.md" 'user-guide-template' "新手指南导航含 user-guide（防漂移）"
+require_file "template-docs/rd-data-chain.md"
+require_contains "template-docs/rd-data-chain.md" '数据类别' "rd-data-chain 含数据类别索引（RC-1）"
+require_contains "template-sync.json" 'template-docs/rd-data-chain\.md' "同步清单含 rd-data-chain"
+require_contains "template-docs/beginner-guide.md" 'rd-data-chain' "新手指南导航含 rd-data-chain（防漂移）"
+require_contains "ai/doc-standards/07-api-spec.md" '时序图' "07 审计基线含关键接口时序图字段（DR-3）"
+require_contains "ai/doc-standards/06-db-design.md" 'ER 图' "06 审计基线要求核心实体 ER 图（DR-1）"
+require_contains "ai/doc-standards/04-architecture.md" '图纸审核' "04 含图纸审核四维度（DR-1）"
+require_contains "ai/document-lifecycle-rules.md" 'DIAG-' "文档生命周期 §13 含图 ID 命名（DR-4）"
+require_contains "README.md" '模板一览' "README 含模板一览可视化章节（RV-1）"
 require_contains "ai/prompts/docs/00-generate-or-complete-docs.md" '专题讨论优先' "文档生成 Prompt 要求专题讨论先确认"
 require_contains "ai/document-lifecycle-rules.md" '## 10\.3 专题方案讨论边界' "文档生命周期定义专题方案讨论边界"
 require_contains "ai/document-lifecycle-rules.md" 'docs/research/YYYY-MM-DD-docs-open-items\.md' "文档生命周期定义 open items 默认路径"
@@ -1526,6 +1701,8 @@ require_contains "docs/08-dev-plan.md" '验证包 / TC' "08 开发计划模板�
 require_contains "docs/08-dev-plan.md" 'Sprint 完成包' "08 开发计划模板包含 Sprint 完成包"
 require_contains "docs/09-verification.md" 'TC 状态' "09 验证模板包含 TC 状态"
 require_contains "docs/09-verification.md" 'Sprint 验收包' "09 验证模板包含 Sprint 验收包"
+require_contains "docs/08-dev-plan.md" 'System Skeleton' "08 实例含 Sprint 0 / System Skeleton"
+require_contains "docs/09-verification.md" '验收大纲层次' "09 实例含验收大纲层次"
 require_contains "ai/implementation-lifecycle-rules.md" 'Sprint / Task 完成后必须形成最小完成包' "实现生命周期要求 Sprint/Task 完成包"
 require_contains "ai/session-rules.md" '不得替代 `docs/08-dev-plan.md` 的进度摘要或 `docs/09-verification.md` 的验证证据 / 验收记录' "会话规则区分 handoff 与 08/09 正式记录"
 require_contains "ai/session-rules.md" '不联网，不查询 GitHub issue / PR / Actions' "快速续接默认不做远端查询"
@@ -1553,16 +1730,14 @@ require_sync_dry_run_direction
 require_new_project_local_smoke
 require_doc_standards_mirror
 
-echo
-echo "==> 检查同步清单一致性"
+begin_section "检查同步清单一致性"
 while IFS= read -r sync_file; do
   [[ -n "$sync_file" ]] || continue
   require_file "$sync_file"
   require_contains "template-sync.json" "$(printf '%s' "$sync_file" | sed 's/[.[\*^$()+?{}|\\]/\\&/g')" "template-sync.json 包含 $sync_file"
 done < <(extract_sync_files)
 
-echo
-echo "==> 检查参考样例完整性"
+begin_section "检查参考样例完整性"
 require_file "_examples/README.md"
 require_contains "_examples/README.md" 'vision-to-product/' "示例导航包含 vision-to-product"
 require_contains "_examples/README.md" 'quick-script/' "示例导航包含 quick-script"
@@ -1615,10 +1790,11 @@ require_example_docs "_examples/todo-api" \
   09-verification.md
 require_example_deliverable_shape "_examples/todo-api"
 
+finish_sections
 echo
 if [[ "$FAILURES" -eq 0 ]]; then
-  echo "✅ 模板自检通过"
+  echo "✅ 模板自检通过（$PASSES 项 / 0 失败）"
 else
-  echo "❌ 模板自检失败：$FAILURES 项" >&2
+  echo "❌ 模板自检失败：$FAILURES 项失败 / $PASSES 项通过" >&2
   exit 1
 fi

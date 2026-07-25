@@ -3,11 +3,11 @@
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
 > Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
 
-本文件定义复杂 Web / 全栈交互项目的轻量结构基线。它不是具体技术栈脚手架，不要求母模板内置业务代码；它用于在派生项目进入首个业务功能 Sprint 前，确认可运行骨架、目录边界、纵切验证和文件膨胀阈值。
+本文件定义复杂 Web / 全栈交互项目的轻量结构基线，是通用 System Skeleton Gate（见 `ai/implementation-lifecycle-rules.md` §3）的 **Web 特化扩展**。它不是具体技术栈脚手架，不要求母模板内置业务代码；它用于在派生项目进入首个业务功能 Sprint 前，在通用可运行系统框架（System Skeleton）基础上叠加确认 App Shell、目录边界、纵切验证和文件膨胀阈值等 Web 特化。
 
 ## 1. 适用范围
 
-满足以下任一条件时，应触发 Web App Structure Profile + Walking Skeleton Gate，或在 `ai/project-rules.md` §3 / `docs/05-tech-spec.md` 中写明豁免理由：
+满足以下任一条件时，应在通用 System Skeleton Gate 基础上叠加本 Web App Structure Profile（Web 特化），或在 `ai/project-rules.md` §3 / `docs/05-tech-spec.md` 中写明豁免理由：
 
 - 项目同时启用 `frontend/` 与 `backend/`，并存在前端调用后端 API。
 - 交付物为 Demo / MVP / 产品，需要浏览器点击演示或人工走查。
@@ -72,7 +72,24 @@ tests/
 | 后端 service / controller | 250 行 | 拆 service、repository / gateway、schema、error handling |
 | 单个测试文件 | 300 行 | 拆 smoke、contract、edge cases |
 
-## 6. Sprint 0 / Walking Skeleton 建议
+### 5.1 主应用文件职责边界与业务下沉
+
+§5 阈值回答「何时该拆」；本节回答「主应用文件只该放什么、新功能往哪里去」，从源头避免膨胀。主应用文件（前端 `App.*` / `src/app/*`、后端 `main` 入口、同等聚合文件）只承担：
+
+- **组合各域 hook / service**——装配业务模块，不实现业务逻辑；
+- **跨域 orchestration**——一次性协调多域（如统一 refresh、初始化顺序）；
+- **cross-cutting wrapper**——全局忙碌 / 错误 / 通知 / 登录失效等横切装配；
+- **render / 启动装配**——路由、providers、布局、入口挂载。
+
+不承担具体业务的状态机、数据加载副作用、事件处理实现、领域计算——这些下沉到域 hook（如 `useSearch` / `useDocuments`）或独立模块 / service。新功能以「最少改动胶水式」在主文件直接加 `useState` / handler / `useEffect` 仅限临时探索或极小改动；进入正式 Sprint 前必须抽到域 hook / 模块。
+
+软上限提醒（配合 §5 行数）：主应用文件内 `useState` / 等价状态 **~10–15 个**、事件 handler **~10–15 个**；超限按业务域抽 hook 或回调聚合。
+
+跨域边界：业务 hook **不持有跨域 setter**；需联动其他域时经回调（如 `onDocumentsChanged`、`onAuthError`）交回主文件做 orchestration，避免循环依赖与跨域闭包过期。一次性 set 多域 state 的跨域 refresh 可留在主文件，但应显式标注 orchestration 职责。
+
+> 与 §5 一致为治理提醒，非硬性；派生项目可在 `ai/project-rules.md` §3 / `docs/05-tech-spec.md` 覆盖或写明豁免。
+
+## 6. Sprint 0 / System Skeleton（Web 特化）建议
 
 复杂 Web 项目可在首个业务 Sprint 前加入一个很小的 Sprint 0：
 

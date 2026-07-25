@@ -439,7 +439,8 @@ function Show-TemplateDiffStat {
     $remoteContent = Get-GitUtf8Text show ("{0}:{1}" -f $Ref, $RemotePath)
     $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
     [System.IO.File]::WriteAllText($remoteFile, $remoteContent, $utf8NoBom)
-    & git diff --no-index --stat -- $localFile $remoteFile | ForEach-Object { Write-Host ($_ -replace [regex]::Escape($tmpDir + [System.IO.Path]::DirectorySeparatorChar), "") }
+    # 仅 dry-run diff：临时关 autocrlf/safecrlf 消 Windows 临时文件 CRLF 噪音；git -c 内联不影响 --commit（v1.56.12）。
+    & git -c core.autocrlf=false -c core.safecrlf=false diff --no-index --stat -- $localFile $remoteFile | ForEach-Object { Write-Host ($_ -replace [regex]::Escape($tmpDir + [System.IO.Path]::DirectorySeparatorChar), "") }
     $global:LASTEXITCODE = 0
   }
   finally {
