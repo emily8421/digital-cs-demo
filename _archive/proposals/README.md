@@ -23,7 +23,9 @@
 | `TEMPLATE-UPGRADE-v1.5.md`（+ `-patch`） | v1.5 | `TEMPLATE-UPGRADE-v1.5.md` | v1.5 模板优化（历史，早期回流） |
 | `TEMPLATE-UPGRADE-v1.6.md`（+ `-patch`） | v1.6 | `TEMPLATE-UPGRADE-v1.6.md` | v1.6 模板优化（历史，早期回流） |
 | `TEMPLATE-UPGRADE-cross-cutting-consistency.md` | v1.8.0 | lifecycle 规则主题（`ai/document-lifecycle-rules.md`） | 文档横切一致性：横切事实单一权威源 SSOT + 引用同步、变更分局部/横切两类、外部文档接入锚定、横切变更后强制一致性验证；4 点全部并入 `ai/document-lifecycle-rules.md` §7（横切事实与权威源）/ §8（外部文档接入规则）/ §9（变更传播规则） |
-
+| `TEMPLATE-UPGRADE-docs-spec-sync.md` | v1.20.0+（`ai/doc-standards/00-09` 规范镜像主路径） | —（模板演进吸收，无同名归档） | 00-09 撰写规范与项目事实分离：模板 docs/00-09 撰写规范镜像至 ai/doc-standards/00-09；docs/_scaffold 方案被替代（git-guide §5.6） |
+| `TEMPLATE-UPGRADE-docs-system-audit-prompt.md` | v1.28.0（`ai/prompts/review/16-docs-system-audit.md`） | —（模板演进吸收，无同名归档） | 文档体系同步后审计提示词：对照规范基线回溯审计整条 PLM 链路 |
+| `TEMPLATE-UPGRADE-sync-powershell-fallback.md` | v1.57.1 已含（`scripts/sync-template.ps1` 原生 fallback） | —（模板演进吸收，无同名归档） | Git Bash/MSYS 启动失败时 PowerShell 原生 fallback 完成 dry-run / commit / 边界检查 |
 > phasing / sync-dryrun 在派生项目同步至模板 v1.7.0 时归档；v1.5 / v1.6 为早期回流的历史提案，已从 `_proposals/archive/` 合并到本目录统一管理（commit 见 git log）。cross-cutting-consistency 在派生项目同步至模板 v1.9.0 时归档（落地版本 v1.8.0）。
 
 ## 历史归档位置说明
