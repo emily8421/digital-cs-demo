@@ -1,9 +1,18 @@
 # CHANGELOG-PLAIN
 
-> Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> 本文是 `CHANGELOG.md` 的大白话同步版，按同一版本顺序解释「这版到底改善了什么」。权威版本事实仍以 `VERSION`、`CHANGELOG.md` 和 Git 历史为准；本文件只帮助人快速读懂发布影响。
 
-本文是 `CHANGELOG.md` 的大白话同步版，按同一版本顺序解释“这版到底改善了什么”。权威版本事实仍以 `VERSION`、`CHANGELOG.md` 和 Git 历史为准；本文件只帮助人快速读懂发布影响。
+## 项目版本
+
+### v0.1.0（2026-07-18）
+
+项目版本基线重定义：`VERSION` 从「模板沿用版本」切换为「项目自有版本」，不沿用旧 v1.30.4；承接当前 P1+P2（Demo）收官状态；继承模板版本改由 `TEMPLATE-BASE.md` 记录，后续同步用 `--preserve-project-version` 保护项目版本。
+
+---
+
+## 模板继承历史（同步保留，仅供审计参考）
+
+> 以下为母模板 ai-project-template 的历史大白话 changelog，随模板同步保留；其中的版本号是母模板历史版本，不代表本项目发布记录。
 
 ## v1.56.13（2026-07-24）
 
@@ -620,3 +629,4 @@ README 瘦身，把维护细节迁到 `MAINTAINERS.md`，完整版本历史迁�
 ## v1.0
 
 模板初始版本：建立 AI 项目模板的基础目录、文档和规则入口，详细设计说明保留在早期归档里。
+
