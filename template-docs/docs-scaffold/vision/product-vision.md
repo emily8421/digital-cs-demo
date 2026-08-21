@@ -1,7 +1,7 @@
 # 产品愿景（Product Vision）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 本文件是 `docs/vision/product-vision.md` 的结构模板副本，不是项目事实。派生项目应通过 `docs/inputs/` 输入评审、愿景就绪评估和人工确认后，再生成或更新真实 `docs/vision/product-vision.md`。
 >

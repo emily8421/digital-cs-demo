@@ -1,7 +1,7 @@
 # Command: submit-proposal
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 ## 用户说法
 
@@ -13,22 +13,22 @@
 
 派生项目里有成熟的 `TEMPLATE-UPGRADE-*.md` 提案，要提交给相邻上游维护者（adjacent-layer upstream）。普通 L3 提交给 `ai-project-template`；领域 L3 先提交给对应领域模板；领域模板只把跨领域通用结论继续提交给 `ai-project-template`。用 `gh` 跨仓库开 issue——**成员免 fork、免本地模板副本**，只需本机 `gh` 登录其 GitHub 账号 + 目标模板仓 public（或成员有访问权限）。
 
-不适用：提案还不成熟（先在派生 `_proposals/` 起草完善）；或要直接改模板代码（走 fork + PR，非本命令）；或领域 L3 想越级把业务事实直接回流母模板。
+不适用：提案还不成熟（先在派生 `_governance/_proposals/` 起草完善）；或要直接改模板代码（走 fork + PR，非本命令）；或领域 L3 想越级把业务事实直接回流母模板。
 
 ## 必读文件
 
 - `ai/index.md`
-- 派生项目 `_proposals/TEMPLATE-UPGRADE-*.md`（待提交提案）
+- 派生项目 `_governance/_proposals/TEMPLATE-UPGRADE-*.md`（待提交提案）
 - `ai/global-rules.md` §9（回流来源标识 + 去项目化要求）
 
 ## 执行流程
 
-1. 列出派生 `_proposals/` 的成熟提案，让用户确认提交哪个。
+1. 列出派生 `_governance/_proposals/` 的成熟提案，让用户确认提交哪个。
 2. **校验**（不過则停下报告，不提交）：
    - 去项目化：无客户 / 账号 / 路径 / 业务细节。
    - 来源标识：头部有 `> 来源：<派生>(owner/repo) 派生项目回流`（缺则补上）。
    - 字段完整：动机 / 拟改 / 版本影响 / 影响面 / 验证方式。
-   - 去重声明：正文含 `## 1.1 与既有规则的关系（去重）`（或等价章节），列出相关既有规则并说明关系类型（对象不同 / 层级不同 / 机制不同 / 互补不重复 / 合并入 / 指向）；范式见 `_proposals/README.md`「提案正文章节」。
+   - 去重声明：正文含 `## 1.1 与既有规则的关系（去重）`（或等价章节），列出相关既有规则并说明关系类型（对象不同 / 层级不同 / 机制不同 / 互补不重复 / 合并入 / 指向）；范式见 `_governance/_proposals/README.md`「提案正文章节」。
 3. 创建 issue 前先做只读预检：
    - `gh auth status -h github.com`。
    - `gh repo view <目标模板仓库 owner/repo> --json nameWithOwner,viewerPermission`。

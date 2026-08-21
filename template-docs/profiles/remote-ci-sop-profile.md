@@ -1,7 +1,7 @@
 # Remote / CI SOP Profile（PR / CI 闭环速查）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 本文件是 **Remote / CI SOP Profile**：AI 做远端操作（push / PR / CI / issue 等）时，先读本契约定位"该读哪几份、怎么做"，**只读必读文件、不全量翻模板**。它是 PR / CI 闭环的速查入口，不替代 `git-guide.md`、`SOP.md`、`MAINTAINERS.md`、`CONTRIBUTING.md` 或 GitHub 远端事实。
 
@@ -37,7 +37,7 @@
 ### B. 提交与推送
 
 1. 只 stage 已确认范围内的文件。
-2. 提交前运行 `git diff --check`；涉及 `_proposals/`、`ai-records/` 等 Markdown 记录时运行 `scripts/check-markdown-clean.ps1` 的窄范围检查。（v1.61.5 起模板仓 `scripts/check-template.ps1` 本地预检末尾已内含 `check-markdown-clean.ps1 _proposals ai-records`，跑一次 `check-template.ps1` 即覆盖 CI 对应 step。）
+2. 提交前运行 `git diff --check`；涉及 `_governance/_proposals/`、`_governance/ai-records/` 等 Markdown 记录时运行 `scripts/check-markdown-clean.ps1` 的窄范围检查。（v1.61.5 起模板仓 `scripts/check-template.ps1` 本地预检末尾已内含 `check-markdown-clean.ps1 _proposals ai-records`，跑一次 `check-template.ps1` 即覆盖 CI 对应 step。）
 3. 首次 push 前说明目标仓库、分支、命令和风险，等待用户确认。
 4. push 失败若属于 network / sandbox / auth / permission，立即停止，不连续重试。
 

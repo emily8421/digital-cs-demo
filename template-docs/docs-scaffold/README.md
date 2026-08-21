@@ -1,7 +1,7 @@
 # Docs Scaffold（项目文档结构模板库）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 本目录保存项目文档的长期结构模板副本，用于派生项目在 `docs/vision/*`、`docs/inputs/*`、`docs/00-09`、`docs/design/*`、`docs/decisions/*` 或 `docs/research/*` 已被项目事实内容覆盖后，仍能查到模板原始大纲、占位表格和 `【撰写提要：...】`。
 
@@ -73,8 +73,8 @@
 | `research/ui-prototype-exploration.md` | `docs/research/YYYY-MM-DD-ui-prototype-exploration.md` | `ai/document-lifecycle-rules.md` §10.2 |
 | `research/tech-env-evaluation.md` | `docs/research/YYYY-MM-DD-tech-env-evaluation-<scope>.md` | `ai/prompts/review/20-tech-env-evaluation.md` |
 
-> 兼容入口：`template-docs/ui-prototype-strategy-template.md` 与 `template-docs/ui-prototype-exploration-template.md` 暂时保留，内容定位与本目录对应模板一致，避免破坏既有链接。
-> `template-docs/docs-open-items.example.md` 暂时保留为填充示例；正式结构模板见 `template-docs/docs-scaffold/research/docs-open-items.md`。
+> 兼容入口：`template-docs/templates/ui-prototype-strategy-template.md` 与 `template-docs/templates/ui-prototype-exploration-template.md` 暂时保留，内容定位与本目录对应模板一致，避免破坏既有链接。
+> `template-docs/templates/docs-open-items.example.md` 暂时保留为填充示例；正式结构模板见 `template-docs/docs-scaffold/research/docs-open-items.md`。
 
 ## 维护要求
 

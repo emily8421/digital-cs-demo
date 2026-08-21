@@ -1,7 +1,7 @@
 # UI Prototype Exploration Template（需求探索原型记录模板）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 推荐落盘路径：`docs/research/YYYY-MM-DD-ui-prototype-exploration.md`
 > 定位：需求探索 / 用户确认辅助材料；不是需求权威源，不替代 `00-09`、架构设计、技术方案、前端交互设计或验收记录。

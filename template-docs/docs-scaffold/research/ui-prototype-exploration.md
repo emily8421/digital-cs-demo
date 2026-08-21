@@ -1,7 +1,7 @@
 # UI Prototype Exploration Scaffold（需求探索原型记录结构模板）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 推荐落盘路径：`docs/research/YYYY-MM-DD-ui-prototype-exploration.md`
 > 对应规则：`ai/document-lifecycle-rules.md` §5.2.1 / §10.2、`ai/prompts/docs/22-ui-prototype-exploration.md`

@@ -1,7 +1,7 @@
 # 07 API Spec Standard（接口设计规范镜像）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 本文件是 `docs/07-api-spec.md` 的细粒度标准，用于 AI 生成、修订、审计和评估接口设计文档。它不是项目事实文档，派生项目的实际接口事实仍写入 `docs/07-api-spec.md`。
 

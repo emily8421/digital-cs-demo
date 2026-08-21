@@ -1,7 +1,7 @@
 # 14 从模板新建派生项目
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 **用途**：从 `ai-project-template` 创建一个新的派生项目，并完成最小初始化入口。
 

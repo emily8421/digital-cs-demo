@@ -1,11 +1,11 @@
 # 待确认事项总览（Docs Open Items）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 本文件是 `docs/research/YYYY-MM-DD-docs-open-items.md` 的结构模板副本，不是项目事实。Open items 只做未决事项索引，不替代 `00-09`、`docs/design/*`、`tasks/*` 或 `ai/project-rules.md` 的权威记录。
 >
-> 兼容示例：`template-docs/docs-open-items.example.md` 暂时保留，用于展示填充样例；本文件作为 scaffold 正式结构模板。
+> 兼容示例：`template-docs/templates/docs-open-items.example.md` 暂时保留，用于展示填充样例；本文件作为 scaffold 正式结构模板。
 
 ## 1. 汇总范围
 

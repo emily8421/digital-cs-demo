@@ -1,15 +1,15 @@
 # 派生项目模板同步运行记录模板
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 本模板用于派生项目完成 `ai-project-template` 方法论同步后，记录真实同步过程、问题与可回流优化点。建议保存到派生项目：
 
 ```text
-sync-records/template-sync/YYYY-MM-DD-sync-template-vX.Y.Z.md
+_governance/sync-records/template-sync/YYYY-MM-DD-sync-template-vX.Y.Z.md
 ```
 
-> 长期记录路径为 `sync-records/template-sync/`，与项目开发文档（`docs/`）分离，便于团队审计和回流提案扫描。若用户暂不想提交长期记录，可先写入 `.ai/session-handoff.md` 作为临时续接文件。
+> 长期记录路径为 `_governance/sync-records/template-sync/`，与项目开发文档（`docs/`）分离，便于团队审计和回流提案扫描。若用户暂不想提交长期记录，可先写入 `.ai/session-handoff.md` 作为临时续接文件。
 
 ## 基本信息
 
@@ -115,16 +115,16 @@ sync-records/template-sync/YYYY-MM-DD-sync-template-vX.Y.Z.md
 
 ## 已生成的回流提案
 
-- `_proposals/TEMPLATE-UPGRADE-xxx.md`
+- `_governance/_proposals/TEMPLATE-UPGRADE-xxx.md`
 
 ## 提案回流收口
 
-> 目录关系：`_proposals/` 是收件箱（待处理 / 候选）；已被模板采纳或决议的提案应移动到 `_archive/proposals/` 留痕。仅有远端 `closed` 不得自动归档，须能从 VERSION / CHANGELOG / PR 判断处理结果。
+> 目录关系：`_governance/_proposals/` 是收件箱（待处理 / 候选）；已被模板采纳或决议的提案应移动到 `_governance/_archive/proposals/` 留痕。仅有远端 `closed` 不得自动归档，须能从 VERSION / CHANGELOG / PR 判断处理结果。
 
-- 扫描范围：`_proposals/` / `.ai/session-handoff.md` / `sync-records/template-sync/` / 模板仓 issue 链接
+- 扫描范围：`_governance/_proposals/` / `.ai/session-handoff.md` / `_governance/sync-records/template-sync/` / 模板仓 issue 链接
 - 已确认被模板采纳或已有决议的提案：
-- 已归档到 `_archive/proposals/` 的本地提案：
-- 仍需保留在 `_proposals/` 的提案：
+- 已归档到 `_governance/_archive/proposals/` 的本地提案：
+- 仍需保留在 `_governance/_proposals/` 的提案：
 - 无法判断是否已处理的 issue / 提案与待确认项：
 
 | 本地提案 | 模板 issue / PR | 远端状态 | 关闭原因 / 处理结果 | 本地动作建议 |

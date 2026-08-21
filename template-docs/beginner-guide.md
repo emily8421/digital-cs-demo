@@ -1,7 +1,7 @@
 # BEGINNER-GUIDE
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 本手册面向第一次使用 `ai-project-template` 的人。它回答「这套模板是什么、怎么用、卡住时去哪看」，帮你建立完整心智模型；规则正文仍以 `ai/` 和 `docs/` 里的活文件为准。
 
@@ -42,7 +42,7 @@
 - 基础工具：Git for Windows、Git Bash、PowerShell。先跑 `scripts/check-prereqs.ps1` 看缺什么，缺了用 `scripts/bootstrap-dev-env.ps1` 一键补齐（详见 `template-docs/env-setup.md`）。
 - AI CLI：至少装一种——按官方文档安装并登录 `Claude CLI` 或 `Codex CLI`（见 `template-docs/ai-cli-setup.md`）。
 - 公司中转站 / LeMesh / CC-Switch：见内网手册（`lemesh_ai_model`），它处理代理接入，不替代 CLI 官方安装。
--（可选）验证新手链路：`template-docs/smoke-test.md` + `template-docs/smoke-test-report-template.md`。
+-（可选）验证新手链路：`template-docs/smoke-test.md` + `template-docs/templates/smoke-test-report-template.md`。
 
 > Keyword for template checks: newbie AI CLI onboarding path.
 
@@ -61,7 +61,7 @@ AI 会先评审 `docs/inputs/` 是否足以生成 `docs/vision/product-vision.md
 
 - 当前阶段的允许项 / 禁止项 / 下一阶段预告。
 - 技术栈倾向和禁区，不要让 AI 猜。
-- 项目形态裁剪：是否需要 `docs/06`、`docs/07`、`frontend/`、`backend/`、`tests/`、`docker/`。
+- 项目形态裁剪：是否需要 `docs/06`、`docs/07`、`project/frontend/`、`project/backend/`、`project/tests/`、`project/docker/`。
 
 ## 3. 怎么用
 
@@ -78,8 +78,8 @@ AI 会先评审 `docs/inputs/` 是否足以生成 `docs/vision/product-vision.md
 ```text
 你准备的输入材料            AI 生成的文档体系              AI 写的实现代码
 ──────────────         ─────────────────────         ────────────────
-docs/inputs/ 原始输入  ──→  docs/vision/product-vision.md  ──→  docs/00-09（根·项目事实） ──→ frontend/ backend/
-客户 PRD / SRS / brief      （整理后愿景锚点）                    docs/design/ 子系统设计       tests/ scripts/ docker/
+docs/inputs/ 原始输入  ──→  docs/vision/product-vision.md  ──→  docs/00-09（根·项目事实） ──→ project/frontend/ project/backend/
+客户 PRD / SRS / brief      （整理后愿景锚点）                    docs/design/ 子系统设计       project/tests/ scripts/ project/docker/
 补充清单 / 评估报告          ↑                                     （约束代码·可审计）
                             └ 不足则补齐后复评                        └ 代码事实可反向同步回文档
 ```
@@ -108,7 +108,7 @@ docs/inputs/ 原始输入  ──→  docs/vision/product-vision.md  ──→  
 |---|---|---|
 | 模板方法层 | 模板自身 + AI 行为规范 + 手册脚本（派生项目里是下行同步的只读件，除根 README；普通派生项目用 `TEMPLATE-BASE.md` 记录继承模板版本，用 `upstream/CHANGELOG.md` / `upstream/CHANGELOG-PLAIN.md` 查看母模板发布参考） | `README.md`、`SOP.md`、`git-guide.md`、`ai/`、`template-docs/`、`scripts/`、`VERSION`、`TEMPLATE-BASE.md`、`upstream/CHANGELOG*.md` |
 | 文档事实层 | 你这个项目的需求 / 设计 / 计划 / 验证（AI 输出，见 §4） | `docs/00-09`、`docs/vision/`、`docs/inputs/`、`docs/design/`、`docs/decisions/` 等 |
-| 代码骨架层 | 实现代码（按项目形态裁剪） | `frontend/`、`backend/`、`tests/`、`scripts/`、`docker/` |
+| 代码骨架层 | 实现代码（按项目形态裁剪） | `project/frontend/`、`project/backend/`、`project/tests/`、`scripts/`、`project/docker/` |
 
 **文档事实层的 `docs/00-09` 一览**（每个文档干什么，详见 `docs/README.md` §2）：
 
@@ -129,8 +129,8 @@ docs/inputs/ 原始输入  ──→  docs/vision/product-vision.md  ──→  
 
 | 层 | 典型目录 / 文件 | 同步时 | 你怎么用 |
 |---|---|---|---|
-| 模板方法论（继承） | `ai/`（除 `ai/project-rules.md`）、`template-docs/`、`scripts/`、`template-sync.json` | 覆盖 | 不直接改；想改通用规则 → `_proposals/` 起草提案回流模板 |
-| 模板治理（本地记录） | `sync-records/`、`ai-records/`、`_proposals/`、`.ai/` | 不覆盖 | 按各自 README 记录 |
+| 模板方法论（继承） | `ai/`（除 `ai/project-rules.md`）、`template-docs/`、`scripts/`、`template-sync.json` | 覆盖 | 不直接改；想改通用规则 → `_governance/_proposals/` 起草提案回流模板 |
+| 模板治理（本地记录） | `_governance/sync-records/`、`_governance/ai-records/`、`_governance/_proposals/`、`.ai/` | 不覆盖 | 按各自 README 记录 |
 | 项目产出（自有） | `docs/`、代码目录、`ai/project-rules.md`、根 `README.md`、`VERSION`、`CHANGELOG*`、`tasks/` | 不覆盖 | 你自己的，直接写 |
 
 > 三个容易混淆的路径：`docs/inputs/*` / `docs/vision/*` / `docs/00-09` / `docs/design/*` / `docs/decisions/*` / `docs/research/*` 是你的项目事实；`template-docs/docs-scaffold/` 下的 `inputs/`、`vision/`、`00-09`、`design/`、`decisions/`、`research/` 是长期结构模板副本；`ai/doc-standards/` 是 AI 规则 / 审计基线。派生项目里：模板方法层是下行同步的只读件（改通用规则要回模板走 PR）；文档事实层和代码骨架层是你自己的。分区规则、裁剪、撰写规范见 `docs/README.md`。
@@ -165,11 +165,12 @@ docs/inputs/ 原始输入  ──→  docs/vision/product-vision.md  ──→  
 | 装 AI CLI | `template-docs/ai-cli-setup.md` |
 | 具体场景怎么操作 | `template-docs/scenario-guides.md`（A0–A28 / C1–C8 / 元场景） |
 | 找命令速查 | `SOP.md`、`ai/commands/README.md` |
-| 查 how-to 任务操作入口 | `template-docs/user-guide-template.md`（任务→权威入口导航表） |
-| 查研发数据沉淀路径 | `template-docs/rd-data-chain.md`（数据类别→载体→主链关系） |
+| 查 how-to 任务操作入口 | `template-docs/templates/user-guide-template.md`（任务→权威入口导航表） |
+| 查研发数据沉淀路径 | `template-docs/maintainer/rd-data-chain.md`（数据类别→载体→主链关系；模板仓文档，v1.66.0 起不下行，模板仓 GitHub 查看） |
 | 理解模板为什么这么设计 | `template-docs/template-methodology.md` |
+| 查治理机制 / 脚本工具台账 | `template-docs/capability-packages.md`（机制注册表）、`scripts/README.md`（工具注册表） |
 | 查术语是什么意思 | `template-docs/glossary.md` |
-| 查看领域模板（可选中间层） | `template-docs/domain-templates.md` |
-| 演示 SOP 怎么写 | `template-docs/demo-runbook-template.md`、`ai/commands/show-demo.md` |
+| 查看领域模板（可选中间层） | `template-docs/profiles/domain-templates.md` |
+| 演示 SOP 怎么写 | `template-docs/templates/demo-runbook-template.md`、`ai/commands/show-demo.md` |
 | docs/ 文档怎么放 / 怎么裁剪 | `docs/README.md` |
 | 查看 `docs/inputs/*` / `docs/vision/*` / `docs/00-09` / `docs/design/*` / `docs/decisions/*` / `docs/research/*` 原始结构模板 | `template-docs/docs-scaffold/` |

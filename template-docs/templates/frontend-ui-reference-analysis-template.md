@@ -1,7 +1,7 @@
 # Frontend UI Reference Analysis Template（前端参考分析记录模板）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 推荐落盘路径：`docs/research/YYYY-MM-DD-frontend-ui-reference-analysis.md`
 > 定位：UI Exploration to Delivery Pipeline 中「前端参考分析」阶段的项目级产物（`ai/document-lifecycle-rules.md` §5.2.1）。它把 `template-docs/ui-knowledge/` 的通用知识转换为当前项目的参考依据包，供探索原型和正式交互设计消费。它不是需求权威源，不替代 `docs/design/frontend-interaction.md`、UI 原型策略、`08` 或 `09`；未经用户确认的内容不得写成已确认需求、接口或验收目标。

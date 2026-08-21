@@ -1,7 +1,7 @@
 # <项目> 用户操作手册（user guide）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 定位：本文件是项目 how-to 操作任务的**单一导航入口**，把「要做什么 → 权威入口在哪」汇总成表，**不重复逐步细节**（细节在 scenario-guides / commands / prompts / SOP）。与 `template-docs/beginner-guide.md`（心智模型）互补：beginner-guide 回答「是什么 / 为什么」，本手册回答「怎么做某任务 → 去哪看」。复杂项目按需实例化到 `docs/`（如 `docs/guides/user-guide.md`）；Lean 项目可不用。
 
@@ -21,7 +21,7 @@
 | 文档评估 | `ai/commands/docs-evaluation.md` | Go / Conditional Go / No Go |
 | 同步模板方法论 | `scripts/sync-template.sh` + `ai/commands/sync-methodology.md` | 派生项目侧 |
 | 同步后整理 | `ai/commands/post-sync-cleanup.md` | |
-| 提 PR / 合并 / 看 CI | `ai/commands/README.md` + `template-docs/remote-ci-sop-profile.md` | |
+| 提 PR / 合并 / 看 CI | `ai/commands/README.md` + `template-docs/profiles/remote-ci-sop-profile.md` | |
 | 提交模板优化提案 | `ai/commands/submit-proposal.md` | 回流模板 |
 
 ## 2. 卡住时去哪看

@@ -1,7 +1,7 @@
 # 02 单任务执行 / 切换工具续接
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 **用途**：执行 `docs/08-dev-plan.md` 中的单个 Sprint，或在切换 AI 工具 / 新会话时续接当前任务。
 
@@ -33,7 +33,7 @@
 - docs/inputs/ui-brief.md 或 docs/research/*ui-brief-intake*.md（若本任务涉及 Web / UI / 可点击 Demo 且存在）
 - docs/design/frontend-experience-brief.md（若 UI 探索 / 视觉探索已确认并形成体验原则）
 - docs/design/frontend-interaction.md 与 UI 原型策略（若本任务涉及 Web / UI / 可点击 Demo）
-- template-docs/web-fullstack-profile.md 与 04/05/08/09 中的 Walking Skeleton 记录（若本任务涉及复杂 Web / 全栈交互）
+- template-docs/profiles/web-fullstack-profile.md 与 04/05/08/09 中的 Walking Skeleton 记录（若本任务涉及复杂 Web / 全栈交互）
 - docs/research/*tech-env-evaluation*.md（若本任务涉及 backend / frontend / docker / 数据库 / 本机模型 / 外部 API 等真实运行依赖）
 - docs/07-api-spec.md（若本项目有对外接口，阅读相关接口）
 - docs/06-db-design.md（若本任务涉及持久化，阅读相关表结构）

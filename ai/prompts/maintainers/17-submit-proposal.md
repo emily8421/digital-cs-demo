@@ -1,7 +1,7 @@
 # 17 派生项目提交提案到模板仓库（跨仓库 issue）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 **用途**：在派生项目里，把成熟的 `TEMPLATE-UPGRADE-*.md` 提案以 issue 形式提交给 `ai-project-template` 模板仓库维护者（跨仓库 `gh`，免 fork）。
 
@@ -11,9 +11,9 @@
 
 **适用场景**：派生项目有成熟提案，要上报给模板维护者。
 
-**不适用场景**：提案不成熟（先在 `_proposals/` 完善）；要直接改模板代码（走 fork + PR）。
+**不适用场景**：提案不成熟（先在 `_governance/_proposals/` 完善）；要直接改模板代码（走 fork + PR）。
 
-**使用前准备**：本机 `gh auth login`（成员 GitHub 账号）；确认模板仓库 `owner/repo`（默认 `emily8421/ai-project-template`，public）；提案已在派生 `_proposals/TEMPLATE-UPGRADE-*.md`。
+**使用前准备**：本机 `gh auth login`（成员 GitHub 账号）；确认模板仓库 `owner/repo`（默认 `emily8421/ai-project-template`，public）；提案已在派生 `_governance/_proposals/TEMPLATE-UPGRADE-*.md`。
 
 **续接要求**：把待提交提案、模板仓 owner/repo、标签写入续接文件；提交后记 issue 链接。
 
@@ -31,12 +31,12 @@
 本派生仓库（owner/repo）：<填写>
 
 执行要求：
-1. 读取本派生 _proposals/TEMPLATE-UPGRADE-*.md，列出成熟提案，让我确认提交哪个。
+1. 读取本派生 _governance/_proposals/TEMPLATE-UPGRADE-*.md，列出成熟提案，让我确认提交哪个。
 2. 校验（不过停下报告，不提交）：
    - 去项目化：无客户/账号/路径/业务细节。
    - 来源标识：头部 "> 来源：<派生>(owner/repo) 派生项目回流"（缺则补）。
    - 字段完整：动机/拟改/版本影响/影响面/验证方式。
-   - 去重声明：正文含 "## 1.1 与既有规则的关系（去重）" 或等价章节，列出相关既有规则与关系类型（对象不同/层级不同/机制不同/互补不重复/合并入/指向）；范式见 _proposals/README.md「提案正文章节」。
+   - 去重声明：正文含 "## 1.1 与既有规则的关系（去重）" 或等价章节，列出相关既有规则与关系类型（对象不同/层级不同/机制不同/互补不重复/合并入/指向）；范式见 _governance/_proposals/README.md「提案正文章节」。
 3. 创建 issue 前先做只读预检：
    - `gh auth status -h github.com`
    - `gh repo view emily8421/ai-project-template --json nameWithOwner,viewerPermission`
@@ -48,7 +48,7 @@
    - `from:<派生标识>` 缺失且有权限创建，则先创建：`gh label create "from:<派生标识>" --repo emily8421/ai-project-template --description "Derived project source: <派生标识>" --color 5319E7`。
    - `from:<派生标识>` 缺失且无权限创建，则降级为仅 `proposal` 标签，并在 issue 正文来源标识与续接记录中注明“来源标签待维护者补充”。
 5. 用 `--body-file` 跨仓库开 issue，禁止把完整 Markdown 正文塞进 `--body`：
-   gh issue create --repo emily8421/ai-project-template --title "<提案标题>" --body-file _proposals/TEMPLATE-UPGRADE-xxx.md --label proposal --label "from:<派生标识>"
+   gh issue create --repo emily8421/ai-project-template --title "<提案标题>" --body-file _governance/_proposals/TEMPLATE-UPGRADE-xxx.md --label proposal --label "from:<派生标识>"
    若来源标签降级，则只传 `--label proposal`。
 6. 若 `gh issue create` 失败，立刻用标题搜索确认是否已创建半成品 issue；若没有，再按认证 / 标签 / 权限错误处理后重试。
 7. 返回 issue 链接、标签、模板仓 repo、提案文件路径，记入 `.ai/session-handoff.md`。

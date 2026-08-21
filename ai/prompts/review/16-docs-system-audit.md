@@ -1,7 +1,7 @@
 # 16 文档体系全链路回溯审计
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 **用途**：项目已成型（完成若干 Sprint / Phase）后，用 `ai/document-lifecycle-rules.md` 回溯审视整条 PLM 链路的合理性、可行性与一致性；派生项目同步模板方法论后，可作为同步后审计模式，判断旧方法生成内容是否需要按新方法回梳。
 
@@ -28,7 +28,7 @@
 
 适用场景：项目已成型（完成若干 Sprint / Phase），用最新方法论回头审视整条 PLM 链路的合理性、可行性与一致性；或派生项目刚完成模板方法论同步，需要执行“同步后审计模式”。区别于 00（生成）/ 10（编码前验收）/ 19（阶段评估）/ 03（合规审查），本提示词是「事后全链路回溯」。
 
-若为同步后审计模式，请先读取最近一次 `sync-records/template-sync/` 同步运行记录；若不存在，再兼容读取旧路径 `docs/archive/template-sync/`。输出时单独列出“同步后回梳建议”，说明哪些是新规范带来的结构缺口，哪些是可接受兼容差异，哪些是项目事实风险。
+若为同步后审计模式，请先读取最近一次 `_governance/sync-records/template-sync/` 同步运行记录；若不存在，再兼容读取旧路径 `docs/archive/template-sync/`。输出时单独列出“同步后回梳建议”，说明哪些是新规范带来的结构缺口，哪些是可接受兼容差异，哪些是项目事实风险。
 
 按以下维度逐段核查并输出：
 

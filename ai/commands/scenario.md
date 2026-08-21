@@ -1,6 +1,6 @@
 # Command: scenario
 
-> Sync notice: 本文件由 `ai-project-template` 维护，派生项目同步模板方法论时可能被覆盖。不要在派生项目直接改；通用改进请经 `_proposals/` 回流模板。
+> Sync notice: 本文件由 `ai-project-template` 维护，派生项目同步模板方法论时可能被覆盖。不要在派生项目直接改；通用改进请经 `_governance/_proposals/` 回流模板。
 
 ## 用户说法
 

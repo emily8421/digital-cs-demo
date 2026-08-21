@@ -1,7 +1,7 @@
 # Design Doc Standard（docs/design/* 通用详细设计标准）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 本文件定义 `docs/design/*` 的通用详细设计标准，供 AI 生成、精修、审计和评估非平凡子系统设计时使用。它是 `04-07` 总体设计 / 契约与 `08-09` 实现计划 / 验证之间的承接层，不替代 `docs/04-architecture.md`、`docs/05-tech-spec.md`、`docs/06-db-design.md` 或 `docs/07-api-spec.md`。
 

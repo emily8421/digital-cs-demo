@@ -1,7 +1,7 @@
 # 06 DB Design Standard（数据库设计规范镜像）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 本文件是 `docs/06-db-design.md` 的细粒度标准，用于 AI 生成、修订、审计和评估数据库设计文档。它不是项目事实文档，派生项目的实际数据设计事实仍写入 `docs/06-db-design.md`。
 

@@ -1,7 +1,7 @@
 # Rules Core（AI 任务启动核心规则）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 本文件是所有非快速续接任务的最小必读规则。它不替代其他规则文件，只负责让 AI 先安全、快速地选择正确规则包。
 

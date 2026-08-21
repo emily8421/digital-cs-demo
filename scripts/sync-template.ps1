@@ -1,5 +1,5 @@
 ﻿<#
-Sync notice: 本文件由 ai-project-template 模板同步维护，派生项目同步时会被覆盖；不应直接修改，通用改进请经 _proposals/ 回流模板仓库。
+Sync notice: 本文件由 ai-project-template 模板同步维护，派生项目同步时会被覆盖；不应直接修改，通用改进请经 _governance/_proposals/ 回流模板仓库。
 sync-template.ps1 - Windows PowerShell entrypoint for template sync.
 
 Usage:
@@ -374,7 +374,7 @@ function Write-TemplateBase {
 ## Managed Files
 
 - Files managed by template sync are listed in ``template-sync.json`` (synced from ai-project-template).
-- Direct edits to those files are overwritten on the next template sync; propose reusable changes via ``_proposals/``.
+- Direct edits to those files are overwritten on the next template sync; propose reusable changes via ``_governance/_proposals/``.
 - Project-owned files (``ai/project-rules.md``, ``docs/``, business code) are not in the sync list and are preserved.
 "@
   $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
@@ -431,7 +431,7 @@ function Write-DomainTemplateBase {
 ## Managed Files
 
 - Files managed by template sync are listed in ``template-sync.json`` (synced from ai-project-template).
-- Direct edits to those files are overwritten on the next template sync; propose reusable changes via ``_proposals/``.
+- Direct edits to those files are overwritten on the next template sync; propose reusable changes via ``_governance/_proposals/``.
 - Domain-template-owned files (``ai/project-rules.md``, ``ai/domain-rules.md``, ``docs/``, business code) are not in the sync list and are preserved.
 "@
   $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
@@ -1083,8 +1083,8 @@ function Invoke-NativeTemplateSync {
   Write-Host "  2. In AI, run: /run post-sync-cleanup"
   Write-Host "  3. In AI, run: /run docs-system-audit (post-sync audit mode)"
   Write-Host "  4. Run project tests / lint / build as applicable; record unavailable checks as unverified"
-  Write-Host "  5. Create or update: sync-records/template-sync/YYYY-MM-DD-sync-template-$version.md"
-  Write-Host "     Use: template-docs/derived-sync-report-template.md"
+  Write-Host "  5. Create or update: _governance/sync-records/template-sync/YYYY-MM-DD-sync-template-$version.md"
+  Write-Host "     Use: template-docs/templates/derived-sync-report-template.md"
   if ($preserveProjectVersion) {
     Write-Host "  6. Confirm project VERSION is still project-owned, project evolution is in CHANGELOG.md / CHANGELOG-PLAIN.md, inherited template version is in TEMPLATE-BASE.md, and upstream template release notes are in upstream/CHANGELOG.md / upstream/CHANGELOG-PLAIN.md"
   } elseif ($domainTemplateMode) {

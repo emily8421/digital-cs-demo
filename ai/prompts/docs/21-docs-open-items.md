@@ -1,7 +1,7 @@
 # 21 待确认事项总览（Open Items）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 **用途**：扫描项目文档、设计文档、评估 / 审计报告、任务单和续接记录中的待人工确认项，生成或更新待确认事项总览。
 

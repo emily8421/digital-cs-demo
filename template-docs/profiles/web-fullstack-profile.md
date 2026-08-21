@@ -1,7 +1,7 @@
 # Web Fullstack Profile + Walking Skeleton Gate
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 本文件定义复杂 Web / 全栈交互项目的轻量结构基线，是通用 System Skeleton Gate（见 `ai/implementation-lifecycle-rules.md` §3）的 **Web 特化扩展**。它不是具体技术栈脚手架，不要求母模板内置业务代码；它用于在派生项目进入首个业务功能 Sprint 前，在通用可运行系统框架（System Skeleton）基础上叠加确认 App Shell、目录边界、纵切验证和文件膨胀阈值等 Web 特化。
 
@@ -9,7 +9,7 @@
 
 满足以下任一条件时，应在通用 System Skeleton Gate 基础上叠加本 Web App Structure Profile（Web 特化），或在 `ai/project-rules.md` §3 / `docs/05-tech-spec.md` 中写明豁免理由：
 
-- 项目同时启用 `frontend/` 与 `backend/`，并存在前端调用后端 API。
+- 项目同时启用 `project/frontend/` 与 `project/backend/`，并存在前端调用后端 API。
 - 交付物为 Demo / MVP / 产品，需要浏览器点击演示或人工走查。
 - 前端包含多页面、多视图、多角色、多状态、表单、列表、搜索 / 问答、看板、管理后台或数据密集界面。
 - Sprint 修改范围包含页面、组件、路由 / 视图切换、API client、状态管理或桌面端 / WebView 集成。
@@ -38,24 +38,25 @@
 ## 4. 推荐目录边界（可裁剪）
 
 ```text
-frontend/
-├─ src/
-│  ├─ app/          # App Shell、路由、全局 providers
-│  ├─ pages/        # 页面 / 视图入口
-│  ├─ features/     # 业务功能纵切
-│  ├─ components/   # 可复用 UI 组件
-│  ├─ api/          # API client，与 docs/07 API-ID 对齐
-│  ├─ state/        # store / hooks / query keys
-│  └─ styles/       # design tokens、布局变量、主题
-backend/
-├─ api/             # 路由 / controller，与 docs/07 API-ID 对齐
-├─ service/         # 业务服务
-├─ model/           # schema / DTO / domain model
-├─ repository/      # persistence / external gateway，可按项目裁剪
-└─ tests/           # service / API / smoke tests
-tests/
-├─ smoke/           # API / browser smoke
-└─ e2e/             # 可选端到端路径
+project/
+├─ project/frontend/
+│  └─ src/
+│     ├─ app/          # App Shell、路由、全局 providers
+│     ├─ pages/        # 页面 / 视图入口
+│     ├─ features/     # 业务功能纵切
+│     ├─ components/   # 可复用 UI 组件
+│     ├─ api/          # API client，与 docs/07 API-ID 对齐
+│     ├─ state/        # store / hooks / query keys
+│     └─ styles/       # design tokens、布局变量、主题
+├─ project/backend/
+│  ├─ api/             # 路由 / controller，与 docs/07 API-ID 对齐
+│  ├─ service/         # 业务服务
+│  ├─ model/           # schema / DTO / domain model
+│  ├─ repository/      # persistence / external gateway，可按项目裁剪
+│  └─ project/tests/           # service / API / smoke tests
+└─ project/tests/
+   ├─ smoke/           # API / browser smoke
+   └─ e2e/             # 可选端到端路径
 ```
 
 项目可用其他命名，但应能回答：入口在哪里、业务纵切在哪里、API client 如何追溯到 `docs/07-api-spec.md`、状态与样式是否可复用、测试和 smoke 如何运行。
@@ -104,7 +105,7 @@ UI Brief / UI Exploration / frontend experience brief / frontend-interaction / U
 
 ## 8. 与 scaffold 实验的关系
 
-本 Profile 只定义结构基线和 Gate，不在母模板内生成真实 Web App scaffold。若需要验证 `template-docs/web-app/`、`new-project --profile web-app` 或领域模板是否值得推进，先按 `template-docs/web-app-scaffold-experiment.md` 在真实项目或独立实验仓记录候选结构、Walking Skeleton 验证、文件膨胀观察和推广结论。
+本 Profile 只定义结构基线和 Gate，不在母模板内生成真实 Web App scaffold。若需要验证 `template-docs/web-app/`、`new-project --profile web-app` 或领域模板是否值得推进，先按 `template-docs/profiles/web-app-scaffold-experiment.md` 在真实项目或独立实验仓记录候选结构、Walking Skeleton 验证、文件膨胀观察和推广结论。
 
 ## 9. 代码层一致性基线（Web 形态）
 

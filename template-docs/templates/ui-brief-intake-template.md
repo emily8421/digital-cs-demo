@@ -1,7 +1,7 @@
 # UI Brief Intake（前端交互输入补齐）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 定位：本模板用于在输入评审、需求探索原型或前端实现前补齐 UI / UX 输入。它可以作为用户原始输入补充写入 `docs/inputs/ui-brief.md`，也可以作为 AI 与用户共同探索记录写入 `docs/research/YYYY-MM-DD-ui-brief-intake.md`。确认前不得替代 `docs/design/frontend-interaction.md`、UI 原型策略、`08` 实现计划或 `09` 验收。
 

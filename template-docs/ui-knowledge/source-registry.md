@@ -1,7 +1,7 @@
 # Source Registry（精选来源登记）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 定位：UI 知识核心层的来源索引。登记可复用的公开设计来源，记录证据范围、许可策略和最后核验状态，供 `visual-patterns.md` / `interaction-patterns.md` 的模式引用。本文件只保存来源元数据、自有摘要和链接，不镜像第三方素材原文、截图或品牌资产。
 

@@ -1,13 +1,13 @@
 # 20 技术路线与环境支撑评估
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 **用途**：在生成 / 修订技术方案、进入首个真实运行依赖 Sprint、升级运行时版本、引入关键依赖或遇到环境问题前，评估技术路线是否被本机 / 团队环境支撑。
 
 **目的**：把运行时版本、依赖安装、导入、最小运行、Docker / 数据库 / 模型、网络权限和资源约束纳入同一评估，避免编码后才发现环境不兼容。
 
-**适用场景**：项目保留 `backend/`、`frontend/`、`docker/`、数据库、本机模型、外部 API 或其他真实运行依赖；`docs/05-tech-spec.md` 要锁定运行时 / 关键依赖；首个编码 Sprint 前需要门禁判断；本机环境与技术方案基线不一致；依赖安装、build、compose、模型加载或启动失败后需要复评。
+**适用场景**：项目保留 `project/backend/`、`project/frontend/`、`project/docker/`、数据库、本机模型、外部 API 或其他真实运行依赖；`docs/05-tech-spec.md` 要锁定运行时 / 关键依赖；首个编码 Sprint 前需要门禁判断；本机环境与技术方案基线不一致；依赖安装、build、compose、模型加载或启动失败后需要复评。
 
 **不适用场景**：只想采集本机事实，用 `ai/prompts/setup/13-collect-env.md`；只评估文档质量和阶段转换，用 `ai/prompts/review/19-docs-evaluation.md`；只做已成型项目全链路审计，用 `ai/prompts/review/16-docs-system-audit.md`。
 
@@ -118,5 +118,5 @@
     - 若用户确认记录，建议路径：`docs/research/YYYY-MM-DD-tech-env-evaluation-<scope>.md`
     - 说明报告不替代 `docs/env/local-env.md`、`docs/05-tech-spec.md` 或 `docs/09-verification.md`
 
-若发现模板通用缺口，请单列“可回流模板优化建议”，但不要直接创建 `_proposals/`，除非用户确认。
+若发现模板通用缺口，请单列“可回流模板优化建议”，但不要直接创建 `_governance/_proposals/`，除非用户确认。
 ```

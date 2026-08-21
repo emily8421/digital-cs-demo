@@ -1,7 +1,7 @@
 # Prompt Library
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 本目录保存详细 Prompt 模板。AI CLI 场景优先使用 `ai/commands/` 快捷命令路由；`INIT-PROMPT.md` 是轻量索引；完整 Prompt 按场景拆分在本目录下。
 

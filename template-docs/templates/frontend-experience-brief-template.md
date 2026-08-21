@@ -1,7 +1,7 @@
 # Frontend Experience Brief Template（前端体验原则 / UI 方向确认模板）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 推荐落盘路径：`docs/design/frontend-experience-brief.md`
 > 定位：已被用户确认的体验原则与 UI 方向承接层；用于把 UI brief、参考分析、需求探索原型或视觉效果探索中的确认结果回填到正式前端交互设计之前。它不是需求权威源，不替代 `docs/design/frontend-interaction.md`、UI 原型策略、`08` 或 `09`。

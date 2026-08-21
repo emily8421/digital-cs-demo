@@ -1,7 +1,7 @@
 # Interaction Patterns（交互模式核心集）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 定位：从权威来源抽取的可复用交互模式。每条带适用 / 不适用条件、行为契约和证据等级，供项目参考分析按 scope 选用并改写为项目级判断。模型与字段规范见 `README.md` §2 §4.2；来源 URL 见 `source-registry.md`。
 

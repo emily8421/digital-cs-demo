@@ -1,7 +1,7 @@
 # Implementation Lifecycle Rules（实现生命周期规则）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 本文件定义 `docs/` 文档体系确认之后，AI 如何进行阶段规划、Sprint / Task 拆分、编码实现、验证与验收留痕。它与 `ai/document-lifecycle-rules.md` 分工如下：
 
@@ -32,11 +32,11 @@
 
 阶段规划发生在文档体系成型并通过评估 / 审计之后，通常对应 Scenario A9。若刚经历关键阶段转换，建议先用 `ai/prompts/review/19-docs-evaluation.md` 做整体或阶段评估；结论为 `No Go` 时不得进入 Sprint 规划，`Conditional Go` 必须列明条件、风险接受口径和待人工确认项。
 
-若项目包含真实运行依赖（如 `backend/`、`frontend/`、`docker/`、数据库、本机模型、外部 API、重型 SDK、LLM、真实数据或权限安全能力），进入首个会触发这些依赖的编码 Sprint 前，必须已有技术路线与环境支撑评估，并在 `docs/05-tech-spec.md` 记录 Risk-ID、依赖配置、readiness gate 和解锁条件；或记录用户明确跳过的原因、风险、影响范围和补做时点。评估结论为 `No-Go` 时不得进入相关 Sprint；`Conditional Go` 只能进入满足限制条件或不触发该风险的 Sprint。
+若项目包含真实运行依赖（如 `project/backend/`、`project/frontend/`、`project/docker/`、数据库、本机模型、外部 API、重型 SDK、LLM、真实数据或权限安全能力），进入首个会触发这些依赖的编码 Sprint 前，必须已有技术路线与环境支撑评估，并在 `docs/05-tech-spec.md` 记录 Risk-ID、依赖配置、readiness gate 和解锁条件；或记录用户明确跳过的原因、风险、影响范围和补做时点。评估结论为 `No-Go` 时不得进入相关 Sprint；`Conditional Go` 只能进入满足限制条件或不触发该风险的 Sprint。
 
 若项目为 non-trivial（多模块 / 有对外接口 / 有运行依赖），进入首个业务模块 Sprint 前必须先实现并验收一套可运行系统框架（System Skeleton）：基于 `docs/04-architecture.md` 架构与功能划分、`docs/07-api-spec.md` 接口规范和主业务流程，落地最小可运行框架——模块边界就位、关键接口连通、至少一条纵切可跑通、错误 / 空 / 加载入口存在，但不含完整业务逻辑；并在 `docs/08-dev-plan.md`（Sprint 0 / Framework Sprint）与 `docs/09-verification.md`（系统框架测试大纲）留框架验收证据。quick-script、纯计算库、单文件工具等可豁免，须在 `ai/project-rules.md` §3 写明豁免理由、风险和补做时点。未完成且无豁免时，不得直接堆入完整业务模块。
 
-复杂 Web / 全栈交互项目在通用 System Skeleton 基础上叠加 `template-docs/web-fullstack-profile.md` 的 Web 特化（触发条件见 `ai/global-rules.md` §5）：App Shell、前后端目录边界、API client ↔ API-ID 追溯、至少一个 vertical slice、文件膨胀阈值和最小浏览器 / API smoke。未完成且无豁免时，不得把多页面 / 多状态功能继续堆入单个主应用文件、全局样式或后端 controller / service。
+复杂 Web / 全栈交互项目在通用 System Skeleton 基础上叠加 `template-docs/profiles/web-fullstack-profile.md` 的 Web 特化（触发条件见 `ai/global-rules.md` §5）：App Shell、前后端目录边界、API client ↔ API-ID 追溯、至少一个 vertical slice、文件膨胀阈值和最小浏览器 / API smoke。未完成且无豁免时，不得把多页面 / 多状态功能继续堆入单个主应用文件、全局样式或后端 controller / service。
 
 1. 输入必须至少包括 `docs/03-prd.md`、`docs/04-architecture.md`、`docs/05-tech-spec.md`、`docs/08-dev-plan.md`、`docs/09-verification.md`。
 2. 若项目涉及持久化或对外接口，还必须读取 `docs/06-db-design.md`、`docs/07-api-spec.md` 的相关章节。
@@ -102,7 +102,7 @@ Lean / 小工具项目可以采用最小验证包，但至少需要：一个可�
 4. **错误信息**：只列失败条件，**不含连接串 / 凭证 / 主机**（防日志与 CI 输出泄露）。
 5. **fail-closed 语义**：guard 不满足时**抛错不 skip**——skip 会让破坏性测试在配置错误时静默跳过保护，违背 guard 初衷；仅在 guard 已过、DB 连接 / 环境本身不可用时才 skip 连接类失败。
 
-> 口径：`ai/project-rules.md §3` 声明「有持久化存储」的项目，在首个 DB 集成测试 Sprint 前落地此 guard；guard 代码放 `tests/` 侧（如 `tests/<lang>/db_test_support.<ext>`），不进生产代码目录。无持久化项目豁免（`ai/project-rules.md §3` 声明）。验证方式：guard 纯单测（三条件全满足才过、缺任一即拒、非测试库 URL 拒）+ 负向 smoke（指向开发库时即使 DB 可达也在连接 / SQL 前拒）。
+> 口径：`ai/project-rules.md §3` 声明「有持久化存储」的项目，在首个 DB 集成测试 Sprint 前落地此 guard；guard 代码放 `project/tests/` 侧（如 `project/tests/<lang>/db_test_support.<ext>`），不进生产代码目录。无持久化项目豁免（`ai/project-rules.md §3` 声明）。验证方式：guard 纯单测（三条件全满足才过、缺任一即拒、非测试库 URL 拒）+ 负向 smoke（指向开发库时即使 DB 可达也在连接 / SQL 前拒）。
 
 ### 6.2 自动检查归位与质量门口径
 

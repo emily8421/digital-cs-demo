@@ -1,10 +1,10 @@
 <#
-Sync notice: 本文件由 ai-project-template 模板同步维护，派生项目同步时会被覆盖；不应直接修改，通用改进请经 _proposals/ 回流模板仓库。
+Sync notice: 本文件由 ai-project-template 模板同步维护，派生项目同步时会被覆盖；不应直接修改，通用改进请经 _governance/_proposals/ 回流模板仓库。
 check-markdown-clean.ps1 - Markdown whitespace preflight for proposal / mirror files.
 
 Usage:
   powershell -ExecutionPolicy Bypass -File scripts/check-markdown-clean.ps1
-  powershell -ExecutionPolicy Bypass -File scripts/check-markdown-clean.ps1 _proposals ai-records
+  powershell -ExecutionPolicy Bypass -File scripts/check-markdown-clean.ps1 _governance/_proposals _governance/ai-records
 
 Checks:
   - no UTF-8 BOM
@@ -16,7 +16,7 @@ $ErrorActionPreference = "Stop"
 
 $paths = @($args | Where-Object { $_ })
 if ($paths.Count -eq 0) {
-  $paths = @("_proposals")
+  $paths = @("_governance/_proposals")
 }
 
 $failures = 0

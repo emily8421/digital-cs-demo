@@ -1,7 +1,7 @@
 # Subsystem Design Scaffold（子系统详细设计结构模板）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 推荐落盘路径：`docs/design/<subsystem>.md`
 > 对应标准：`ai/doc-standards/design-doc.md`

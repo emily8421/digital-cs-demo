@@ -1,7 +1,7 @@
 # SMOKE-TEST
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 本手册用于验证一个新手是否能按当前模板，在 Windows 环境下从零跑通最小路径。它不是派生项目文档，而是模板自身的操作验证说明。
 
@@ -158,4 +158,4 @@ Remove-Item -Recurse -Force .\smoke-demo
 - 哪一步失败
 - 是否需要补 README / SOP / template-docs/env-setup.md / template-docs/beginner-guide.md
 
-若希望统一记录格式，直接使用 `template-docs/smoke-test-report-template.md`。
+若希望统一记录格式，直接使用 `template-docs/templates/smoke-test-report-template.md`。

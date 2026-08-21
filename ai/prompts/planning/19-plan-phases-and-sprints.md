@@ -1,7 +1,7 @@
 # 19 阶段 / Sprint / 验证闭环规划
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 **用途**：在文档体系成型后，基于 `docs/03-09` 规划 Phase、Sprint、Task 和验证闭环。
 

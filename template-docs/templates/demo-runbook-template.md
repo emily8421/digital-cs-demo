@@ -1,7 +1,7 @@
 # <项目> 演示效果手册（demo runbook）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 定位：本文件是当前项目的演示 SOP，说明如何启动、检查和查看效果。**不替代 `docs/09-verification.md` 正式验收记录**。具体端口、脚本、二维码由项目填写；模板只规定结构。默认路径 `docs/env/local-demo-runbook.md`，多入口项目可按入口命名（如 `docs/env/admin-demo-runbook.md`）。
 

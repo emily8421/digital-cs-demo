@@ -1,7 +1,7 @@
 # SMOKE-TEST-REPORT-TEMPLATE
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 本文件用于记录一次新手烟测结果。目标是让每次烟测都至少留下同一套最小事实，便于判断问题出在环境、入口文档、脚本提示，还是模板流程本身。
 

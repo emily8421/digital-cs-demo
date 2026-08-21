@@ -1,7 +1,7 @@
 # 13 采集本机运行环境与资源约束
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 **用途**：在派生项目中生成 `docs/env/local-env.md`，作为架构设计、技术方案和本机 Demo 可行性评估的输入；它只采集环境事实，不替代技术路线与环境支撑评估。
 

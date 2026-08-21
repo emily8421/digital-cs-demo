@@ -1,7 +1,7 @@
 # 待确认事项总览示例
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 建议落盘路径：`docs/research/YYYY-MM-DD-docs-open-items.md`。
 > 若项目决定长期维护固定入口 `docs/open-items.md`，请同步更新 `docs/README.md` 说明其定位；open items 总览只做未决事项索引，不替代 00-09、`docs/design/*`、`tasks/*` 或 `ai/project-rules.md` 的事实记录。

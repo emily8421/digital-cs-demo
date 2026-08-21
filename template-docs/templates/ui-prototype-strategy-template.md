@@ -1,7 +1,7 @@
 # UI Prototype Strategy Template（UI 原型策略 / 实现前原型记录模板）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 定位：实现前 UI 原型策略记录；用于已有需求链和基本设计后、进入前端实现前确认原型形式、覆盖范围和验收映射。它不是需求权威源，不替代 `00-09`、`docs/design/frontend-interaction.md` 或 `09` 验收记录。
 > 字段标准见 `ai/doc-standards/ui-prototype-strategy.md` §4；本模板为可填副本，各表给 `<示例>` 行供参考（填写时替换或删除）。
