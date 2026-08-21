@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sync notice: 本文件由 ai-project-template 模板同步维护，派生项目同步时会被覆盖；不应直接修改，通用改进请经 _proposals/ 回流模板仓库。
+# Sync notice: 本文件由 ai-project-template 模板同步维护，派生项目同步时会被覆盖；不应直接修改，通用改进请经 _governance/_proposals/ 回流模板仓库。
 # sync-template.sh — 在派生项目里下行同步 ai-project-template 的方法论文件
 #
 # 用法（在派生项目根目录执行）:
@@ -104,6 +104,10 @@ fi
 TEMPLATE_REMOTE="${TEMPLATE_REMOTE:-https://github.com/emily8421/ai-project-template.git}"
 
 # 兜底同步清单；优先读取模板远端 template-sync.json。
+# 注意：本兜底数组只覆盖 files_all（普通与领域路线的主集）；files_domain 专属文件
+#（ai/doc-standards/domain-rules.md、template-docs/maintainer/domain-derived-scenarios-template.md）
+# 与模板仓专用文档（e2e-regression-checklist.md、e2e-report-template.md、rd-data-chain.md）
+# 不在兜底范围——template-sync.json 可读时由主清单正确分发；兜底场景下缺失属已知局限。
 DEFAULT_SYNC_FILES=(
   "VERSION"
   "CHANGELOG.md"
@@ -113,11 +117,10 @@ DEFAULT_SYNC_FILES=(
   "template-docs/env-setup.md"
   "template-docs/ai-cli-setup.md"
   "template-docs/smoke-test.md"
-  "template-docs/smoke-test-report-template.md"
+  "template-docs/templates/smoke-test-report-template.md"
   "template-docs/template-methodology.md"
   "template-docs/capability-packages.md"
-  "template-docs/remote-ci-sop-profile.md"
-  "template-docs/domain-derived-scenarios-template.md"
+  "template-docs/profiles/remote-ci-sop-profile.md"
   "template-docs/glossary.md"
   "template-docs/docs-scaffold/README.md"
   "template-docs/docs-scaffold/inputs/input-review-report.md"
@@ -140,19 +143,19 @@ DEFAULT_SYNC_FILES=(
   "template-docs/docs-scaffold/research/docs-open-items.md"
   "template-docs/docs-scaffold/research/ui-prototype-exploration.md"
   "template-docs/docs-scaffold/research/tech-env-evaluation.md"
-  "template-docs/session-handoff.example.md"
-  "template-docs/derived-sync-report-template.md"
-  "template-docs/frontend-experience-brief-template.md"
-  "template-docs/ui-brief-intake-template.md"
-  "template-docs/frontend-ui-reference-analysis-template.md"
+  "template-docs/templates/session-handoff.example.md"
+  "template-docs/templates/derived-sync-report-template.md"
+  "template-docs/templates/frontend-experience-brief-template.md"
+  "template-docs/templates/ui-brief-intake-template.md"
+  "template-docs/templates/frontend-ui-reference-analysis-template.md"
   "template-docs/examples/extract-diagrams.mjs"
   "template-docs/ui-knowledge/README.md"
   "template-docs/ui-knowledge/source-registry.md"
   "template-docs/ui-knowledge/visual-patterns.md"
   "template-docs/ui-knowledge/interaction-patterns.md"
-  "template-docs/web-fullstack-profile.md"
-  "template-docs/web-app-scaffold-experiment.md"
-  "template-docs/ui-prototype-strategy-template.md"
+  "template-docs/profiles/web-fullstack-profile.md"
+  "template-docs/profiles/web-app-scaffold-experiment.md"
+  "template-docs/templates/ui-prototype-strategy-template.md"
   "template-sync.json"
   "ai/index.md"
   "ai/rules-core.md"
@@ -222,11 +225,9 @@ DEFAULT_SYNC_FILES=(
   "git-guide.md"
   "docs/README.md"
   "docs/inputs/README.md"
-  "scripts/new-project.sh"
+  "scripts/README.md"
   "scripts/sync-template.sh"
   "scripts/sync-template.ps1"
-  "scripts/check-template.sh"
-  "scripts/check-template.ps1"
   "scripts/check-markdown-clean.ps1"
   "scripts/check-derived-sync.sh"
   "scripts/check-derived-sync.ps1"
@@ -234,10 +235,6 @@ DEFAULT_SYNC_FILES=(
   "scripts/collect-env.ps1"
   "scripts/check-prereqs.ps1"
   "scripts/bootstrap-dev-env.ps1"
-  "scripts/sync-all-derived.sh"
-  "scripts/e2e-sync-check.sh"
-  "template-docs/e2e-regression-checklist.md"
-  "template-docs/e2e-report-template.md"
   "ai/commands/submit-proposal.md"
   "ai/commands/submit-feedback.md"
   "ai/prompts/maintainers/17-submit-proposal.md"
@@ -396,7 +393,7 @@ write_template_base() {
 ## Managed Files
 
 - Files managed by template sync are listed in \`template-sync.json\` (synced from ai-project-template).
-- Direct edits to those files are overwritten on the next template sync; propose reusable changes via \`_proposals/\`.
+- Direct edits to those files are overwritten on the next template sync; propose reusable changes via \`_governance/_proposals/\`.
 - Project-owned files (\`ai/project-rules.md\`, \`docs/\`, business code) are not in the sync list and are preserved.
 EOF
 }
@@ -454,7 +451,7 @@ write_domain_template_base() {
 ## Managed Files
 
 - Files managed by template sync are listed in \`template-sync.json\` (synced from ai-project-template).
-- Direct edits to those files are overwritten on the next template sync; propose reusable changes via \`_proposals/\`.
+- Direct edits to those files are overwritten on the next template sync; propose reusable changes via \`_governance/_proposals/\`.
 - Domain-template-owned files (\`ai/project-rules.md\`, \`ai/domain-rules.md\`, \`docs/\`, business code) are not in the sync list and are preserved.
 EOF
 }
@@ -727,7 +724,7 @@ summary_bucket_for() {
 matches_risk_path() {
   local file="$1"
   case "$file" in
-    README.md|ai/project-rules.md|docs/0[0-9]-*.md|frontend/*|backend/*|tests/*|docker/*)
+    README.md|ai/project-rules.md|docs/0[0-9]-*.md|project/frontend/*|project/backend/*|project/tests/*|project/docker/*)
       return 0
       ;;
     *)
@@ -941,8 +938,8 @@ else
   echo "  2. 在 AI 中执行: /run post-sync-cleanup"
   echo "  3. 在 AI 中执行: /run docs-system-audit（同步后审计模式）"
   echo "  4. 按项目技术栈运行测试 / lint / build；无法运行的记录为未验证项"
-  echo "  5. 生成或更新同步运行记录: sync-records/template-sync/YYYY-MM-DD-sync-template-$VERSION.md"
-  echo "     可参考: template-docs/derived-sync-report-template.md"
+  echo "  5. 生成或更新同步运行记录: _governance/sync-records/template-sync/YYYY-MM-DD-sync-template-$VERSION.md"
+  echo "     可参考: template-docs/templates/derived-sync-report-template.md"
   if [[ "$PRESERVE_PROJECT_VERSION" -eq 1 ]]; then
     echo "  6. 核对项目自身版本仍记录在 VERSION，项目演进记录在 CHANGELOG.md / CHANGELOG-PLAIN.md；继承模板版本见 TEMPLATE-BASE.md，母模板发布参考见 upstream/CHANGELOG.md / upstream/CHANGELOG-PLAIN.md"
   elif [[ "$DOMAIN_TEMPLATE_MODE" -eq 1 ]]; then
