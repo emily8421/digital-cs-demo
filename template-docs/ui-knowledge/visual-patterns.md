@@ -1,7 +1,7 @@
 # Visual Patterns（视觉模式核心集）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 定位：从权威来源与成熟产品观察抽取的可复用视觉 / 布局模式。视觉模式多为 C / D 级（可观察模式或视觉启发），不得表述为成熟交互证据；涉及可访问性规范的（如配色对比）按其来源定级。模型与字段规范见 `README.md` §2 §4.2；来源 URL 见 `source-registry.md`。
 

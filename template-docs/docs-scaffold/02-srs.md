@@ -1,7 +1,7 @@
 # 02 需求规格说明（SRS）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 
 > **文档定位**：把用户需求转化为系统必须满足的可验证需求。本文回答“系统必须做什么 / 达到什么约束”，不写产品优先级、技术实现、数据库或 API 细节。

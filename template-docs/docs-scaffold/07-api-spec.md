@@ -1,7 +1,7 @@
 # 07 API / 接口设计（API Specification）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 
 > **文档定位**：当项目对外暴露接口、命令、SDK、事件、Webhook、文件导入导出、异步任务或集成契约时，定义 API-ID、请求 / 响应 / 错误 / 权限 / 兼容契约、状态机和追溯矩阵。

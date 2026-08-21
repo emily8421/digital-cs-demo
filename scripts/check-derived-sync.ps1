@@ -1,5 +1,5 @@
 <#
-Sync notice: 本文件由 ai-project-template 模板同步维护，派生项目同步时会被覆盖；不应直接修改，通用改进请经 _proposals/ 回流模板仓库。
+Sync notice: 本文件由 ai-project-template 模板同步维护，派生项目同步时会被覆盖；不应直接修改，通用改进请经 _governance/_proposals/ 回流模板仓库。
 check-derived-sync.ps1 - Windows PowerShell entrypoint for derived project sync boundary check.
 
 Usage:
@@ -243,10 +243,10 @@ function Test-ProtectedProjectFile {
     $ChangedFile -eq "ai/project-rules.md" -or
     $ChangedFile -eq "ai/domain-rules.md" -or
     $ChangedFile -like "docs/0[0-9]-*" -or
-    $ChangedFile -like "frontend/*" -or
-    $ChangedFile -like "backend/*" -or
-    $ChangedFile -like "tests/*" -or
-    $ChangedFile -like "docker/*"
+    $ChangedFile -like "project/frontend/*" -or
+    $ChangedFile -like "project/backend/*" -or
+    $ChangedFile -like "project/tests/*" -or
+    $ChangedFile -like "project/docker/*"
   )
 }
 

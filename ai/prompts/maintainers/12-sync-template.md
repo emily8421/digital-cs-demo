@@ -1,7 +1,7 @@
 # 12 派生项目同步模板方法论
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 **用途**：在派生项目中，让 AI 按标准流程执行 `ai-project-template` 方法论下行同步；若派生项目已完成同步提交但旧流程未跑后续，则按“同步后续接模式”补完边界验证、整理、审计、验证建议和同步记录。
 
@@ -11,7 +11,7 @@
 
 **适用场景**：模板仓库已有新版方法论，派生项目需要同步 `ai/global-rules.md`、Prompt、治理文档、脚本和 AI 入口文件。
 
-**不适用场景**：要把派生项目经验回流到模板；这种情况应先在派生项目 `_proposals/` 起草提案，再按 `CONTRIBUTING.md` 上行流程处理。
+**不适用场景**：要把派生项目经验回流到模板；这种情况应先在派生项目 `_governance/_proposals/` 起草提案，再按 `CONTRIBUTING.md` 上行流程处理。
 
 **使用前准备**：确认当前在派生项目根目录，已保存业务改动；目标模板版本必须从模板仓库根目录 `VERSION` 读取，不在 Prompt 中固定写死。
 
@@ -19,7 +19,7 @@
 
 **预期产出**：同步分支、同步提交、派生同步边界检查结果、同步后整理计划、文档体系审计摘要、提案回流收口结论、项目验证建议、派生同步运行记录、派生项目已处理提案归档计划和 PR 链接。
 
-**使用后下一步**：评审并合并派生项目同步 PR；用 `template-docs/derived-sync-report-template.md` 生成或更新同步运行记录；若 `post-sync-cleanup`、`docs-system-audit` 或项目验证建议发现待办，按最小任务继续处理。若 `ai/project-rules.md` 需要人工迁移新骨架项、`_proposals/` 中仍有未处理提案，或运行记录中出现可通用模板优化点，单独开任务处理。
+**使用后下一步**：评审并合并派生项目同步 PR；用 `template-docs/templates/derived-sync-report-template.md` 生成或更新同步运行记录；若 `post-sync-cleanup`、`docs-system-audit` 或项目验证建议发现待办，按最小任务继续处理。若 `ai/project-rules.md` 需要人工迁移新骨架项、`_governance/_proposals/` 中仍有未处理提案，或运行记录中出现可通用模板优化点，单独开任务处理。
 
 > 事实来源：下行同步标准流程以 `git-guide.md` 与 `CONTRIBUTING.md` 为准；本节只是把该流程整理成可复制给 AI 执行的 Prompt。
 
@@ -27,8 +27,8 @@
 
 当当前工作目录是 `ai-project-template` 模板仓，且用户要求“同步至派生项目 / 同步 N 个派生 / 同步 LUMEN、zhiyan 等”时，不要直接假设当前目录就是派生项目，也不要先全盘递归查找目录。先读取：
 
-- `ai-records/project-registry/README.md`
-- `ai-records/project-registry/registry.md`
+- `_governance/ai-records/project-registry/README.md`
+- `_governance/ai-records/project-registry/registry.md`
 
 执行要求：
 
@@ -46,9 +46,9 @@
 
 目标：将当前派生项目同步到 ai-project-template 最新模板方法论版本。目标版本必须以模板仓库根目录 `VERSION` 为准，不要使用本 Prompt 文本中的示例版本号。
 
-若当前目录是 `ai-project-template` 模板仓，且本轮目标是从模板仓同步到一个或多个派生项目，先进入“模板仓发起模式”：读取 `ai-records/project-registry/README.md` 与 `ai-records/project-registry/registry.md`，按 Project / Aliases / Local path / Path status / Sync mode 解析目标项目；路径 missing 或 stale-risk 时先停下列待确认项，不得先全盘递归找目录。确认目标路径后，再逐个进入派生项目执行本 SOP。
+若当前目录是 `ai-project-template` 模板仓，且本轮目标是从模板仓同步到一个或多个派生项目，先进入“模板仓发起模式”：读取 `_governance/ai-records/project-registry/README.md` 与 `_governance/ai-records/project-registry/registry.md`，按 Project / Aliases / Local path / Path status / Sync mode 解析目标项目；路径 missing 或 stale-risk 时先停下列待确认项，不得先全盘递归找目录。确认目标路径后，再逐个进入派生项目执行本 SOP。
 
-先说明本次标准闭环计划：同步预检 → dry-run → 同步提交 → `check-derived-sync` 边界验证 → `post-sync-cleanup` 整理计划 → `docs-system-audit` 同步后审计 → 项目验证建议 → `sync-records/template-sync/` 同步报告。每一步说明是否只读、是否会写文件；写入前等待确认。若用户明确说已同步但只需补后续，或 Git 显示最近已有 `sync template vX.Y.Z from ai-project-template` 同步提交，则进入“同步后续接模式”：不要重新执行 dry-run / commit，先核对同步提交、`VERSION`、`TEMPLATE-BASE.md`（若存在）、工作区和既有同步记录，再从 `check-derived-sync` 边界验证开始补完后续闭环。
+先说明本次标准闭环计划：同步预检 → dry-run → 同步提交 → `check-derived-sync` 边界验证 → `post-sync-cleanup` 整理计划 → `docs-system-audit` 同步后审计 → 项目验证建议 → `_governance/sync-records/template-sync/` 同步报告。每一步说明是否只读、是否会写文件；写入前等待确认。若用户明确说已同步但只需补后续，或 Git 显示最近已有 `sync template vX.Y.Z from ai-project-template` 同步提交，则进入“同步后续接模式”：不要重新执行 dry-run / commit，先核对同步提交、`VERSION`、`TEMPLATE-BASE.md`（若存在）、工作区和既有同步记录，再从 `check-derived-sync` 边界验证开始补完后续闭环。
 
 执行要求：
 
@@ -57,7 +57,7 @@
 1. 先阅读 ai/index.md 及其列出的全部规则文件。
 2. 检查 git status；若有未提交改动，立即停止并说明，不要覆盖。
 3. 判断是否为同步后续接模式：
-   - 读取：git log --oneline -8、git status --short --branch、Get-Content VERSION、Get-Content TEMPLATE-BASE.md（若存在）、最近一次 `sync-records/template-sync/` 记录（若存在；旧路径 `docs/archive/template-sync/` 兼容读取）。
+   - 读取：git log --oneline -8、git status --short --branch、Get-Content VERSION、Get-Content TEMPLATE-BASE.md（若存在）、最近一次 `_governance/sync-records/template-sync/` 记录（若存在；旧路径 `docs/archive/template-sync/` 兼容读取）。
    - 若最近提交或用户说明表明已经完成 `sync template vX.Y.Z from ai-project-template`，且本轮目标只是补完后续，不要重新 dry-run / commit；记录已同步版本和缺失环节，直接跳到第 11 步继续。
    - 若存在 `TEMPLATE-BASE.md`，`VERSION` 视为项目自身版本，继承模板版本以 `TEMPLATE-BASE.md` / 同步提交为准；若二者与目标版本冲突，停止并说明冲突，不得覆盖文件。
    - 若不存在 `TEMPLATE-BASE.md`，兼容旧语义：`VERSION` 可能仍是继承模板版本；若 `VERSION` 与最近同步提交 / 目标版本冲突，停止并向用户说明冲突，不得覆盖文件。
@@ -81,7 +81,7 @@
 8. 如果是 v1.6.8+ 后续同步：
    - 运行：powershell -ExecutionPolicy Bypass -File scripts/sync-template.ps1 --dry-run
    - 大批量同步（跨多版本 / 首次同步）输出可能很长并含大量 `LF will be replaced by CRLF` 噪音；建议重定向到 log（`> sync.log 2>&1`）并用更长超时（300s+）。CRLF warning 不等于失败（见 git-guide §5.8）。
-9. 检查 dry-run 输出，确认只涉及模板方法论同步文件；普通派生项目双版本模式允许出现 `TEMPLATE-BASE.md`，但不应出现 README.md、ai/project-rules.md、docs/00-09、frontend/、backend/、tests/、docker/ 或业务代码。大同步时优先 grep 摘要而非完整输出：`grep -nE 'README\.md|ai/project-rules\.md|ai/doc-standards/domain-rules\.md|docs/00-09|frontend/|backend/|tests/|docker/' sync.log` 查项目专属 / 领域专属误触及（普通派生不应出现 domain-rules standards）；`grep -nE 'VERSION|CHANGELOG|TEMPLATE-BASE|preserve-project-version|domain-template' sync.log` 查版本机制；EXIT 与变化文件数作摘要，成功不回灌完整列表。
+9. 检查 dry-run 输出，确认只涉及模板方法论同步文件；普通派生项目双版本模式允许出现 `TEMPLATE-BASE.md`，但不应出现 README.md、ai/project-rules.md、docs/00-09、project/frontend/、project/backend/、project/tests/、project/docker/ 或业务代码。大同步时优先 grep 摘要而非完整输出：`grep -nE 'README\.md|ai/project-rules\.md|ai/doc-standards/domain-rules\.md|docs/00-09|project/frontend/|project/backend/|project/tests/|project/docker/' sync.log` 查项目专属 / 领域专属误触及（普通派生不应出现 domain-rules standards）；`grep -nE 'VERSION|CHANGELOG|TEMPLATE-BASE|preserve-project-version|domain-template' sync.log` 查版本机制；EXIT 与变化文件数作摘要，成功不回灌完整列表。
 10. 如果 dry-run 合理，执行同步：
    - 普通派生项目若已有或准备采用 `TEMPLATE-BASE.md` 双版本模式，优先追加 `--preserve-project-version`，使 `VERSION` / `CHANGELOG.md` 保持项目自身版本，继承模板版本写入 `TEMPLATE-BASE.md`；若仓库已存在 `TEMPLATE-BASE.md`，新版脚本会自动启用该模式。
    - 领域模板（如 `agent-system-template`，仓库存在领域版 `TEMPLATE-BASE.md`：`Lineage type: domain template`）从母模板 sync 时改用 `--domain-template`（与 `--preserve-project-version` 互斥），保留领域模板自身 `VERSION` / `CHANGELOG.md`，并把继承母模板版本写入领域版 `TEMPLATE-BASE.md`（含 `Domain standards scope`）；仓库已存在领域版 `TEMPLATE-BASE.md` 时自动启用。领域路线会额外同步 `files_domain` 组（含 `ai/doc-standards/domain-rules.md` 领域 rules 规范基线）；领域仓的 `ai/domain-rules.md` 种子不入清单、不同步、受 `check-derived-sync` 保护。普通派生项目不要用 `--domain-template`，反之领域模板不要用 `--preserve-project-version`，二者冲突时脚本会停止并提示。
@@ -101,13 +101,13 @@
 13. 如本次同步引入新的项目专属骨架项，不要直接覆盖 ai/project-rules.md；列出需要人工迁移的字段，例如 `§2.1 运行环境与资源约束`。领域模板仓的 `ai/domain-rules.md` 种子不在同步清单、不会被覆盖；如本次同步刷新了 `ai/doc-standards/domain-rules.md` 规范基线，对照它维护领域种子（§0-§4）。
 14. 如项目已同步到含 `scripts/collect-env.ps1` 的模板版本，但尚无 `docs/env/local-env.md`，提示运行：powershell -ExecutionPolicy Bypass -File scripts/collect-env.ps1，并补齐人工确认项。
 15. 做提案回流收口检查：
-   - 扫描本项目 `_proposals/TEMPLATE-UPGRADE-*.md`、`.ai/session-handoff.md`、最近 `sync-records/template-sync/` 运行记录（旧路径 `docs/archive/template-sync/` 兼容读取），找出本项目曾提交到模板仓的 issue 链接、待处理提案和已生成回流提案。
+   - 扫描本项目 `_governance/_proposals/TEMPLATE-UPGRADE-*.md`、`.ai/session-handoff.md`、最近 `_governance/sync-records/template-sync/` 运行记录（旧路径 `docs/archive/template-sync/` 兼容读取），找出本项目曾提交到模板仓的 issue 链接、待处理提案和已生成回流提案。
    - 若记录了模板仓 issue 链接，必要时运行 `gh issue view <编号或URL> --repo <模板owner>/<模板repo> --json number,title,state,labels,url,closedAt`，判断 issue 是否已关闭、是否仍标记 `proposal` / `feedback`、是否有后续说明。
    - 对照本次同步到的模板 `VERSION`、`CHANGELOG.md`、PR 记录或 issue 关闭说明，判断提案是否已被采纳 / 已被替代处理 / 延后 / 未处理。
-   - 已被模板仓库采纳或有明确“已处理 / 不采纳”决议，并且本次同步已拿到对应模板版本的本地提案，移动到本项目 `_archive/proposals/` 归档。
+   - 已被模板仓库采纳或有明确“已处理 / 不采纳”决议，并且本次同步已拿到对应模板版本的本地提案，移动到本项目 `_governance/_archive/proposals/` 归档。
    - 只有 issue 已关闭但无法从 VERSION / CHANGELOG / PR / issue 说明判断处理结果时，不要误归档；记录为待确认项。
-   - 未处理、延后处理、仍 open 或不确定状态的提案继续保留在 `_proposals/`，不要误归档。
-   - 如执行归档，补充或更新 `_archive/proposals/README.md`，说明归档规则与对应模板版本 / PR / issue。
+   - 未处理、延后处理、仍 open 或不确定状态的提案继续保留在 `_governance/_proposals/`，不要误归档。
+   - 如执行归档，补充或更新 `_governance/_archive/proposals/README.md`，说明归档规则与对应模板版本 / PR / issue。
 16. 如有归档改动，运行 git status 并确认只移动提案记录，不改业务文件。
 17. 进入同步后整理闭环：
    - 触发或引导执行 `/run post-sync-cleanup`，先只读输出整理审计与迁移计划。
@@ -122,12 +122,12 @@
    - 根据项目形态建议运行测试、lint、文档自检、脚本验证或人工验收。
    - 若无法运行或项目没有验证入口，记录为未验证项，不得写成已通过。
 20. 生成或更新派生同步运行记录：
-   - 读取 `template-docs/derived-sync-report-template.md`。
-   - 推荐保存到 `sync-records/template-sync/YYYY-MM-DD-sync-template-vX.Y.Z.md`（长期记录，与项目文档分离，便于审计和回流扫描）；如果用户暂不想提交长期记录，先写入 `.ai/session-handoff.md`。
+   - 读取 `template-docs/templates/derived-sync-report-template.md`。
+   - 推荐保存到 `_governance/sync-records/template-sync/YYYY-MM-DD-sync-template-vX.Y.Z.md`（长期记录，与项目文档分离，便于审计和回流扫描）；如果用户暂不想提交长期记录，先写入 `.ai/session-handoff.md`。
    - 记录同步前版本、目标版本、同步分支、dry-run / commit / check-derived-sync 命令、同步结果、是否新增 / 刷新 `ai/doc-standards/00-09`、是否残留旧 `docs/_scaffold/`、同步后整理摘要、文档体系审计摘要、提案回流收口结论、项目验证建议、遇到的问题和后续动作。
 21. 从运行记录归纳可优化点：
    - 区分项目专属问题、环境问题和模板方法论问题。
-   - 对可通用于多个项目的问题，生成去项目化 `_proposals/TEMPLATE-UPGRADE-*.md`；不得包含客户、账号、路径敏感信息或项目专属业务细节。
+   - 对可通用于多个项目的问题，生成去项目化 `_governance/_proposals/TEMPLATE-UPGRADE-*.md`；不得包含客户、账号、路径敏感信息或项目专属业务细节。
    - 若没有可回流问题，记录“本次无模板回流提案”。
 22. 推送当前分支：git push -u origin chore/sync-template-vX.Y.Z。
 23. 创建 PR：gh pr create --fill。
@@ -146,7 +146,7 @@
 - dry-run 显示会覆盖项目专属文件。
 - sync-template 提示本地脚本不是最新版，且无法完成 bootstrap。
 - 派生同步边界检查显示最新同步提交包含 README.md、ai/project-rules.md、docs/00-09 或业务代码。
-- 无法判断 `_proposals/` 中某个提案是否已被模板采纳。
+- 无法判断 `_governance/_proposals/` 中某个提案是否已被模板采纳。
 - 运行记录中包含敏感信息且无法去项目化。
 - 脚本失败。
 - GitHub 认证或权限失败。

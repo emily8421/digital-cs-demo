@@ -1,7 +1,7 @@
 # AI Commands（快捷命令路由）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 本目录提供 AI CLI 的快捷命令路由。命令文件只负责把“用户意图”映射到权威 SOP、Prompt 和脚本说明；完整执行细节仍以 `ai/prompts/`、`SOP.md`、`git-guide.md`、`docs/` 与项目规则为准。
 
@@ -45,7 +45,7 @@ AI 识别到命令意图后，应先判断是否为 `resume` 快速续接；若�
 
 1. 读取 `ai/index.md` 与 `ai/rules-core.md`，按任务路由选择规则包；无法判断时读取完整规则回退包。
 2. 读取本命令索引和对应命令文件。
-3. 读取命令文件列出的权威文档、Prompt 和脚本说明；若属于 PR / CI / Git 收尾，先读 `template-docs/remote-ci-sop-profile.md` 做最小必读分诊。
+3. 读取命令文件列出的权威文档、Prompt 和脚本说明；若属于 PR / CI / Git 收尾，先读 `template-docs/profiles/remote-ci-sop-profile.md` 做最小必读分诊。
 4. 说明将执行的命令、影响范围、是否只读、是否会写文件。
 5. 涉及模板维护、规则改造、同步机制、PR / CI / 远端 GitHub 操作、批量搜索、全量自检或长输出命令时，默认按 `ai/session-rules.md` §3.3 进入 Checkpoint Mode；按风险分级确认，低风险本地只读和已授权范围内编辑可小批次执行，高风险远端 / 破坏性动作单步确认，失败即停。
 6. 涉及写入、安装、提交、同步或状态改变时，先取得用户确认。
@@ -95,7 +95,7 @@ AI 识别到命令意图后，应先判断是否为 `resume` 快速续接；若�
 | `commit-message` | 生成提交信息 | `ai/prompts/git/06-commit-message.md` |
 | `submit-proposal` | 提交提案给维护者 / 回流模板 | `ai/prompts/maintainers/17-submit-proposal.md`（跨仓库开 issue） |
 | `submit-feedback` | 收集使用问题反馈给模板 | `ai/prompts/maintainers/18-submit-feedback.md`（半自动汇集 + 开 issue） |
-| `show-demo` | 查看演示效果 / 启动 Demo / 二维码 / 检查 Demo | `ai/commands/show-demo.md`、`template-docs/demo-runbook-template.md` |
+| `show-demo` | 查看演示效果 / 启动 Demo / 二维码 / 检查 Demo | `ai/commands/show-demo.md`、`template-docs/templates/demo-runbook-template.md` |
 
 ## 维护规则
 

@@ -1,7 +1,7 @@
 # Git 使用说明
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 
 本文件是 `ai-project-template` 及其派生项目的 git 工作流，**按场景组织**——你要做哪件事，就查哪个场景（见 §2 速查表）。模板变更治理见 `CONTRIBUTING.md`。
@@ -146,7 +146,7 @@ cd /path/ai-project-template && git worktree remove ../ai-tpl-wt2
 
 派生项目同步模板方法论更新时，优先使用同步脚本，不要手动逐文件复制。该流程是**模板 → 派生项目**的下行获取，不会把派生项目内容提交回模板。
 
-> **批量同步（维护者）**：从模板仓目录发起“同步至派生项目 / 同步 N 个派生”时，优先读取维护者侧 `ai-records/project-registry/registry.md` 解析目标、别名、本地路径和同步模式；路径缺失或 stale-risk 先停下确认。`bash scripts/sync-all-derived.sh <父目录> --dry-run` 仅作为同父目录项目的 fallback 批量扫描工具；确认后 `--commit`。
+> **批量同步（维护者）**：从模板仓目录发起“同步至派生项目 / 同步 N 个派生”时，优先读取维护者侧 `_governance/ai-records/project-registry/registry.md` 解析目标、别名、本地路径和同步模式；路径缺失或 stale-risk 先停下确认。`bash scripts/sync-all-derived.sh <父目录> --dry-run` 仅作为同父目录项目的 fallback 批量扫描工具；确认后 `--commit`。
 
 ### 5.1 路径判定
 
@@ -188,7 +188,7 @@ git commit -m "chore: bootstrap latest sync script"
 - `README.md`
 - `ai/project-rules.md`
 - `docs/00-scenario.md` ~ `docs/09-verification.md`
-- `frontend/`、`backend/`、`tests/`、`docker/` 等业务代码或项目专属目录
+- `project/frontend/`、`project/backend/`、`project/tests/`、`project/docker/` 等业务代码或项目专属目录
 
 > 例外：`ai/doc-standards/00-09`（模板撰写规范镜像）会在本次同步中**新增 / 刷新**，属预期产物（见 §5.6），不等于、也不覆盖项目自己的 `docs/00-09` 项目事实。旧项目残留的 `docs/_scaffold/00-09` 仅作兼容参考。
 
@@ -208,7 +208,7 @@ git show --name-only --stat HEAD
 powershell -ExecutionPolicy Bypass -File scripts/check-derived-sync.ps1
 ```
 
-随后继续执行 `/run post-sync-cleanup`、`/run docs-system-audit` 的同步后审计模式，并按 `template-docs/derived-sync-report-template.md` 生成或更新 `sync-records/template-sync/YYYY-MM-DD-sync-template-vX.Y.Z.md`。若项目当前 AI 入口仍是旧版本，先直接打开新同步到的 `ai/prompts/maintainers/12-sync-template.md` 作为后续步骤清单。
+随后继续执行 `/run post-sync-cleanup`、`/run docs-system-audit` 的同步后审计模式，并按 `template-docs/templates/derived-sync-report-template.md` 生成或更新 `_governance/sync-records/template-sync/YYYY-MM-DD-sync-template-vX.Y.Z.md`。若项目当前 AI 入口仍是旧版本，先直接打开新同步到的 `ai/prompts/maintainers/12-sync-template.md` 作为后续步骤清单。
 
 ### 5.3 v1.6.8+ 后续同步
 
@@ -261,14 +261,14 @@ powershell -ExecutionPolicy Bypass -File scripts/check-template.ps1       # 仅�
 - `--dry-run` 只预览差异，不修改工作区、不 stage。
 - `--commit` 会覆盖同步清单中的文件并自动提交；普通派生项目建议追加 `--preserve-project-version`，保留项目自身 `VERSION` / `CHANGELOG.md`，并用 `TEMPLATE-BASE.md` 记录继承模板版本；领域模板（如 `agent-system-template`）改用 `--domain-template`（与 `--preserve-project-version` 互斥），保留领域模板自身 `VERSION` / `CHANGELOG.md`，并用领域版 `TEMPLATE-BASE.md` 记录继承母模板版本；若仓库已存在对应角色的 `TEMPLATE-BASE.md`，新版脚本会自动启用相应模式；提交信息仍由脚本生成。
 - 根 `README.md` 是项目件，`ai/project-rules.md` 与领域模板仓的 `ai/domain-rules.md` 是项目 / 领域专属规则，均不在 `template-sync.json` 中，不参与模板下行同步。
-- 被 `template-sync.json` 列入的方法论文件（`.md` / `.mdc` / `.sh` / `.ps1`；`template-sync.json` 自身用 `description` 字段承载同等声明）会在同步时被覆盖；派生项目不要直接修改这些文件，如需改进请在 `_proposals/` 起草提案并回流模板。
+- 被 `template-sync.json` 列入的方法论文件（`.md` / `.mdc` / `.sh` / `.ps1`；`template-sync.json` 自身用 `description` 字段承载同等声明）会在同步时被覆盖；派生项目不要直接修改这些文件，如需改进请在 `_governance/_proposals/` 起草提案并回流模板。
 - 同步文件清单以 `template-sync.json` 为准（v1.60.0 起分 `files_all` / `files_ordinary` / `files_domain` 三组，按派生路线选组：领域 `files_all ∪ files_domain`，普通 `files_all ∪ files_ordinary`）；`scripts/sync-template.sh` 会优先读取模板远端清单。
 - 同步后若 `check-derived-sync` 失败，先修复同步边界问题，再 push / PR。
 - 若已经完成同步提交但不确定后续是否执行，使用 `/run sync-methodology` 的“同步后续接模式”：不要重新 dry-run / commit，先核对 `git log --oneline -8`、`VERSION`、`TEMPLATE-BASE.md`（若存在）、最近同步记录和工作区，再从 `check-derived-sync` 开始补完后续闭环。
 - 同步后进入标准闭环：`check-derived-sync` 边界验证 → `post-sync-cleanup` 整理计划 → `docs-system-audit` 同步后审计 → 项目验证建议 → 同步报告留痕。
 - 同步后整理项目内容时，另开分支执行 `ai/prompts/maintainers/15-post-sync-cleanup.md` 第一段，先只审计并输出迁移计划，不要混入同步提交；整理摘要应回写同步报告。
 - 项目文档成型后，再用 `ai/prompts/review/16-docs-system-audit.md` 对照本次同步产出的 `ai/doc-standards` 规范基线，回溯审计整条 PLM 链路（先出报告不改文件；旧项目可 fallback 到 `docs/_scaffold`）。同步后审计模式应区分规范基线缺口、兼容差异和项目事实问题。
-- 同步报告推荐写入 `sync-records/template-sync/YYYY-MM-DD-sync-template-vX.Y.Z.md`，记录同步命令、边界验证、整理摘要、文档审计摘要、项目验证建议、未验证项和后续任务；旧路径 `docs/archive/template-sync/` 仅作兼容读取。
+- 同步报告推荐写入 `_governance/sync-records/template-sync/YYYY-MM-DD-sync-template-vX.Y.Z.md`，记录同步命令、边界验证、整理摘要、文档审计摘要、项目验证建议、未验证项和后续任务；旧路径 `docs/archive/template-sync/` 仅作兼容读取。
 - 老派生项目若执行 `--dry-run` 后出现 staged 改动，说明本地 `scripts/sync-template.sh` 过旧；先恢复工作区，手动用模板最新版覆盖该脚本，再重新执行 `--dry-run`。
 
 ### 5.6 `doc-standards` 规范镜像（v1.20.0+）
@@ -304,7 +304,7 @@ Windows / Git Bash 下大批量同步（跨多版本 / 首次同步）会输出�
 - **重定向到 log**：`sync-template.sh --dry-run > sync.log 2>&1`（或 `.ps1`），完整输出落盘，不直接灌入上下文。
 - **长超时**：大同步 dry-run / commit 用更长超时（300s+），避免工具超时被误判为脚本失败。
 - **grep 摘要**：只看 EXIT、变化文件数、删除数、项目专属触及、版本机制结果：
-  - 禁止路径：`grep -nE 'README\.md|ai/project-rules\.md|docs/00-09|frontend/|backend/|tests/|docker/' sync.log`
+  - 禁止路径：`grep -nE 'README\.md|ai/project-rules\.md|docs/00-09|project/frontend/|project/backend/|project/tests/|project/docker/' sync.log`
   - 版本机制：`grep -nE 'VERSION|CHANGELOG|TEMPLATE-BASE|preserve-project-version|domain-template' sync.log`
 - **CRLF warning 不判失败**：`LF will be replaced by CRLF` 是 Windows 换行提示，不等于错误；只有真实 Git 错误、冲突、越界覆盖或校验失败才算失败。
 - **失败才展开**：成功时只保留摘要计数；失败或可疑时再打开 log 的最小相关片段。

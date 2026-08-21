@@ -1,7 +1,7 @@
 # Command: docs-evaluation
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 ## 用户说法
 
@@ -54,7 +54,7 @@
 
 ## 写入风险
 
-默认只读；评估报告落盘、起草 `_proposals/` 或修正文档前必须确认。评估报告不得写入 `docs/` 根目录，不覆盖 `00-09`，不替代正式文档修订。
+默认只读；评估报告落盘、起草 `_governance/_proposals/` 或修正文档前必须确认。评估报告不得写入 `docs/` 根目录，不覆盖 `00-09`，不替代正式文档修订。
 
 ## 续接要求
 

@@ -1,7 +1,7 @@
 # AI 任务启动入口
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 首次在本模板项目里启动 AI 工作时，从这里入手——下面 4 个入口覆盖场景引导 / 命令 / 速查 / Prompt（明细表见各权威位置）。AI 工具会自动读取 `ai/index.md` 规则；本文件是给人看的入口：
 

@@ -1,7 +1,7 @@
 # 04 单文档修订
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 **用途**：只修订某一份文档或某个章节，不启动完整初始化流程。
 

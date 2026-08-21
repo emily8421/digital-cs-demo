@@ -1,7 +1,7 @@
 # Global Rules（跨项目通用规则）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 本文件对所有基于本模板创建的项目逐字复用，不针对具体项目修改。
 > 如需调整通用原则，先改本模板仓库的本文件，再覆盖同步到各项目（见README）。
@@ -106,7 +106,9 @@ ProjectName/
 ├─ docs/        # 项目事实：需求、设计、计划
 ├─ ai/          # AI行为规范（本目录）
 ├─ tasks/       # AI任务单（按需启用）
-├─ frontend/ backend/ tests/ scripts/ docker/   # 按项目技术栈与演示形态创建，不必全有
+├─ project/     # 项目代码骨架：frontend/ backend/ tests/ docker/ 按形态裁剪
+├─ _governance/ # 项目治理记录：ai-records/ sync-records/ _proposals/ _archive/ _examples/
+├─ scripts/     # 模板方法论脚本
 ├─ AGENTS.md / CLAUDE.md / .cursor/rules/project-rules.mdc
 ├─ README.md
 └─ .gitignore
@@ -116,9 +118,9 @@ ProjectName/
 
 | 区 | 典型目录 / 文件 | 同步时 | 派生项目怎么用 |
 |---|---|---|---|
-| 模板方法论（继承） | `ai/`（除 `project-rules.md` 实例）、`template-docs/`、`scripts/`（模板脚本）、`template-sync.json`、`SOP.md`、`git-guide.md` 等 | **覆盖** | 不直接改；通用改进走 `_proposals/` 回流模板 |
-| 模板治理（本地记录） | `sync-records/`、`ai-records/`、`_proposals/`、`.ai/` | 不覆盖 | 按各自 README 记录，不参与同步 |
-| 项目产出（自有） | `docs/`、代码目录（`frontend/` 等）、`ai/project-rules.md`、根 `README.md`、`VERSION`、`CHANGELOG*`、`tasks/`、`knowledge/` 等项目自建目录 | 不覆盖 | 项目自有，直接写 |
+| 模板方法论（继承） | `ai/`（除 `project-rules.md` 实例）、`template-docs/`、`scripts/`（模板脚本）、`template-sync.json`、`SOP.md`、`git-guide.md` 等 | **覆盖** | 不直接改；通用改进走 `_governance/_proposals/` 回流模板 |
+| 模板治理（本地记录） | `_governance/`（含 `sync-records/`、`ai-records/`、`_proposals/`、`_archive/`、`_examples/`）、`.ai/` | 不覆盖 | 按各自 README 记录，不参与同步 |
+| 项目产出（自有） | `docs/`、`project/` 代码目录、`ai/project-rules.md`、根 `README.md`、`VERSION`、`CHANGELOG*`、`tasks/`、`knowledge/` 等项目自建目录 | 不覆盖 | 项目自有，直接写 |
 
 机器事实源仍是 `template-sync.json`（本表是人读导航，不是第二权威源）；项目自建目录（如知识沉淀）建议放 `docs/` 子目录或项目自管目录并登记 `ai/project-rules.md` §4，避免根目录膨胀。人读版地图见 `template-docs/beginner-guide.md` §5。
 
@@ -128,9 +130,9 @@ ProjectName/
 额外项目文档必须按 `docs/README.md` 放入 `vision/`、`inputs/`、`design/`、`decisions/`、`research/`、`env/`、`meetings/`、`archive/` 等子目录，
 不占用、不挪动 `00-09` 编号，禁止把新增文档直接堆到 `docs/` 根目录。
 
-`frontend/` 是否启用取决于 `ai/project-rules.md` §3 的「演示形态」决策：消息通道内交互、CLI 或不需演示通常不启用；独立 Web 页面、移动端、小程序、桌面端等可点击 UI 通常启用，并在 `docs/04-architecture.md`、`docs/05-tech-spec.md` 体现前端设计。若项目存在多页面、多角色、复杂表单、状态流、验收依赖点击路径，或 Sprint 修改范围包含页面 / 组件 / 搜索问答 UI / 管理页 / 桌面端集成，开发前应补充 `docs/design/frontend-interaction.md` 或按入口拆分的 `docs/design/*interaction*.md`；若不补，须在 `ai/project-rules.md` §3 或 `docs/05-tech-spec.md` 写明豁免理由。满足前端交互触发条件且用户需实现前预览界面、页面信息密度高、主流程依赖点击验收、存在多状态 / 多角色 / 权限可见性，或 Demo / Mock / 降级口径可能被误读时，应在 `ai/project-rules.md` §2.3 / §3、`docs/05-tech-spec.md` 或前端交互设计中选择 UI 原型策略（Figma / Penpot / Balsamiq / Axure / Storybook / 代码原型 / 截图标注 / 其他）或写明豁免；原型不替代需求、设计或验收，不新增未授权需求 / 接口 / 权限 / 验收目标。非平凡子系统、复杂权限 / 安全边界、AI / 外部服务、导入 / 异步任务、跨模块状态机、Mock / 降级差异或高风险愿景能力，也应按 `ai/doc-standards/design-doc.md` 补充 `docs/design/<subsystem>.md` 或写明豁免理由。根 `README.md` 是项目件，用于说明具体项目，不纳入下行同步清单，各项目自行维护。
+`project/frontend/` 是否启用取决于 `ai/project-rules.md` §3 的「演示形态」决策：消息通道内交互、CLI 或不需演示通常不启用；独立 Web 页面、移动端、小程序、桌面端等可点击 UI 通常启用，并在 `docs/04-architecture.md`、`docs/05-tech-spec.md` 体现前端设计。若项目存在多页面、多角色、复杂表单、状态流、验收依赖点击路径，或 Sprint 修改范围包含页面 / 组件 / 搜索问答 UI / 管理页 / 桌面端集成，开发前应补充 `docs/design/frontend-interaction.md` 或按入口拆分的 `docs/design/*interaction*.md`；若不补，须在 `ai/project-rules.md` §3 或 `docs/05-tech-spec.md` 写明豁免理由。满足前端交互触发条件且用户需实现前预览界面、页面信息密度高、主流程依赖点击验收、存在多状态 / 多角色 / 权限可见性，或 Demo / Mock / 降级口径可能被误读时，应在 `ai/project-rules.md` §2.3 / §3、`docs/05-tech-spec.md` 或前端交互设计中选择 UI 原型策略（Figma / Penpot / Balsamiq / Axure / Storybook / 代码原型 / 截图标注 / 其他）或写明豁免；原型不替代需求、设计或验收，不新增未授权需求 / 接口 / 权限 / 验收目标。非平凡子系统、复杂权限 / 安全边界、AI / 外部服务、导入 / 异步任务、跨模块状态机、Mock / 降级差异或高风险愿景能力，也应按 `ai/doc-standards/design-doc.md` 补充 `docs/design/<subsystem>.md` 或写明豁免理由。根 `README.md` 是项目件，用于说明具体项目，不纳入下行同步清单，各项目自行维护。
 
-复杂 Web / 全栈交互项目（同时启用 `frontend/` 与 `backend/`、需要浏览器演示、多页面 / 多状态 / 多角色 / 数据密集界面，或首个前端 Sprint 可能把多个业务能力堆入单个主应用文件）在通用 System Skeleton Gate（见 `ai/implementation-lifecycle-rules.md` §3）基础上叠加 **Web App Structure Profile（Web 特化）**：参考 `template-docs/web-fullstack-profile.md`，在 `docs/04-architecture.md` / `docs/05-tech-spec.md` / `docs/08-dev-plan.md` / `docs/09-verification.md` 中明确 App Shell、前后端目录边界、API client ↔ API-ID 追溯、vertical slice、文件膨胀阈值和浏览器 / API smoke；若不触发，须在 `ai/project-rules.md` §3 或 `docs/05-tech-spec.md` 写明豁免理由。
+复杂 Web / 全栈交互项目（同时启用 `project/frontend/` 与 `project/backend/`、需要浏览器演示、多页面 / 多状态 / 多角色 / 数据密集界面，或首个前端 Sprint 可能把多个业务能力堆入单个主应用文件）在通用 System Skeleton Gate（见 `ai/implementation-lifecycle-rules.md` §3）基础上叠加 **Web App Structure Profile（Web 特化）**：参考 `template-docs/profiles/web-fullstack-profile.md`，在 `docs/04-architecture.md` / `docs/05-tech-spec.md` / `docs/08-dev-plan.md` / `docs/09-verification.md` 中明确 App Shell、前后端目录边界、API client ↔ API-ID 追溯、vertical slice、文件膨胀阈值和浏览器 / API smoke；若不触发，须在 `ai/project-rules.md` §3 或 `docs/05-tech-spec.md` 写明豁免理由。
 
 项目涉及具体运行时版本锁定（如 Node / Python / Java 锁定特定版本）时，应在 `ai/project-rules.md` §2.5 写明锁定的运行时与版本、版本声明文件、切换工具、CI 校验方式和锁定原因，或写明豁免理由；声明文件标准与切换工具推荐见 `template-docs/env-setup.md`「运行时版本管理」小节。
 
@@ -161,9 +163,9 @@ AI 判断需要新增项目文档时，必须先阅读 `docs/README.md` 的分�
 - **项目专属层**：
   - **规范基线**（`ai/doc-standards/project-rules.md`，同步）：`ai/project-rules.md` 的字段规范、填写要求、审计项与禁止项的单一事实源。
   - **种子实例**（`ai/project-rules.md`，不同步）：派生项目填写的项目专属事实骨架（技术栈、Phase、裁剪决策等）。
-- **领域专属层**（领域模板项目，详见 `template-docs/domain-templates.md`）：`ai/doc-standards/domain-rules.md`（规范基线，同步）+ 领域仓自持的 `ai/domain-rules.md`（种子实例，不同步）。
+- **领域专属层**（领域模板项目，详见 `template-docs/profiles/domain-templates.md`）：`ai/doc-standards/domain-rules.md`（规范基线，同步）+ 领域仓自持的 `ai/domain-rules.md`（种子实例，不同步）。
 
-判断标准：一条规则换到另一个完全不同的项目上是否还成立——成立属通用层或规范基线，不成立（具体技术栈 / 功能 / Phase）属种子实例。文档生成、审计、精修 `ai/project-rules.md` 时对照 `ai/doc-standards/project-rules.md`；项目专属内容只写实例，不回写规范基线（规范基线经 `_proposals/` 回流模板仓）。
+判断标准：一条规则换到另一个完全不同的项目上是否还成立——成立属通用层或规范基线，不成立（具体技术栈 / 功能 / Phase）属种子实例。文档生成、审计、精修 `ai/project-rules.md` 时对照 `ai/doc-standards/project-rules.md`；项目专属内容只写实例，不回写规范基线（规范基线经 `_governance/_proposals/` 回流模板仓）。
 
 ### 文档编号规范
 
@@ -240,11 +242,11 @@ Prompt / SOP / 脚本说明执行；不要要求用户手工打开 prompt 文件
 
 `ai/global-rules.md` 是模板复用件，派生项目不得直接修改后长期保留；通用规则调整必须回到 `ai-project-template` 模板仓库走 PR，避免版本漂移、无法审计。
 
-每次任务收尾时，AI 应顺带审视本次工作是否暴露出可通用于多个项目的模板优化点（如规则不清、决策前置不足、文档骨架缺口、脚本流程别扭）。任何需要修改项目模板的工作，都必须先形成 `TEMPLATE-UPGRADE-*.md` 提案（去项目化：动机 / 拟改 / 版本 / 影响 / 与既有规则关系（去重）），可附 `TEMPLATE-UPGRADE-*-patch.md` 记录具体 old→new 修改建议；成熟后回流到模板仓库 `_proposals/` 收件箱，由模板仓库 PR 落地。模板改动合并并下行同步后，已处理提案必须移动到 `_archive/proposals/` 归档或在派生项目历史中留痕。
+每次任务收尾时，AI 应顺带审视本次工作是否暴露出可通用于多个项目的模板优化点（如规则不清、决策前置不足、文档骨架缺口、脚本流程别扭）。任何需要修改项目模板的工作，都必须先形成 `TEMPLATE-UPGRADE-*.md` 提案（去项目化：动机 / 拟改 / 版本 / 影响 / 与既有规则关系（去重）），可附 `TEMPLATE-UPGRADE-*-patch.md` 记录具体 old→new 修改建议；成熟后回流到模板仓库 `_governance/_proposals/` 收件箱，由模板仓库 PR 落地。模板改动合并并下行同步后，已处理提案必须移动到 `_governance/_archive/proposals/` 归档或在派生项目历史中留痕。
 
-在模板仓库内，模板维护者 AI 处理 `_proposals/` 时必须先读取全部 `TEMPLATE-UPGRADE-*.md` 与可选 `*-patch.md`，输出去重 / 冲突 / 依赖分析和合并或分阶段优化计划，再辅助修改 `ai/global-rules.md`、`INIT-PROMPT.md`、`ai/prompts/`、脚本和治理文档；所有实际改动仍需人工审查并通过 PR 合并。
+在模板仓库内，模板维护者 AI 处理 `_governance/_proposals/` 时必须先读取全部 `TEMPLATE-UPGRADE-*.md` 与可选 `*-patch.md`，输出去重 / 冲突 / 依赖分析和合并或分阶段优化计划，再辅助修改 `ai/global-rules.md`、`INIT-PROMPT.md`、`ai/prompts/`、脚本和治理文档；所有实际改动仍需人工审查并通过 PR 合并。
 
-**回流来源标识**：派生项目回流到模板仓库的提案 / 反馈（`TEMPLATE-UPGRADE-*.md`、issue、PR），必须在头部标明来源派生：`> 来源：<派生项目名>（<owner>/<repo>）派生项目回流`。来源是「出处元数据」（公开仓库引用），不属于去项目化禁止的客户 / 账号 / 路径 / 业务细节。模板自产提案标「模板维护者」。这让维护者处理 `_proposals/` / issue 时一眼知出处，不与「别的会话 / 模板自产」混淆。派生项目提交提案 / 反馈的流程见 `ai/commands/submit-proposal.md`、`ai/commands/submit-feedback.md`（跨仓库开 issue，免 fork）。
+**回流来源标识**：派生项目回流到模板仓库的提案 / 反馈（`TEMPLATE-UPGRADE-*.md`、issue、PR），必须在头部标明来源派生：`> 来源：<派生项目名>（<owner>/<repo>）派生项目回流`。来源是「出处元数据」（公开仓库引用），不属于去项目化禁止的客户 / 账号 / 路径 / 业务细节。模板自产提案标「模板维护者」。这让维护者处理 `_governance/_proposals/` / issue 时一眼知出处，不与「别的会话 / 模板自产」混淆。派生项目提交提案 / 反馈的流程见 `ai/commands/submit-proposal.md`、`ai/commands/submit-feedback.md`（跨仓库开 issue，免 fork）。
 
 ## 10. 文档语言与表述规范
 

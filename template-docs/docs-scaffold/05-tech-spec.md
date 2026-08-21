@@ -1,7 +1,7 @@
 # 05 技术方案（Technical Specification）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 
 > **文档定位**：定义技术栈、版本、依赖、配置、关键技术决策、运行资源、安全隐私、技术风险验证和 readiness gate。本文回答“用什么技术以及如何落地”，不重复 04 的架构图，不写 DB/API 字段细节。
@@ -126,12 +126,12 @@
 
 ## 9. Readiness Gate（如触发）
 
-【撰写提要：真实外部服务、数据库、LLM、Docker / 部署、重型 SDK 或权限安全能力进入 Sprint 前，必须给出 readiness gate 结论；Lean 项目无触发项时写“不适用”及理由。复杂 Web / 全栈交互项目如同时启用 `frontend/` 与 `backend/`、需要浏览器演示、多页面 / 多状态 / 多角色 / 数据密集界面，或首个前端 Sprint 可能堆入单个主应用文件，应记录 Web App Structure Profile + Walking Skeleton Gate 结论；参考 `template-docs/web-fullstack-profile.md`。】
+【撰写提要：真实外部服务、数据库、LLM、Docker / 部署、重型 SDK 或权限安全能力进入 Sprint 前，必须给出 readiness gate 结论；Lean 项目无触发项时写“不适用”及理由。复杂 Web / 全栈交互项目如同时启用 `project/frontend/` 与 `project/backend/`、需要浏览器演示、多页面 / 多状态 / 多角色 / 数据密集界面，或首个前端 Sprint 可能堆入单个主应用文件，应记录 Web App Structure Profile + Walking Skeleton Gate 结论；参考 `template-docs/profiles/web-fullstack-profile.md`。】
 
 | Gate | 适用对象 | 进入标准 | 必需证据 | 状态 | 阻塞项 / 下一步 |
 |---|---|---|---|---|---|
 | RG-001 | 外部 API / 数据库 / LLM / Docker / 部署 |  | `docs/research/*tech-env-evaluation*.md` / 命令输出 / TC | Go / Conditional Go / No-Go / 待评估 |  |
-| WSG-001 | Web App Structure Profile + Walking Skeleton Gate | App Shell、目录边界、vertical slice、文件膨胀阈值、API / browser smoke 已定义 | `template-docs/web-fullstack-profile.md` / 04 / 08 / 09 | Go / Conditional Go / No-Go / 豁免 |  |
+| WSG-001 | Web App Structure Profile + Walking Skeleton Gate | App Shell、目录边界、vertical slice、文件膨胀阈值、API / browser smoke 已定义 | `template-docs/profiles/web-fullstack-profile.md` / 04 / 08 / 09 | Go / Conditional Go / No-Go / 豁免 |  |
 
 ### 9.1 Web App Structure Profile（如触发）
 

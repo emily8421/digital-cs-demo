@@ -1,7 +1,7 @@
 # 07 文档反向同步
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 **用途**：当实现结果与 `docs/` 中的设计产生差异时，先把事实同步回文档。
 

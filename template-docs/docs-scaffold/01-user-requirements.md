@@ -1,7 +1,7 @@
 # 01 用户需求说明（User Requirements）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 
 > **文档定位**：把 00 场景中的用户目标转化为用户可理解的需求。本文回答“用户想要什么”，不写系统内部设计、表结构、接口或实现方案。

@@ -1,7 +1,7 @@
 # Frontend Interaction Design Standard（前端交互设计细粒度标准）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 本文件定义 `docs/design/frontend-interaction.md` 或 `docs/design/*interaction*.md` 的细粒度标准。它是 `ai/doc-standards/design-doc.md` 的页面 / 交互型补充，不替代 `03/04/05/07/08/09`，也不替代通用 `docs/design/*` 详细设计标准。
 
@@ -10,7 +10,7 @@
 满足以下任一条件时，开发前应补前端交互设计，或在 `ai/project-rules.md` §3 / `docs/05-tech-spec.md` 写明豁免理由：
 
 - 交付形态包含独立 Web、移动端、小程序、桌面端或其他可点击 UI。
-- 项目保留 `frontend/`，且存在多页面、多入口、多角色、复杂表单、状态流、搜索 / 问答 UI、管理页或审批流。
+- 项目保留 `project/frontend/`，且存在多页面、多入口、多角色、复杂表单、状态流、搜索 / 问答 UI、管理页或审批流。
 - 验收依赖点击路径、页面状态、表单校验、权限可见性或用户操作。
 - Sprint / Task 修改范围包含页面、组件、编辑器、搜索 / 问答 UI、管理页、移动端或桌面端集成。
 

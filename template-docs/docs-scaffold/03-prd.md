@@ -1,7 +1,7 @@
 # 03 产品需求文档（PRD）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 
 > **文档定位**：确定产品范围、优先级、Phase 路线图和交付物形态。本文回答“先做什么、做到什么程度、何时算完成”。

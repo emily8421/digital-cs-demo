@@ -1,7 +1,7 @@
 # 24 文档体系周期性健康度复核
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 **用途**：一轮工作（Sprint / Phase 收口，或连续多轮文档修改）收尾时，对文档体系做一次轻量健康度复核，识别「积累式演进」带来的臃肿、重复、结构退化和状态滞后等可读性副作用。
 

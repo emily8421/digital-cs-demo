@@ -1,7 +1,7 @@
 # 00 Scenario（项目背景与场景）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 
 > **文档定位**：描述项目为什么要做、服务谁、在什么场景下产生价值。本文回答“背景与场景”，不写系统功能清单、技术方案或 Phase 计划。

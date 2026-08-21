@@ -1,7 +1,7 @@
 # Tech Environment Evaluation Scaffold（技术路线与环境支撑评估结构模板）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 推荐落盘路径：`docs/research/YYYY-MM-DD-tech-env-evaluation-<scope>.md`
 > 对应 Prompt：`ai/prompts/review/20-tech-env-evaluation.md`

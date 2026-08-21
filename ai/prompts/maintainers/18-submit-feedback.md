@@ -1,7 +1,7 @@
 # 18 派生项目汇集使用问题反馈到模板仓库（半自动）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 **用途**：在派生项目里，半自动汇集使用模板过程中的候选问题 / 优化点，人工勾选后以 issue 反馈给模板维护者。
 
@@ -30,10 +30,10 @@
 
 执行要求：
 1. 扫描候选来源：
-   - sync-records/template-sync/ 或旧路径 docs/archive/template-sync/ 下最近 sync 运行记录的可优化点
+   - _governance/sync-records/template-sync/ 或旧路径 docs/archive/template-sync/ 下最近 sync 运行记录的可优化点
    - docs-audit 报告（16-docs-system-audit 产出）的问题
    - check 告警（check-derived-sync / check-template 输出的 warning）
-   - _proposals/ 未成熟草稿
+   - _governance/_proposals/ 未成熟草稿
 2. 列出候选，让我勾选值得上报的（不要自动全报，避免噪声）。
 3. 选中的逐条去项目化（无客户/账号/路径/业务细节）+ 标来源 "> 来源：<派生>(owner/repo)"。
 4. 用 gh 跨仓库开 issue：

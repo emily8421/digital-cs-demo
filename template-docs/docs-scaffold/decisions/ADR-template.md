@@ -1,7 +1,7 @@
 # ADR-0000：决策标题
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 本文件是 `docs/decisions/ADR-0000-title.md` 的结构模板副本，不是项目事实。ADR 用于记录重要架构决策、横切事实和不可散落在多个文档中各自定义的取舍。
 

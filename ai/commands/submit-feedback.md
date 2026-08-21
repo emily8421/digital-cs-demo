@@ -1,7 +1,7 @@
 # Command: submit-feedback
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 ## 用户说法
 
@@ -11,19 +11,19 @@
 
 ## 适用场景
 
-派生项目使用模板过程中沉淀的**候选问题 / 优化点**（散落在 sync 运行记录、docs-audit 报告、check 告警、`_proposals/` 未成熟草稿），想半自动汇集后反馈给相邻上游维护者（adjacent-layer upstream）。普通 L3 反馈给 `ai-project-template`；领域 L3 先反馈给对应领域模板；领域模板只把跨领域通用结论继续反馈给母模板。**扫描自动化，人工勾选上报哪些**（避免噪声淹没维护者）。
+派生项目使用模板过程中沉淀的**候选问题 / 优化点**（散落在 sync 运行记录、docs-audit 报告、check 告警、`_governance/_proposals/` 未成熟草稿），想半自动汇集后反馈给相邻上游维护者（adjacent-layer upstream）。普通 L3 反馈给 `ai-project-template`；领域 L3 先反馈给对应领域模板；领域模板只把跨领域通用结论继续反馈给母模板。**扫描自动化，人工勾选上报哪些**（避免噪声淹没维护者）。
 
 不适用：已是成熟提案（用 `/run submit-proposal`）；纯派生项目业务问题（不回流模板）；领域 L3 业务事实越级反馈母模板。
 
 ## 必读文件
 
 - `ai/index.md`
-- 派生候选来源：`sync-records/template-sync/` 或旧路径 `docs/archive/template-sync/`（sync 运行记录可优化点）、docs-audit 报告、check 告警、`_proposals/` 草稿
+- 派生候选来源：`_governance/sync-records/template-sync/` 或旧路径 `docs/archive/template-sync/`（sync 运行记录可优化点）、docs-audit 报告、check 告警、`_governance/_proposals/` 草稿
 - `ai/global-rules.md` §9（回流来源标识 + 去项目化）
 
 ## 执行流程
 
-1. 扫描候选来源（sync 运行记录 / audit 报告 / check 告警 / `_proposals/` 草稿），列出可优化点。
+1. 扫描候选来源（sync 运行记录 / audit 报告 / check 告警 / `_governance/_proposals/` 草稿），列出可优化点。
 2. 让成员**勾选**值得上报的（人工过滤，避免噪声）。
 3. 选中的逐个去项目化 + 标来源（`> 来源：<派生>(owner/repo)`）。
 4. `gh issue create --repo <目标模板仓库> --label feedback,from:<派生标识>` 开 issue（每个选中项一条，或合并一条）。

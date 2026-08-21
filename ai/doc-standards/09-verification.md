@@ -1,7 +1,7 @@
 # 09 Verification Standard（验证计划规范镜像）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 本文件是 `docs/09-verification.md` 的细粒度标准，用于 AI 生成、修订、审计和评估验证计划。它不是项目事实文档，派生项目的实际验证计划、证据和验收记录仍写入 `docs/09-verification.md`。
 

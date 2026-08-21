@@ -1,7 +1,7 @@
 # Command: tech-env-evaluation
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 ## 用户说法
 
@@ -15,7 +15,7 @@
 
 ## 适用场景
 
-项目涉及真实运行依赖（如 `backend/`、`frontend/`、`docker/`、数据库、本机模型、外部 API、重型 SDK）时，在生成 / 修订 `docs/05-tech-spec.md`、进入首个编码 Sprint、升级运行时版本、引入关键依赖或遇到环境问题前，评估技术路线是否被本机 / 团队环境支撑，并输出 `Go / Conditional Go / No-Go` 结论。
+项目涉及真实运行依赖（如 `project/backend/`、`project/frontend/`、`project/docker/`、数据库、本机模型、外部 API、重型 SDK）时，在生成 / 修订 `docs/05-tech-spec.md`、进入首个编码 Sprint、升级运行时版本、引入关键依赖或遇到环境问题前，评估技术路线是否被本机 / 团队环境支撑，并输出 `Go / Conditional Go / No-Go` 结论。
 
 ## 与相近命令的区别
 

@@ -1,7 +1,7 @@
 # 04 系统架构（Architecture）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 
 > **文档定位**：定义系统边界、架构视图、模块职责、关键流程、运行拓扑和架构决策。本文回答“系统如何组织”，不写具体依赖版本、表字段、接口字段或 Sprint 实施步骤。
@@ -75,7 +75,7 @@ flowchart LR
 
 【撰写提要：每个模块职责要清晰，避免把无关能力塞入当前 Phase。非平凡模块应指向 `docs/design/<子系统>.md`；页面型系统应标出前端入口 / 页面模块，并指向 `docs/design/frontend-interaction.md` 或对应 `docs/design/*interaction*.md`。】
 
-复杂 Web / 全栈交互项目还应说明是否触发 `template-docs/web-fullstack-profile.md`，并标出 App Shell、页面 / feature 边界、前后端组件协作和最小 vertical slice；不触发时写明豁免理由。
+复杂 Web / 全栈交互项目还应说明是否触发 `template-docs/profiles/web-fullstack-profile.md`，并标出 App Shell、页面 / feature 边界、前后端组件协作和最小 vertical slice；不触发时写明豁免理由。
 
 | MOD-ID | 模块 | 职责 | 输入 | 输出 | 边界 / 不负责 | 关联组件 | 关联设计 |
 |---|---|---|---|---|---|---|---|

@@ -1,7 +1,7 @@
 # 输入评审报告（Input Review Report）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 > 本文件是 `docs/inputs/input-review-report.md` 或 `docs/inputs/<topic>/input-review-report.md` 的结构模板副本，不是项目事实。输入评审报告只记录输入盘点、愿景就绪度、缺口和下一步建议，不替代 `docs/vision/product-vision.md` 或 `docs/00-09`。
 

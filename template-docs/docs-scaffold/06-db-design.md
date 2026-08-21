@@ -1,7 +1,7 @@
 # 06 数据库设计（Database Design）
 
 > Sync notice: This file is maintained by `ai-project-template` and may be overwritten when a derived project syncs template methodology.
-> Do not edit it directly in derived projects; propose reusable changes in `_proposals/` and upstream them to the template repository.
+> Do not edit it directly in derived projects; propose reusable changes in `_governance/_proposals/` and upstream them to the template repository.
 
 
 > **文档定位**：当项目涉及持久化数据库时，定义数据对象、概念模型、表字段、索引约束、迁移 / seed / 回滚、数据安全留存和实现状态差异。本文回答“数据如何持久化，以及当前实现是否等价于目标设计”。

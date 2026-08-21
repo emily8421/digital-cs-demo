@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sync notice: 本文件由 ai-project-template 模板同步维护，派生项目同步时会被覆盖；不应直接修改，通用改进请经 _proposals/ 回流模板仓库。
+# Sync notice: 本文件由 ai-project-template 模板同步维护，派生项目同步时会被覆盖；不应直接修改，通用改进请经 _governance/_proposals/ 回流模板仓库。
 # check-derived-sync.sh — 检查派生项目最近一次模板同步提交是否越过同步边界
 #
 # 用法（在派生项目根目录执行）:
@@ -104,7 +104,7 @@ is_sync_file() {
 is_protected_project_file() {
   local changed_file="$1"
   case "$changed_file" in
-    README.md|ai/project-rules.md|ai/domain-rules.md|docs/0[0-9]-*|frontend/*|backend/*|tests/*|docker/*)
+    README.md|ai/project-rules.md|ai/domain-rules.md|docs/0[0-9]-*|project/frontend/*|project/backend/*|project/tests/*|project/docker/*)
       return 0
       ;;
     *)
